@@ -427,3 +427,40 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# =========================
+# React / Node.js / Vite
+# =========================
+
+# Dependencies
+node_modules/
+
+# Production build
+dist/
+build/
+
+# Vite
+.vite/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Cache
+.eslintcache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Optional: lockfiles (MANTENHA se quiser reprodutibilidade)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
