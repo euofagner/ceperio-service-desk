@@ -1,2 +1,6 @@
-# CeperioServiceDesk
-A Full-stack IT service desk system built with ASP.NET Core Web API and React to streamline internal support ticket management for the company where I currently work as an IT support intern.
+# Ceperio Service Desk
+A Full-stack IT service desk system built with ASP.NET Core Web API and React to streamline internal support ticket management.
+
+
+## About 
+This project was inspired by a real workflow need observed during my IT support internship, where support requests were handled without a service desk platform.
