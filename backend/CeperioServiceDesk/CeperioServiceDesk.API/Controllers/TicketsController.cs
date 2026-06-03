@@ -19,6 +19,17 @@ public class TicketsController(AppDbContext context) : ControllerBase
         return Ok(tickets);
     }
 
+    [HttpGet("{id}", Name = "ObterTicket")]
+    public async Task<ActionResult<Ticket>> GetTicket(int id)
+    {
+        var ticket = await _context.Tickets.FindAsync(id);
+
+        if (ticket is null)
+            return NotFound($"Ticket de id: {id} não encontrado.");
+
+        return Ok(ticket);
+    }
+
     [HttpPost]
     public async Task<ActionResult> PostTicket(Ticket ticket)
     {
