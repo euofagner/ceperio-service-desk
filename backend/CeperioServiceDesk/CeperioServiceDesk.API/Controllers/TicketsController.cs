@@ -38,6 +38,6 @@ public class TicketsController(AppDbContext context) : ControllerBase
         await _context.Tickets.AddAsync(ticket);
         await _context.SaveChangesAsync();
 
-        return Created();
+        return new CreatedAtRouteResult("ObterTicket", new {id = ticket.Id}, ticket);
     }
 }
