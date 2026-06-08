@@ -19,7 +19,7 @@ public class TicketsController(AppDbContext context) : ControllerBase
         return Ok(tickets);
     }
 
-    [HttpGet("{id}", Name = "ObterTicket")]
+    [HttpGet("{id:int}", Name = "ObterTicket")]
     public async Task<ActionResult<Ticket>> GetTicket(int id)
     {
         var ticket = await _context.Tickets.FindAsync(id);
@@ -38,6 +38,27 @@ public class TicketsController(AppDbContext context) : ControllerBase
         await _context.Tickets.AddAsync(ticket);
         await _context.SaveChangesAsync();
 
-        return new CreatedAtRouteResult("ObterTicket", new {id = ticket.Id}, ticket);
+        return new CreatedAtRouteResult("ObterTicket", new { id = ticket.Id }, ticket);
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult> PutTicket(int id, Ticket ticket)
+    {
+        if (id != ticket.Id)
+            return BadRequest("O id da rota não corresponde ao id do ticket");
+
+        var existingTicket = await _context.Tickets.FindAsync(id);
+
+        if (existingTicket is null) 
+            return NotFound($"Ticket de id: {id} não encontrado.");
+
+        existingTicket.Title = ticket.Title;
+        existingTicket.Description = ticket.Description;
+        existingTicket.TicketStatus = ticket.TicketStatus;
+        existingTicket.TicketPriority = ticket.TicketPriority;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(ticket);
     }
 }
