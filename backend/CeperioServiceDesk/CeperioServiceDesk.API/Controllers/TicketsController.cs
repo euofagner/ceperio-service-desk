@@ -62,4 +62,19 @@ public class TicketsController(AppDbContext context) : ControllerBase
 
         return Ok(existingTicket);
     }
+
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> DeleteTicket(int id)
+    {
+        var existingTicket = await _context.Tickets.FindAsync(id);
+
+        if (existingTicket is null)
+            return NotFound($"Ticket de id: {id} não encontrado.");
+
+        _context.Tickets.Remove(existingTicket);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
+ 
