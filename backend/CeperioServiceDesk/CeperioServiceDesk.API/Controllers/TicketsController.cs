@@ -56,9 +56,10 @@ public class TicketsController(AppDbContext context) : ControllerBase
         existingTicket.Description = ticket.Description;
         existingTicket.TicketStatus = ticket.TicketStatus;
         existingTicket.TicketPriority = ticket.TicketPriority;
+        existingTicket.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
 
-        return Ok(ticket);
+        return Ok(existingTicket);
     }
 }

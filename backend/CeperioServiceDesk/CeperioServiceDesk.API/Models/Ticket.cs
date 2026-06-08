@@ -13,6 +13,7 @@ public class Ticket
     [StringLength(300)]
     public string Description { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime? UpdatedAt { get; set; }
     public TicketStatus TicketStatus { get; set; } = TicketStatus.Open;
     public TicketPriority TicketPriority { get; set; } = TicketPriority.Medium;
 }
