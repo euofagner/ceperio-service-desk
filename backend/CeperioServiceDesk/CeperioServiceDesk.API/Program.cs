@@ -19,6 +19,13 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+app.UseCors(options => 
+{
+    options.WithOrigins("http://localhost:5173");
+    options.AllowAnyMethod();
+    options.AllowAnyHeader();
+});
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
