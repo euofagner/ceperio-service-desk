@@ -5,11 +5,17 @@ import cepelogo from "../assets/cepelogo.png";
 function Tickets() {
 
     const [tickets, setTickets] = useState([]);
+    const [filter, setFilter] = useState("all");
+    const [loading, setLoading] = useState(true);
 
     async function getTickets() {
-        const ticketsFromApi = await api.get("/tickets");
-
-        setTickets(ticketsFromApi.data);
+        try {
+            const ticketsFromApi = await api.get("/tickets");
+            setTickets(ticketsFromApi.data);
+        }
+        finally {
+            setLoading(false);
+        }
     }
 
     useEffect(() => {
@@ -44,9 +50,21 @@ function Tickets() {
         3: "text-red-400 font-bold",
     };
 
+    const filteredTickets = filter === "all"
+        ? tickets
+        : tickets.filter(t => t.ticketStatus === parseInt(filter));
+
+    if (loading) {
+        return (
+            <div className="bg-neutral-950 text-neutral-200 min-h-screen flex items-center justify-center">
+                <p>Carregando tickets...</p>
+            </div>
+        )
+    }
+
     return (
         <div className="min-h-screen bg-neutral-950 text-neutral-200">
-            <div className="max-w-4x1 mx-auto px-6 py-12">
+            <div className="max-w-4xl mx-auto px-6 py-12">
                 <div className="mb-5">
                     <div className="flex items-center mb-2">
                         <img
@@ -69,9 +87,24 @@ function Tickets() {
                     </p>
                 </div>
 
+                {/* tickets filter */}
+                <div className="flex items-center gap-3">
+                    <select
+                        value={filter}
+                        onChange={(e) => setFilter(e.target.value)}
+                        className="bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-neutral-300 focus:outline-none focus:border-neutral-700">
+
+                        <option value="all">Todos os status</option>
+                        <option value="0">Aberto</option>
+                        <option value="1">Em andamento</option>
+                        <option value="2">Resolvido</option>
+                        <option value="3">Fechado</option>
+                    </select>
+                </div>
+
                 {/* tickets list */}
                 <div className="space-y-3">
-                    {tickets.map(ticket =>
+                    {filteredTickets.map(ticket =>
                         <div
                             key={ticket.id}
                             className="bg-neutral-900 border-neutral-800 rounded-lg p-5 hover:border-neutral-700 transition-colors">
