@@ -22,32 +22,20 @@ function Tickets() {
         getTickets();
     }, []);
 
-    const status = {
-        0: "Aberto",
-        1: "Em andamento",
-        2: "Resolvido",
-        3: "Fechado"
+
+
+    const statusConfig = {
+        0: { label: "Aberto", dot: "bg-red-500", badge: "bg-red-500/10 text-red-400 border-red-500/20" },
+        1: { label: "Em andamento", dot: "bg-yellow-500", badge: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" },
+        2: { label: "Resolvido", dot: "bg-green-500", badge: "bg-green-500/10 text-green-400 border-green-500/20" },
+        3: { label: "Fechado", dot: "bg-neutral-500", badge: "bg-neutral-500/10 text-neutral-400 border-neutral-500/20" }
     };
 
-    const priority = {
-        0: "Baixa",
-        1: "Média",
-        2: "Alta",
-        3: "Crítica"
-    };
-
-    const statusColor = {
-        0: "bg-red-900 text-red-300",
-        1: "bg-yellow-900 text-yellow-300",
-        2: "bg-green-900 text-green-300",
-        3: "bg-gray-700 text-gray-300",
-    };
-
-    const priorityColor = {
-        0: "text-green-400",
-        1: "text-blue-400",
-        2: "text-orange-400",
-        3: "text-red-400 font-bold",
+    const priorityConfig = {
+        0: { label: "Baixa" },
+        1: { label: "Média" },
+        2: { label: "Alta" },
+        3: { label: "Crítica" }
     };
 
     const filteredTickets = filter === "all"
@@ -74,7 +62,7 @@ function Tickets() {
 
     return (
         <div className="min-h-screen bg-neutral-950 text-neutral-200">
-            <div className="max-w-4xl mx-auto px-6 py-12">
+            <div className="max-w-7xl mx-auto px-6 py-12">
                 <div className="mb-5">
                     <div className="flex items-center mb-2">
                         <img
@@ -131,38 +119,50 @@ function Tickets() {
 
                 {/* tickets list */}
                 <div className="space-y-3">
-                    {filteredTickets.map(ticket =>
-                        <div
-                            key={ticket.id}
-                            className="bg-neutral-900 border-neutral-800 rounded-lg p-5 hover:border-neutral-700 transition-colors">
+                    {filteredTickets.map((ticket) => {
+                        const status = statusConfig[ticket.ticketStatus] || statusConfig[0];
+                        const priority = priorityConfig[ticket.ticketPriority] || priorityConfig[1];
 
-                            <div className="flex justify-between items-start mb-2">
-                                <h2>{ticket.title}</h2>
-                                <span className="text-neutral-500">
-                                    #{ticket.id}
-                                </span>
+                        return (
+                            <div
+                                key={ticket.id}
+                                className="group bg-neutral-900 hover:bg-neutral-800/30 transition-colors rounded-lg cursor-pointer border border-neutral-800/50">
+
+                                <div className="flex items-center gap-4 px-5 py-4">
+                                    {/* Status dot */}
+                                    <div className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${status.dot}`} />
+
+                                    {/* Conteúdo */}
+                                    <div className="flex-1 min-w-1">
+                                        <div className="flex items-center gap-3 mb-1">
+                                            <span className="text-xs text-neutral-600 font-mono">
+                                                #{ticket.id}
+                                            </span>
+                                            <h3 className="text-sm font-medium text-white truncate">
+                                                {ticket.title}
+                                            </h3>
+                                        </div>
+                                        <p className="text-sm text-neutral-500 mb-2 line-clamp-1">
+                                            {ticket.description}
+                                        </p>
+                                        <div className="flex items-center gap-3">
+                                            <span className={`text-[11px] px-2 py-0.5 rounded-full border ${status.badge}`}>
+                                                {status.label}
+                                            </span>
+                                            <span className={`text-xs text-${status.badge}`}>
+                                                {priority.label}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Data */}
+                                    <span className="text-neutral-500">
+                                        {formatDate(ticket.createdAt)}
+                                    </span>
+                                </div>
                             </div>
-
-                            <p className="text-gray-400 text-sm mb-3">
-                                {ticket.description}
-                            </p>
-
-                            <div className="flex gap-3 text-xs">
-                                <span className={`px-2 py-1 rounded-full ${statusColor[ticket.ticketStatus] || "text-gray-300"}`}>
-                                    Status: {status[ticket.ticketStatus]}
-                                </span>
-
-                                <span className={priorityColor[ticket.ticketPriority]}>
-                                    <span className="text-white">Prioridade: </span>
-                                    {priority[ticket.ticketPriority] || ticket.ticketPriority}
-                                </span>
-
-                                <span className="text-neutral-500 whitespace-nowrap">
-                                    {formatDate(ticket.createdAt)}
-                                </span>
-                            </div>
-                        </div>
-                    )}
+                        );
+                    })}
                 </div>
 
                 <div className="mt-4 font-bold text-neutral-500">
