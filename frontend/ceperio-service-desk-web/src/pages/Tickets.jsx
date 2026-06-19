@@ -54,6 +54,16 @@ function Tickets() {
         ? tickets
         : tickets.filter(t => t.ticketStatus === parseInt(filter));
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diff = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+
+        if (diff === 0) return "Hoje";
+        if (diff === 1) return "Ontem";
+        return `há ${diff} dias`;
+    }
+
     if (loading) {
         return (
             <div className="bg-neutral-950 text-neutral-200 min-h-screen flex items-center justify-center">
@@ -88,7 +98,7 @@ function Tickets() {
                 </div>
 
                 {/* tickets filter */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center mb-5 gap-3">
                     <select
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
@@ -121,7 +131,7 @@ function Tickets() {
                             </p>
 
                             <div className="flex gap-3 text-xs">
-                                <span className={`px-2 py-1 rounded-full ${statusColor[ticket.ticketStatus] || "bg-gray-800 text-gray-300"}`}>
+                                <span className={`px-2 py-1 rounded-full ${statusColor[ticket.ticketStatus] || "text-gray-300"}`}>
                                     Status: {status[ticket.ticketStatus]}
                                 </span>
 
@@ -129,9 +139,17 @@ function Tickets() {
                                     <span className="text-white">Prioridade: </span>
                                     {priority[ticket.ticketPriority] || ticket.ticketPriority}
                                 </span>
+
+                                <span className="text-neutral-500 whitespace-nowrap">
+                                    {formatDate(ticket.createdAt)}
+                                </span>
                             </div>
                         </div>
                     )}
+                </div>
+
+                <div className="mt-4 font-bold text-neutral-500">
+                    Mostrando {filteredTickets.length} de {tickets.length} tickets
                 </div>
             </div>
         </div>
