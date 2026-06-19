@@ -97,6 +97,23 @@ function Tickets() {
                     </p>
                 </div>
 
+                <div className="flex gap-3 mb-6">
+                    <span className="bg-red-500/10 text-red-400 text-xs font-semibold rounded-full px-3 py-1">
+                        {tickets.filter(t => t.ticketStatus === 0).length} ticket
+                        {tickets.filter(t => t.ticketStatus === 0).length !== 1 && "s"} aberto
+                        {tickets.filter(t => t.ticketStatus === 0).length !== 1 && "s"}
+                    </span>
+                    <span className="bg-yellow-500/10 text-yellow-400 text-xs items-center font-semibold rounded-full px-3 py-1">
+                        {tickets.filter(t => t.ticketStatus === 1).length} ticket
+                        {tickets.filter(t => t.ticketStatus === 1).length !== 1 && "s"} em andamento
+                    </span>
+                    <span className="bg-green-500/10 text-green-400 items-center font-semibold text-xs px-3 py-1 rounded-full">
+                        {tickets.filter(t => t.ticketStatus === 2).length} ticket
+                        {tickets.filter(t => t.ticketStatus === 2).length !== 1 && "s"} resolvido
+                        {tickets.filter(t => t.ticketStatus === 2).length !== 1 && "s"}
+                    </span>
+                </div>
+
                 {/* tickets filter */}
                 <div className="flex items-center mb-5 gap-3">
                     <select
