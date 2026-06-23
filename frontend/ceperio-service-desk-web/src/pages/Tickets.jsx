@@ -35,6 +35,8 @@ function Tickets() {
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [deleting, setDeleting] = useState(false);
 
+    const [toast, setToast] = useState(null); // message: string, type: 'success' | 'error' 
+
     async function getTickets() {
         try {
             const ticketsFromApi = await api.get("/tickets");
@@ -77,6 +79,11 @@ function Tickets() {
         setEditingTicket(null);
     }
 
+    function showToast(message, type = 'success') {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 3000);
+    }
+
     async function handleSubmit(e) {
         e.preventDefault();
         if (!formData.title.trim()) return;
@@ -101,16 +108,19 @@ function Tickets() {
                 });
             } closeModal();
             await getTickets();
+            showToast(editingTicket ? "Ticket atualizado com sucesso!" : "Ticket criado com sucesso!")
         } finally {
             setSubmitting(false);
         }
     }
+
     async function handleDeleteTicket(id) {
         setDeleting(true);
         try {
             await api.delete(`/tickets/${id}`);
             setDeleteTarget(null);
             await getTickets();
+            showToast("Ticket excluído com sucesso!")
         } finally {
             setDeleting(false);
         }
@@ -410,6 +420,31 @@ function Tickets() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {toast && (
+                <div className="fixed top-4 right-4 z-50 animate-slide-in">
+                    <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border text-sm shadow-lg ${toast.type === 'success'
+                            ? 'bg-green-950 border-green-800 text-green-300'
+                            : 'bg-red-950 border-red-800 text-red-300'
+                        }`}>
+                        {toast.type === 'success' ? (
+                            <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                        ) : (
+                            <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        )}
+                        <span>{toast.message}</span>
+                        <button onClick={() => setToast(null)} className="ml-4 text-neutral-500 hover:text-white">
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
             )}
