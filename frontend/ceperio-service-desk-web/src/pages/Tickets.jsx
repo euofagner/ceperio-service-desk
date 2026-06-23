@@ -23,10 +23,12 @@ function Tickets() {
     const [loading, setLoading] = useState(true);
 
     const [showModal, setShowModal] = useState(false);
-    const [newTicket, setNewTicket] = useState({
+    const [editingTicket, setEditingTicket] = useState(null);
+    const [formData, setFormData] = useState({
         title: "",
         description: "",
-        ticketPriority: 1
+        ticketPriority: 1,
+        ticketStatus: 0
     });
     const [submitting, setSubmitting] = useState(false);
 
@@ -47,21 +49,63 @@ function Tickets() {
         getTickets();
     }, []);
 
-    async function handleCreateTicket(e) {
+
+    function openCreateModal() {
+        setEditingTicket(null);
+        setFormData({
+            title: "",
+            description: "",
+            ticketPriority: 1,
+            ticketStatus: 0
+        });
+        setShowModal(true);
+    }
+
+    function openEditingModal(ticket) {
+        setEditingTicket(ticket);
+        setFormData({
+            title: ticket.title,
+            description: ticket.description,
+            ticketPriority: ticket.ticketPriority,
+            ticketStatus: ticket.ticketStatus
+        })
+        setShowModal(true);
+    }
+
+    function closeModal() {
+        setShowModal(false);
+        setEditingTicket(null);
+    }
+
+    async function handleSubmit(e) {
         e.preventDefault();
-        if (!newTicket.title.trim()) return;
+        if (!formData.title.trim()) return;
 
         setSubmitting(true);
         try {
-            await api.post("/tickets", newTicket);
-            setShowModal(false);
-            setNewTicket({ title: "", description: "", ticketPriority: 1 });
-            await getTickets(); 
+            if (editingTicket) {
+                // Atualizar
+                await api.put(`/tickets/${editingTicket.id}`, {
+                    id: editingTicket.id,
+                    title: formData.title,
+                    description: formData.description,
+                    ticketPriority: formData.ticketPriority,
+                    ticketStatus: formData.ticketStatus,
+                    createdAt: editingTicket.createdAt,
+                    createdByEmail: editingTicket.createdByEmail
+                });
+            } else {
+                await api.post("/tickets", {
+                    title: formData.title,
+                    description: formData.description,
+                    ticketPriority: formData.ticketPriority
+                });
+            } closeModal();
+            await getTickets();
         } finally {
             setSubmitting(false);
         }
     }
-
     async function handleDeleteTicket(id) {
         setDeleting(true);
         try {
@@ -165,13 +209,15 @@ function Tickets() {
                         return (
                             <div
                                 key={ticket.id}
-                                className="group bg-neutral-900 hover:border-neutral-600 hover:shadow-lg transition-colors rounded-lg cursor-pointer border border-neutral-800/50">
+                                className="group bg-neutral-900 hover:border-neutral-600 hover:shadow-lg transition-colors rounded-lg border border-neutral-800/50 cursor-pointer">
 
-                                <div className="flex items-center gap-4 px-5 py-4">
+                                <div
+                                    onClick={() => openEditingModal(ticket)}
+                                    className="flex items-center gap-4 px-5 py-4">
                                     {/* Status dot */}
                                     <div className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${status.dot}`} />
 
-                                    {/* Conteúdo */}
+                                    {/* content */}
                                     <div className="flex-1 min-w-1">
                                         <div className="flex items-center gap-3 mb-1">
                                             <span className="text-xs text-neutral-600 font-mono">
@@ -203,14 +249,15 @@ function Tickets() {
                                     <button onClick={(e) => {
                                         e.stopPropagation();
                                         setDeleteTarget(deleteTarget === ticket.id ? null : ticket.id)
-                                    }} className="opacity-0 group-hover:opacity-100 text-neutral-600 hover:text-neutral-300 transition-all p-1 rounded">
+                                    }} className="opacity-0 group-hover:opacity-100 text-neutral-500 hover:text-neutral-300 transition-all p-1 rounded">
 
-                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                         </svg>
                                     </button>
                                 </div>
-                                {/* AQUI - Confirmação de delete */}
+
+                                {/* delete confirmation */}
                                 {deleteTarget === ticket.id && (
                                     <div className="px-5 py-3 bg-neutral-800/50 border-t border-neutral-800 flex items-center justify-between">
                                         <span className="text-sm text-neutral-400">
@@ -222,7 +269,7 @@ function Tickets() {
                                                     e.stopPropagation();
                                                     setDeleteTarget(null);
                                                 }}
-                                                className="px-3 py-1 text-xs text-neutral-400 hover:text-white transition-colors">
+                                                className="px-3 py-1 text-sm text-neutral-400 hover:text-white transition-colors">
                                                 Cancelar
                                             </button>
                                             <button
@@ -231,7 +278,7 @@ function Tickets() {
                                                     handleDeleteTicket(ticket.id);
                                                 }}
                                                 disabled={deleting}
-                                                className="px-3 py-1 text-xs bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors disabled:opacity-50">
+                                                className="px-3 py-1 text-sm bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors disabled:opacity-50">
                                                 {deleting ? "Excluindo..." : "Excluir"}
                                             </button>
                                         </div>
@@ -247,59 +294,59 @@ function Tickets() {
                 </div>
             </div>
 
-            {/* create ticket */}
+            {/* create and update ticket */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    <div
-                        className="absolute inset-0 bg-black/50"
-                        onClick={() => setShowModal(false)} />
+                    <div className="absolute inset-0 bg-black/50" onClick={closeModal} />
 
                     <div className="relative bg-neutral-900 border border-neutral-800 rounded-xl w-full max-w-lg mx-4 p-6">
                         <h2 className="text-lg font-semibold text-white mb-4">
-                            Novo Ticket
+                            {editingTicket ? "Editar Ticket" : "Novo Ticket"}
                         </h2>
 
-                        <form onSubmit={handleCreateTicket} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm text-neutral-400 mb-1">
-                                    Título
-                                </label>
+                                <label className="block text-sm text-neutral-400 mb-1">Título</label>
                                 <input
                                     type="text"
-                                    value={newTicket.title}
-                                    onChange={(e) =>
-                                        setNewTicket({ ...newTicket, title: e.target.value })
-                                    }
-                                    className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500" placeholder="Ex: Impressora não funciona" required />
+                                    value={formData.title}
+                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                    className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500"
+                                    placeholder="Ex: Impressora não funciona"
+                                    required />
                             </div>
 
                             <div>
-                                <label className="block text-sm text-neutral-400 mb-1">
-                                    Descrição
-                                </label>
+                                <label className="block text-sm text-neutral-400 mb-1">Descrição</label>
                                 <textarea
-                                    value={newTicket.description}
-                                    onChange={(e) =>
-                                        setNewTicket({ ...newTicket, description: e.target.value })
-                                    }
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                     rows={3}
-                                    className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 resize-none" placeholder="Descreva o problema..." />
+                                    className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 resize-none"
+                                    placeholder="Descreva o problema..." />
                             </div>
 
-                            <div>
-                                <label className="block text-sm text-neutral-400 mb-1">
-                                    Prioridade
-                                </label>
-                                <select
-                                    value={newTicket.ticketPriority}
-                                    onChange={(e) =>
-                                        setNewTicket({
-                                            ...newTicket,
-                                            ticketPriority: parseInt(e.target.value),
-                                        })
-                                    }
-                                    className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-500">
+                            {editingTicket && (
+                                <div>
+                                    <label className="block text-sm text-neutral-400 mb-1">Status</label>
+                                    <select
+                                        value={formData.ticketStatus}
+                                        onChange={(e) => setFormData({ ...formData, ticketStatus: parseInt(e.target.value) })}
+                                        className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-500">
+                                        <option value={0}>Aberto</option>
+                                        <option value={1}>Em andamento</option>
+                                        <option value={2}>Resolvido</option>
+                                        <option value={3}>Fechado</option>
+                                    </select>
+                                </div>
+                            )}
 
+                            <div>
+                                <label className="block text-sm text-neutral-400 mb-1">Prioridade</label>
+                                <select
+                                    value={formData.ticketPriority}
+                                    onChange={(e) => setFormData({ ...formData, ticketPriority: parseInt(e.target.value) })}
+                                    className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-500">
                                     <option value={0}>Baixa</option>
                                     <option value={1}>Média</option>
                                     <option value={2}>Alta</option>
@@ -310,15 +357,15 @@ function Tickets() {
                             <div className="flex gap-3 pt-2">
                                 <button
                                     type="button"
-                                    onClick={() => setShowModal(false)}
+                                    onClick={closeModal}
                                     className="flex-1 px-4 py-2 bg-neutral-800 text-neutral-300 text-sm rounded-lg hover:bg-neutral-700 transition-colors">
                                     Cancelar
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={submitting || !newTicket.title.trim()}
+                                    disabled={submitting || !formData.title.trim()}
                                     className="flex-1 px-4 py-2 bg-white text-black text-sm font-medium rounded-lg hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                                    {submitting ? "Criando..." : "Criar Ticket"}
+                                    {submitting ? "Salvando..." : editingTicket ? "Salvar" : "Criar Ticket"}
                                 </button>
                             </div>
                         </form>
@@ -326,7 +373,9 @@ function Tickets() {
                 </div>
             )}
         </div>
-    )
+    );
 }
+
+
 
 export default Tickets
