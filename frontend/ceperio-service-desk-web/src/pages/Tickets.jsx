@@ -30,6 +30,9 @@ function Tickets() {
     });
     const [submitting, setSubmitting] = useState(false);
 
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [deleting, setDeleting] = useState(false);
+
     async function getTickets() {
         try {
             const ticketsFromApi = await api.get("/tickets");
@@ -53,9 +56,20 @@ function Tickets() {
             await api.post("/tickets", newTicket);
             setShowModal(false);
             setNewTicket({ title: "", description: "", ticketPriority: 1 });
-            await getTickets(); // Atualiza a lista
+            await getTickets(); 
         } finally {
             setSubmitting(false);
+        }
+    }
+
+    async function handleDeleteTicket(id) {
+        setDeleting(true);
+        try {
+            await api.delete(`/tickets/${id}`);
+            setDeleteTarget(null);
+            await getTickets();
+        } finally {
+            setDeleting(false);
         }
     }
 
@@ -184,7 +198,45 @@ function Tickets() {
                                     <span className="text-neutral-500">
                                         {formatDate(ticket.createdAt)}
                                     </span>
+
+                                    {/* exclude ticket */}
+                                    <button onClick={(e) => {
+                                        e.stopPropagation();
+                                        setDeleteTarget(deleteTarget === ticket.id ? null : ticket.id)
+                                    }} className="opacity-0 group-hover:opacity-100 text-neutral-600 hover:text-neutral-300 transition-all p-1 rounded">
+
+                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                        </svg>
+                                    </button>
                                 </div>
+                                {/* AQUI - Confirmação de delete */}
+                                {deleteTarget === ticket.id && (
+                                    <div className="px-5 py-3 bg-neutral-800/50 border-t border-neutral-800 flex items-center justify-between">
+                                        <span className="text-sm text-neutral-400">
+                                            Excluir ticket #{ticket.id}?
+                                        </span>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setDeleteTarget(null);
+                                                }}
+                                                className="px-3 py-1 text-xs text-neutral-400 hover:text-white transition-colors">
+                                                Cancelar
+                                            </button>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteTicket(ticket.id);
+                                                }}
+                                                disabled={deleting}
+                                                className="px-3 py-1 text-xs bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors disabled:opacity-50">
+                                                {deleting ? "Excluindo..." : "Excluir"}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         );
                     })}
