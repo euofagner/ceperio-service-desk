@@ -82,13 +82,9 @@ function Tickets() {
 
     // action ticket message
     function showToast(message, type = 'success') {
-        if (toastTimer) clearTimeout(toastTimer);
-
+        pauseToast();
         setToast( { message, type } );
-
-        const timer = setTimeout(() => setToast(null), 2500);
-        
-        setToastTimer(timer);
+        resumeToast();
     }
 
     function pauseToast() {
