@@ -35,7 +35,8 @@ function Tickets() {
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [deleting, setDeleting] = useState(false);
 
-    const [toast, setToast] = useState(null); // message: string, type: 'success' | 'error' 
+    const [toast, setToast] = useState(null); // action ticket message
+    const [toastTimer, setToastTimer] = useState(null);
 
     async function getTickets() {
         try {
@@ -79,9 +80,24 @@ function Tickets() {
         setEditingTicket(null);
     }
 
+    // action ticket message
     function showToast(message, type = 'success') {
-        setToast({ message, type });
-        setTimeout(() => setToast(null), 3000);
+        if (toastTimer) clearTimeout(toastTimer);
+
+        setToast( { message, type } );
+
+        const timer = setTimeout(() => setToast(null), 2500);
+        
+        setToastTimer(timer);
+    }
+
+    function pauseToast() {
+        if (toastTimer) clearTimeout(toastTimer);
+    }
+
+    function resumeToast() {
+        const timer = setTimeout(() => setToast(null), 2500);
+        setToastTimer(timer);
     }
 
     async function handleSubmit(e) {
@@ -424,11 +440,12 @@ function Tickets() {
                 </div>
             )}
 
+            {/* action ticket notification (toast) */}
             {toast && (
-                <div className="fixed top-4 right-4 z-50 animate-slide-in">
+                <div className="fixed top-4 right-4 z-50 animate-slide-in" onMouseEnter={pauseToast} onMouseLeave={resumeToast}>
                     <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border text-sm shadow-lg ${toast.type === 'success'
-                            ? 'bg-green-950 border-green-800 text-green-300'
-                            : 'bg-red-950 border-red-800 text-red-300'
+                        ? 'bg-green-950 border-green-800 text-green-300'
+                        : 'bg-red-950 border-red-800 text-red-300'
                         }`}>
                         {toast.type === 'success' ? (
                             <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
