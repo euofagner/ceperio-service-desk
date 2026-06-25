@@ -1,3 +1,4 @@
+import { useToastNotification } from "../hooks/toastNotification";
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import cepelogo from "../assets/cepelogo.png";
@@ -17,7 +18,6 @@ const priorityConfig = {
 };
 
 function Tickets() {
-
     const [tickets, setTickets] = useState([]);
     const [filter, setFilter] = useState("all");
     const [loading, setLoading] = useState(true);
@@ -35,8 +35,7 @@ function Tickets() {
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [deleting, setDeleting] = useState(false);
 
-    const [toast, setToast] = useState(null); // action ticket message
-    const [toastTimer, setToastTimer] = useState(null);
+    const { toast, setToast, showToast, pauseToast, resumeToast } = useToastNotification();
 
     async function getTickets() {
         try {
@@ -51,7 +50,6 @@ function Tickets() {
     useEffect(() => {
         getTickets();
     }, []);
-
 
     function openCreateModal() {
         setEditingTicket(null);
@@ -78,22 +76,6 @@ function Tickets() {
     function closeModal() {
         setShowModal(false);
         setEditingTicket(null);
-    }
-
-    // action ticket message
-    function showToast(message, type = 'success') {
-        pauseToast();
-        setToast( { message, type } );
-        resumeToast();
-    }
-
-    function pauseToast() {
-        if (toastTimer) clearTimeout(toastTimer);
-    }
-
-    function resumeToast() {
-        const timer = setTimeout(() => setToast(null), 2500);
-        setToastTimer(timer);
     }
 
     async function handleSubmit(e) {
@@ -160,13 +142,11 @@ function Tickets() {
         return (
             <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
                 <div className="w-full max-w-md">
-
                     <div className="flex items-center gap-4 mb-8">
                         <img
                             src={cepelogo}
                             alt="Logo"
-                            className="h-12"
-                        />
+                            className="h-12" />
 
                         <div>
                             <h1 className="text-white font-semibold">
@@ -464,7 +444,5 @@ function Tickets() {
         </div>
     );
 }
-
-
 
 export default Tickets
