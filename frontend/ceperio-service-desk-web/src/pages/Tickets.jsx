@@ -102,8 +102,13 @@ function Tickets() {
                 });
             } closeModal();
             await getTickets();
-            showToast(editingTicket ? "Ticket atualizado com sucesso!" : "Ticket criado com sucesso!")
-        } finally {
+            showToast(editingTicket ? "Ticket atualizado com sucesso!" : "Ticket criado com sucesso!");
+        }
+        catch {
+            showToast(editingTicket ? "Erro ao salvar ticket. Verifique sua conexão." : "Erro ao criar ticket. Verifique sua conexão.", "error");
+        }
+        finally 
+        {
             setSubmitting(false);
         }
     }
@@ -114,8 +119,11 @@ function Tickets() {
             await api.delete(`/tickets/${id}`);
             setDeleteTarget(null);
             await getTickets();
-            showToast("Ticket excluído com sucesso!")
-        } finally {
+            showToast("Ticket excluído com sucesso!");
+        } catch{
+            showToast("Erro ao excluir ticket. Verifique sua conexão.", "error");
+        } 
+        finally {
             setDeleting(false);
         }
     }

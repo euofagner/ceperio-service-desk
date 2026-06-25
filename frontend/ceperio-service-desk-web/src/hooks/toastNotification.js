@@ -17,7 +17,7 @@ export function useToastNotification() {
     }
 
     function resumeToast() {
-        const timer = setTimeout(() => setToast(null), 2500);
+        const timer = setTimeout(() => setToast(null), 3000);
         setToastTimer(timer);
     }
 
