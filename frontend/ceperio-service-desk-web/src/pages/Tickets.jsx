@@ -3,6 +3,7 @@ import { formatDate } from "../utils/formatDate";
 import { useEffect, useState } from "react";
 import cepelogo from "../assets/cepelogo.png";
 import TicketCard from "../components/TicketCard";
+import TicketModal from "../components/TicketModal";
 import api from "../services/api";
 
 function Tickets() {
@@ -26,13 +27,6 @@ function Tickets() {
 
     const [showModal, setShowModal] = useState(false);
     const [editingTicket, setEditingTicket] = useState(null);
-    const [formData, setFormData] = useState({
-        title: "",
-        description: "",
-        ticketPriority: 1,
-        ticketStatus: 0
-    });
-    const [submitting, setSubmitting] = useState(false);
 
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [deleting, setDeleting] = useState(false);
@@ -55,23 +49,11 @@ function Tickets() {
 
     function openCreateModal() {
         setEditingTicket(null);
-        setFormData({
-            title: "",
-            description: "",
-            ticketPriority: 1,
-            ticketStatus: 0
-        });
         setShowModal(true);
     }
 
-    function openEditingModal(ticket) {
+    function openEditModal(ticket) {
         setEditingTicket(ticket);
-        setFormData({
-            title: ticket.title,
-            description: ticket.description,
-            ticketPriority: ticket.ticketPriority,
-            ticketStatus: ticket.ticketStatus
-        })
         setShowModal(true);
     }
 
@@ -80,38 +62,23 @@ function Tickets() {
         setEditingTicket(null);
     }
 
-    async function handleSubmit(e) {
-        e.preventDefault();
-        if (!formData.title.trim()) return;
-
-        setSubmitting(true);
-        try {
-            if (editingTicket) {
-                await api.put(`/tickets/${editingTicket.id}`, {
-                    id: editingTicket.id,
-                    title: formData.title,
-                    description: formData.description,
-                    ticketPriority: formData.ticketPriority,
-                    ticketStatus: formData.ticketStatus,
-                    createdAt: editingTicket.createdAt,
-                    createdByEmail: editingTicket.createdByEmail
-                });
-            } else {
-                await api.post("/tickets", {
-                    title: formData.title,
-                    description: formData.description,
-                    ticketPriority: formData.ticketPriority
-                });
-            } closeModal();
-            await getTickets();
-            showToast(editingTicket ? "Ticket atualizado com sucesso!" : "Ticket criado com sucesso!");
+    async function handleSubmit(ticketId, formData) {
+        if (ticketId) {
+            // Editar
+            const ticket = tickets.find(t => t.id === ticketId);
+            await api.put(`/tickets/${ticketId}`, {
+                id: ticketId,
+                ...formData,
+                createdAt: ticket.createdAt,
+                createdByEmail: ticket.createdByEmail
+            });
+            showToast("Ticket atualizado com sucesso!");
+        } else {
+            // Criar
+            await api.post("/tickets", formData);
+            showToast("Ticket criado com sucesso!");
         }
-        catch {
-            showToast(editingTicket ? "Erro ao salvar ticket. Verifique sua conexão." : "Erro ao criar ticket. Verifique sua conexão.", "error");
-        }
-        finally {
-            setSubmitting(false);
-        }
+        await getTickets();
     }
 
     async function handleDeleteTicket(id) {
@@ -225,7 +192,7 @@ function Tickets() {
                 {/* tickets filter and +ticket button*/}
                 <div className="flex items-center justify-between mb-5 gap-3">
                     <button
-                        onClick={() => setShowModal(openCreateModal)}
+                        onClick={openCreateModal}
                         className="inline-flex items-center gap-2 px-4 py-2 bg-white text-black text-sm font-medium rounded-lg hover:bg-neutral-200 transition-colors cursor-pointer">
                         <span className="text-lg leading-none">+</span> Novo Ticket
                     </button>
@@ -248,7 +215,7 @@ function Tickets() {
                         <TicketCard
                             key={ticket.id}
                             ticket={ticket}
-                            onEdit={openEditingModal}
+                            onEdit={openEditModal}
                             onDeleteClick={(id) => setDeleteTarget(deleteTarget === id ? null : id)}
                             deleteTarget={deleteTarget}
                             onCancelDelete={() => setDeleteTarget(null)}
@@ -264,81 +231,10 @@ function Tickets() {
 
             {/* create and update ticket */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-black/50" onClick={closeModal} />
-
-                    <div className="relative bg-neutral-900 border border-neutral-800 rounded-xl w-full max-w-lg mx-4 p-6">
-                        <h2 className="text-lg font-semibold text-white mb-4">
-                            {editingTicket ? "Editar Ticket" : "Novo Ticket"}
-                        </h2>
-
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-sm text-neutral-400 mb-1">Título</label>
-                                <input
-                                    type="text"
-                                    value={formData.title}
-                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500"
-                                    placeholder="Ex: Impressora não funciona"
-                                    required />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm text-neutral-400 mb-1">Descrição</label>
-                                <textarea
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    rows={3}
-                                    className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 resize-none"
-                                    placeholder="Descreva o problema..." />
-                            </div>
-
-                            {editingTicket && (
-                                <div>
-                                    <label className="block text-sm text-neutral-400 mb-1">Status</label>
-                                    <select
-                                        value={formData.ticketStatus}
-                                        onChange={(e) => setFormData({ ...formData, ticketStatus: parseInt(e.target.value) })}
-                                        className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-500">
-                                        <option value={0}>Aberto</option>
-                                        <option value={1}>Em andamento</option>
-                                        <option value={2}>Resolvido</option>
-                                        <option value={3}>Fechado</option>
-                                    </select>
-                                </div>
-                            )}
-
-                            <div>
-                                <label className="block text-sm text-neutral-400 mb-1">Prioridade</label>
-                                <select
-                                    value={formData.ticketPriority}
-                                    onChange={(e) => setFormData({ ...formData, ticketPriority: parseInt(e.target.value) })}
-                                    className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-500">
-                                    <option value={0}>Baixa</option>
-                                    <option value={1}>Média</option>
-                                    <option value={2}>Alta</option>
-                                    <option value={3}>Crítica</option>
-                                </select>
-                            </div>
-
-                            <div className="flex gap-3 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={closeModal}
-                                    className="flex-1 px-4 py-2 bg-neutral-800 text-neutral-300 text-sm rounded-lg hover:bg-neutral-700 transition-colors">
-                                    Cancelar
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={submitting || !formData.title.trim()}
-                                    className="flex-1 px-4 py-2 bg-white text-black text-sm font-medium rounded-lg hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                                    {submitting ? "Salvando..." : editingTicket ? "Salvar" : "Criar Ticket"}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <TicketModal
+                    ticket={editingTicket}
+                    onSubmit={handleSubmit}
+                    onClose={closeModal} />
             )}
 
             {/* action ticket notification (toast) */}
