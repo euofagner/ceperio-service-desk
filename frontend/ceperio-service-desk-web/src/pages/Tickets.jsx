@@ -1,27 +1,28 @@
-import { useToastNotification } from "../hooks/toastNotification";
+import { useToast } from "../hooks/useToast";
 import { formatDate } from "../utils/formatDate";
 import { useEffect, useState } from "react";
-import api from "../services/api";
 import cepelogo from "../assets/cepelogo.png";
-
-const statusConfig = {
-    0: { label: "Aberto", dot: "bg-red-500", badge: "bg-red-500/10 text-red-400 border-red-500/20" },
-    1: { label: "Em andamento", dot: "bg-yellow-500", badge: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" },
-    2: { label: "Resolvido", dot: "bg-green-500", badge: "bg-green-500/10 text-green-400 border-green-500/20" },
-    3: { label: "Fechado", dot: "bg-neutral-500", badge: "bg-neutral-500/10 text-neutral-400 border-neutral-500/20" }
-};
-
-const priorityConfig = {
-    0: { label: "Baixa", color: "text-yellow-500" },
-    1: { label: "Média", color: "text-yellow-500" },
-    2: { label: "Alta", color: "text-yellow-500" },
-    3: { label: "Crítica", color: "text-yellow-500" }
-};
+import TicketCard from "../components/TicketCard";
+import api from "../services/api";
 
 function Tickets() {
     const [tickets, setTickets] = useState([]);
     const [filter, setFilter] = useState("all");
     const [loading, setLoading] = useState(true);
+
+    const statusConfig = {
+        0: { label: "Aberto", dot: "bg-red-500", badge: "bg-red-500/10 text-red-400 border-red-500/20" },
+        1: { label: "Em andamento", dot: "bg-yellow-500", badge: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" },
+        2: { label: "Resolvido", dot: "bg-green-500", badge: "bg-green-500/10 text-green-400 border-green-500/20" },
+        3: { label: "Fechado", dot: "bg-neutral-500", badge: "bg-neutral-500/10 text-neutral-400 border-neutral-500/20" }
+    };
+
+    const priorityConfig = {
+        0: { label: "Baixa", color: "text-yellow-500" },
+        1: { label: "Média", color: "text-yellow-500" },
+        2: { label: "Alta", color: "text-yellow-500" },
+        3: { label: "Crítica", color: "text-yellow-500" }
+    };
 
     const [showModal, setShowModal] = useState(false);
     const [editingTicket, setEditingTicket] = useState(null);
@@ -36,7 +37,7 @@ function Tickets() {
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [deleting, setDeleting] = useState(false);
 
-    const { toast, setToast, showToast, pauseToast, resumeToast } = useToastNotification();
+    const { toast, setToast, showToast, pauseToast, resumeToast } = useToast();
 
     async function getTickets() {
         try {
@@ -108,8 +109,7 @@ function Tickets() {
         catch {
             showToast(editingTicket ? "Erro ao salvar ticket. Verifique sua conexão." : "Erro ao criar ticket. Verifique sua conexão.", "error");
         }
-        finally 
-        {
+        finally {
             setSubmitting(false);
         }
     }
@@ -121,9 +121,9 @@ function Tickets() {
             setDeleteTarget(null);
             await getTickets();
             showToast("Ticket excluído com sucesso!");
-        } catch{
+        } catch {
             showToast("Erro ao excluir ticket. Verifique sua conexão.", "error");
-        } 
+        }
         finally {
             setDeleting(false);
         }
@@ -225,7 +225,7 @@ function Tickets() {
                 {/* tickets filter and +ticket button*/}
                 <div className="flex items-center justify-between mb-5 gap-3">
                     <button
-                        onClick={() => setShowModal(true)}
+                        onClick={() => setShowModal(openCreateModal)}
                         className="inline-flex items-center gap-2 px-4 py-2 bg-white text-black text-sm font-medium rounded-lg hover:bg-neutral-200 transition-colors cursor-pointer">
                         <span className="text-lg leading-none">+</span> Novo Ticket
                     </button>
@@ -244,91 +244,17 @@ function Tickets() {
 
                 {/* tickets list */}
                 <div className="space-y-3">
-                    {filteredTickets.map((ticket) => {
-                        const status = statusConfig[ticket.ticketStatus] || statusConfig[0];
-                        const priority = priorityConfig[ticket.ticketPriority] || priorityConfig[1];
-
-                        return (
-                            <div
-                                key={ticket.id}
-                                className="group bg-neutral-900 hover:border-neutral-600 hover:shadow-lg transition-colors rounded-lg border border-neutral-800/50 cursor-pointer">
-
-                                <div
-                                    onClick={() => openEditingModal(ticket)}
-                                    className="flex items-center gap-4 px-5 py-4">
-                                    {/* Status dot */}
-                                    <div className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${status.dot}`} />
-
-                                    {/* content */}
-                                    <div className="flex-1 min-w-1">
-                                        <div className="flex items-center gap-3 mb-1">
-                                            <span className="text-xs text-neutral-600 font-mono">
-                                                #{ticket.id}
-                                            </span>
-                                            <h3 className="text-sm font-medium text-white truncate">
-                                                {ticket.title}
-                                            </h3>
-                                        </div>
-                                        <p className="text-sm text-neutral-500 mb-2 line-clamp-1">
-                                            {ticket.description}
-                                        </p>
-                                        <div className="flex items-center gap-3">
-                                            <span className={`text-[11px] px-2 py-0.5 rounded-full border ${status.badge}`}>
-                                                {status.label}
-                                            </span>
-                                            <span className="text-sm">
-                                                {priority.label}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {/* Data */}
-                                    <span className="text-neutral-500">
-                                        {formatDate(ticket.createdAt)}
-                                    </span>
-
-                                    {/* exclude ticket */}
-                                    <button onClick={(e) => {
-                                        e.stopPropagation();
-                                        setDeleteTarget(deleteTarget === ticket.id ? null : ticket.id)
-                                    }} className="opacity-0 group-hover:opacity-100 text-neutral-500 hover:text-neutral-300 transition-all p-1 rounded">
-
-                                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                                        </svg>
-                                    </button>
-                                </div>
-
-                                {/* delete confirmation */}
-                                {deleteTarget === ticket.id && (
-                                    <div className="px-5 py-3 bg-neutral-800/50 border-t border-neutral-800 flex items-center justify-between">
-                                        <span className="text-sm text-neutral-400">
-                                            Excluir ticket #{ticket.id}?
-                                        </span>
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setDeleteTarget(null);
-                                                }}
-                                                className="px-3 py-1 text-sm text-neutral-400 hover:text-white transition-colors">
-                                                Cancelar
-                                            </button>
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleDeleteTicket(ticket.id);
-                                                }}
-                                                disabled={deleting}
-                                                className="px-3 py-1 text-sm bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors disabled:opacity-50">
-                                                {deleting ? "Excluindo..." : "Excluir"}
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
+                    {filteredTickets.map((ticket) => (
+                        <TicketCard
+                            key={ticket.id}
+                            ticket={ticket}
+                            onEdit={openEditingModal}
+                            onDeleteClick={(id) => setDeleteTarget(deleteTarget === id ? null : id)}
+                            deleteTarget={deleteTarget}
+                            onCancelDelete={() => setDeleteTarget(null)}
+                            onConfirmDelete={handleDeleteTicket}
+                            deleting={deleting} />
+                    ))}
                 </div>
 
                 <div className="mt-4 font-bold text-neutral-500">
