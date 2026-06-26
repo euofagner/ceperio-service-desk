@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export function useToastNotification() {
+export function useToast() {
     const [toast, setToast] = useState(null);
     const [toastTimer, setToastTimer] = useState(null);
 
