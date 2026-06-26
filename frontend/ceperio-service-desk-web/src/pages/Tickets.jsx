@@ -1,4 +1,5 @@
 import { useToastNotification } from "../hooks/toastNotification";
+import { formatDate } from "../utils/formatDate";
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import cepelogo from "../assets/cepelogo.png";
@@ -132,16 +133,6 @@ function Tickets() {
         ? tickets
         : tickets.filter(t => t.ticketStatus === parseInt(filter));
 
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diff = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-
-        if (diff === 0) return "Hoje";
-        if (diff === 1) return "Ontem";
-        return `há ${diff} dias`;
-    }
-
     const openTickets = tickets.filter(t => t.ticketStatus === 0).length;
     const inProgressTickets = tickets.filter(t => t.ticketStatus === 1).length;
     const solvedTickets = tickets.filter(t => t.ticketStatus === 2).length;
@@ -170,7 +161,7 @@ function Tickets() {
                         {[...Array(4)].map((_, index) => (
                             <div
                                 key={index}
-                                className="bg-neutral-900 border border-neutral-800 rounded-lg p-5">
+                                className="bg-neutral-900 rounded-lg p-5">
                                 <div className="flex gap-4">
                                     <div className="w-2 h-2 rounded-full bg-neutral-700 mt-2 animate-pulse" />
 
