@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function TicketModal({ ticket, onSubmit, onClose }) {
     const editing = ticket !== null;
@@ -10,6 +10,15 @@ function TicketModal({ ticket, onSubmit, onClose }) {
         ticketStatus: ticket?.ticketStatus ?? 0
     });
     const [submitting, setSubmitting] = useState(false);
+
+    useEffect(() => {
+        function handleKeyDown(e) {
+            if (e.key === "Escape") onClose();
+        }
+
+        document.addEventListener("keydown", handleKeyDown);
+        return () => document.removeEventListener("keydown", handleKeyDown);
+    }, [onClose]);
 
     async function handleSubmit(e) {
         e.preventDefault();
