@@ -23,6 +23,8 @@ function Tickets() {
         try {
             const ticketsFromApi = await api.get("/tickets");
             setTickets(ticketsFromApi.data);
+        } catch {
+            showToast("Erro ao carregar tickets. Verifique sua conexão.", "error");
         }
         finally {
             setLoading(false);
@@ -49,22 +51,24 @@ function Tickets() {
     }
 
     async function handleSubmit(ticketId, formData) {
-        if (ticketId) {
-            // Editar
-            const ticket = tickets.find(t => t.id === ticketId);
-            await api.put(`/tickets/${ticketId}`, {
-                id: ticketId,
-                ...formData,
-                createdAt: ticket.createdAt,
-                createdByEmail: ticket.createdByEmail
-            });
-            showToast("Ticket atualizado com sucesso!");
-        } else {
-            // Criar
-            await api.post("/tickets", formData);
-            showToast("Ticket criado com sucesso!");
+        try {
+            if (ticketId) {
+                const ticket = tickets.find(t => t.id === ticketId);
+                await api.put(`/tickets/${ticketId}`, {
+                    id: ticketId,
+                    ...formData,
+                    createdAt: ticket.createdAt,
+                    createdByEmail: ticket.createdByEmail
+                });
+                showToast("Ticket atualizado com sucesso!");
+            } else {
+                await api.post("/tickets", formData);
+                showToast("Ticket criado com sucesso!");
+            }
+            await getTickets();
+        } catch {
+            showToast(editingTicket ? "Erro ao salvar ticket. Verifique sua conexão." : "Erro ao criar ticket. Verifique sua conexão.", "error");
         }
-        await getTickets();
     }
 
     async function handleDeleteTicket(id) {
