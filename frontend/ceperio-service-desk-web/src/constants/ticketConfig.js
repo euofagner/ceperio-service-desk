@@ -6,8 +6,8 @@ export const statusConfig = {
 };
 
 export const priorityConfig = {
-    0: { label: "Baixa", color: "text-yellow-500" },
-    1: { label: "Média", color: "text-yellow-500" },
-    2: { label: "Alta", color: "text-yellow-500" },
-    3: { label: "Crítica", color: "text-yellow-500" }
+    0: { label: "Baixa", color: "text-green-400", icon: "🌱" },
+    1: { label: "Média", color: "text-yellow-400", icon: "⚡" },
+    2: { label: "Alta", color: "text-orange-400", icon: "🔥" },
+    3: { label: "Crítica", color: "text-red-400", icon: "🚨" }
 };

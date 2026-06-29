@@ -18,13 +18,19 @@ export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget
                         <h3 className="text-sm font-medium text-white truncate">{ticket.title}</h3>
                     </div>
                     <p className="text-sm text-neutral-500 mb-2 line-clamp-1">{ticket.description}</p>
-                    <div className="flex items-center gap-3">
-                        <span className={`text-[11px] px-2 py-0.5 rounded-full border ${status.badge}`}>
+                    <div className="flex items-center gap-4 text-xs">
+                        <span className={`px-2 py-0.5 rounded-full border ${status.badge}`}>
                             {status.label}
                         </span>
-                        <span className="text-xs text-neutral-500">{priority.label}</span>
+
+                        <span className={`flex items-center gap-1 ${priority.color}`}>
+                            <span className="text-neutral-400">Prioridade:</span>
+                            <span>{priority.icon}</span>
+                            <span>{priority.label}</span>
+                        </span>
                     </div>
                 </div>
+                
                 <span className="text-neutral-500 text-sm">{formatDate(ticket.createdAt)}</span>
 
                 <button
