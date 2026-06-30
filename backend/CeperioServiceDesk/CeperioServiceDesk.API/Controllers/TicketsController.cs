@@ -30,6 +30,21 @@ public class TicketsController(AppDbContext context) : ControllerBase
         return Ok(ticket);
     }
 
+    [HttpGet("summary")]
+    public async Task<ActionResult> GetSummary()
+    {
+        var summary = new
+        {
+            total = await _context.Tickets.CountAsync(),
+            open = await _context.Tickets.CountAsync(t => t.TicketStatus == TicketStatus.Open),
+            inProgress = await _context.Tickets.CountAsync(t => t.TicketStatus == TicketStatus.InProgress),
+            resolved = await _context.Tickets.CountAsync(t => t.TicketStatus == TicketStatus.Resolved),
+            closed = await _context.Tickets.CountAsync(t => t.TicketStatus == TicketStatus.Closed)
+        };
+
+        return Ok(summary);
+    }
+
     [HttpPost]
     public async Task<ActionResult> PostTicket(Ticket ticket)
     {
