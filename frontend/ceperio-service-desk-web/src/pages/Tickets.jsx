@@ -11,6 +11,14 @@ function Tickets() {
     const [filter, setFilter] = useState("all");
     const [loading, setLoading] = useState(true);
 
+    const [summary, setSummary] = useState({
+        total: 0,
+        open: 0,
+        inProgress: 0,
+        resolved: 0,
+        closed: 0
+    });
+
     const [showModal, setShowModal] = useState(false);
     const [editingTicket, setEditingTicket] = useState(null);
 
@@ -31,8 +39,18 @@ function Tickets() {
         }
     }
 
+    async function getSummary() {
+        try {
+            const response = await api.get("/tickets/summary");
+            setSummary(response.data);
+        } catch {
+
+        }
+    }
+
     useEffect(() => {
         getTickets();
+        getSummary();
     }, []);
 
     function openCreateModal() {
@@ -89,10 +107,6 @@ function Tickets() {
     const filteredTickets = filter === "all"
         ? tickets
         : tickets.filter(t => t.ticketStatus === parseInt(filter));
-
-    const openTickets = tickets.filter(t => t.ticketStatus === 0).length;
-    const inProgressTickets = tickets.filter(t => t.ticketStatus === 1).length;
-    const solvedTickets = tickets.filter(t => t.ticketStatus === 2).length;
 
     if (loading) {
         return (
@@ -169,13 +183,13 @@ function Tickets() {
 
                 <div className="flex gap-3 mb-6">
                     <span className="bg-red-500/10 text-red-400 text-xs font-semibold rounded-full px-3 py-1">
-                        {openTickets} ticket{openTickets !== 1 && "s"} aberto{openTickets !== 1 && "s"}
+                        {summary.open} ticket{summary.open !== 1 && "s"} aberto{summary.open !== 1 && "s"}
                     </span>
                     <span className="bg-yellow-500/10 text-yellow-400 text-xs items-center font-semibold rounded-full px-3 py-1">
-                        {inProgressTickets} ticket{inProgressTickets !== 1 && "s"} em andamento
+                        {summary.inProgress} ticket{summary.inProgress !== 1 && "s"} em andamento
                     </span>
                     <span className="bg-green-500/10 text-green-400 items-center font-semibold text-xs px-3 py-1 rounded-full">
-                        {solvedTickets} ticket{solvedTickets !== 1 && "s"} resolvido{solvedTickets !== 1 && "s"}
+                        {summary.resolved} ticket{summary.resolved !== 1 && "s"} resolvido{summary.resolved !== 1 && "s"}
                     </span>
                 </div>
 
