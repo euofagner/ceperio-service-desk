@@ -77,7 +77,6 @@ function Tickets() {
                     id: ticketId,
                     ...formData,
                     createdAt: ticket.createdAt,
-                    createdByEmail: ticket.createdByEmail
                 });
                 showToast("Ticket atualizado com sucesso!");
             } else {
