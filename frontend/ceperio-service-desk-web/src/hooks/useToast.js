@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export function useToast() {
     const [toast, setToast] = useState(null);
-    const [toastTimer, setToastTimer] = useState(null);
+    const toastTimer = useRef(null);
 
     function showToast(message, type = "success") {
         pauseToast();
@@ -13,12 +13,11 @@ export function useToast() {
     }
 
     function pauseToast() {
-        if (toastTimer) clearTimeout(toastTimer);
+        if (toastTimer.current) clearTimeout(toastTimer.current);
     }
 
     function resumeToast() {
-        const timer = setTimeout(() => setToast(null), 3000);
-        setToastTimer(timer);
+        toastTimer.current = setTimeout(() => setToast(null), 3000);
     }
 
     return {
