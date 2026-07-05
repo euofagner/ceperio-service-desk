@@ -7,7 +7,7 @@
 ![SQL Server](https://img.shields.io/badge/SQL_Server-LocalDB-CC2927?logo=microsoftsqlserver)
 ![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite)
 ![Axios](https://img.shields.io/badge/Axios-1.7-5A29E4?logo=axios)
-![Scalar](https://img.shields.io/badge/Scalar-API-00B4D8?logo=swagger)
+![Scalar](https://img.shields.io/badge/Scalar-API-00B4D8?logo=scalar)
 
 A Full-stack IT service desk system built with ASP.NET Core Web API and React to streamline internal support ticket management.
 
@@ -16,3 +16,19 @@ This project was inspired by a real workflow need observed during my IT support 
 
 The goal is to build a modern ticket management system that allows users to create, track, update, and manage IT support requests through a simple and intuitive interface.
 
+## Screenshots 
+
+### Dashboard 
+![Dashboard](/screenshots/dashboard-success-toast.png)
+
+*Overview of tickets with status, priorities and success and error notification*
+
+### Create new ticket 
+![Create ticket](/screenshots/create-ticket.png) 
+
+*Creation modal with title, description and priority*
+
+### API Documentation (Scalar)
+![Api docs](/screenshots/api-documentation.png)
+
+*Interactive api documentation with all endpoints*
