@@ -19,7 +19,7 @@ The goal is to build a modern ticket management system that allows users to crea
 ## Screenshots 
 
 ### Dashboard 
-![Dashboard](/screenshots/dashboard-success-toast.png)
+![Dashboard](/screenshots/dashboard.png)
 
 *Overview of tickets with status, priorities and success and error notification*
 
