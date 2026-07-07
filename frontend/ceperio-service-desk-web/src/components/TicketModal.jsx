@@ -36,7 +36,9 @@ function TicketModal({ ticket, onSubmit, onClose }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-            <div className="relative bg-neutral-900 border border-neutral-800 rounded-xl w-full max-w-lg mx-4 p-6">
+            <div className="relative bg-neutral-900 border border-neutral-800 rounded-xl w-full max-w-lg mx-4 p-6" 
+                onClick={(e) => e.stopPropagation()}>
+                    
                 <h2 className="text-lg font-semibold text-white mb-4">
                     {editing ? "Editar Ticket" : "Novo Ticket"}
                 </h2>
