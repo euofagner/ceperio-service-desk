@@ -84,6 +84,7 @@ function Tickets() {
                 showToast("Ticket criado com sucesso!");
             }
             await getTickets();
+            await getSummary();
         } catch {
             showToast(ticketId ? "Erro ao salvar ticket. Verifique sua conexão." : "Erro ao criar ticket. Verifique sua conexão.", "error");
         }
@@ -95,6 +96,7 @@ function Tickets() {
             await api.delete(`/tickets/${id}`);
             setDeleteTarget(null);
             await getTickets();
+            await getSummary();
             showToast("Ticket excluído com sucesso!");
         } catch {
             showToast("Erro ao excluir ticket. Verifique sua conexão.", "error");
