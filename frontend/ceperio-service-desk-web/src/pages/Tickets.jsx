@@ -85,7 +85,7 @@ function Tickets() {
             }
             await getTickets();
         } catch {
-            showToast(editingTicket ? "Erro ao salvar ticket. Verifique sua conexão." : "Erro ao criar ticket. Verifique sua conexão.", "error");
+            showToast(ticketId ? "Erro ao salvar ticket. Verifique sua conexão." : "Erro ao criar ticket. Verifique sua conexão.", "error");
         }
     }
 
