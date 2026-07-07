@@ -23,6 +23,19 @@ function TicketModal({ ticket, onSubmit, onClose }) {
     async function handleSubmit(e) {
         e.preventDefault();
         if (!formData.title.trim()) return;
+        
+        if (editing) {
+            const nothingChanged = 
+                formData.title === ticket.title &&
+                formData.description === (ticket.description || "") &&
+                formData.ticketPriority === ticket.ticketPriority &&
+                formData.ticketStatus === ticket.ticketStatus;
+                
+            if (nothingChanged) {
+                onClose();
+                return;
+            }
+        }
 
         setSubmitting(true);
         try {
