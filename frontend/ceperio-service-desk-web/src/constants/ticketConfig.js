@@ -1,3 +1,5 @@
+import { ChevronDown, Minus, Flame, Siren } from "../assets/icons/PriorityIcons";
+
 export const statusConfig = {
     0: { label: "Aberto", dot: "bg-red-500", badge: "bg-red-500/10 text-red-400 border-red-500/20" },
     1: { label: "Em andamento", dot: "bg-yellow-500", badge: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" },
@@ -6,8 +8,8 @@ export const statusConfig = {
 };
 
 export const priorityConfig = {
-    0: { label: "Baixa", color: "bg-blue-500/10 text-blue-400 border-blue-500/20", icon: "⬇️" },
-    1: { label: "Média", color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", icon: "📌" },
-    2: { label: "Alta", color: "bg-red-500/10 text-red-400 border-red-500/20", icon: "🔥" },
-    3: { label: "Crítica", color: "bg-purple-500/10 text-purple-400 border-purple-500/20", icon: "🚨" }
+    0: { label: "Baixa", color: "bg-blue-500/10 text-blue-400 border-blue-500/20", icon: ChevronDown },
+    1: { label: "Média", color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", icon: Minus },
+    2: { label: "Alta", color: "bg-red-500/10 text-red-400 border-red-500/20", icon: Flame },
+    3: { label: "Crítica", color: "bg-purple-500/10 text-purple-400 border-purple-500/20", icon: Siren }
 };
