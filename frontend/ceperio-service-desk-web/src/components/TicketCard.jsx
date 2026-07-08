@@ -1,3 +1,4 @@
+import TicketDate from "./TicketDate";
 import { formatDate, isNew } from "../utils/formatDate";
 import { statusConfig, priorityConfig } from "../constants/ticketConfig";
 
@@ -44,7 +45,17 @@ export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget
                     </div>
                 </div>
 
-                <span className="text-neutral-500 text-sm shrink-0">{formatDate(ticket.createdAt)}</span>
+                <TicketDate content={new Date(ticket.createdAt).toLocaleString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })}>
+                    <span className="text-neutral-500 text-[16px] cursor-default">
+                        {formatDate(ticket.createdAt)}
+                    </span>
+                </TicketDate>
 
                 <button
                     onClick={(e) => {
