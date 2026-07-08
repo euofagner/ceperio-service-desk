@@ -5,7 +5,6 @@ export function formatDate(dateString) {
     const diffMinutes = Math.floor((now - date) / (1000 * 60)); 
 
     if (diffMinutes < 1) return "Agora";
-
     if (diffMinutes < 60) return `${diffMinutes} min atrás`;
 
     const diffHours = Math.floor(diffMinutes / 60);
@@ -17,4 +16,11 @@ export function formatDate(dateString) {
     if (diffDays === 1) return "Ontem";
 
     return `há ${diffDays} dias`;
+}
+
+export function isNew(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffHours = (now - date) / (1000 * 60 * 60);
+    return diffHours <= 24;
 }

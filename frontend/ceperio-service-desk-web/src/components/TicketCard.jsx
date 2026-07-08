@@ -1,4 +1,4 @@
-import { formatDate } from "../utils/formatDate";
+import { formatDate, isNew } from "../utils/formatDate";
 import { statusConfig, priorityConfig } from "../constants/ticketConfig";
 
 export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget, onCancelDelete, onConfirmDelete, deleting }) {
@@ -17,7 +17,16 @@ export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget
                         <span className="text-xs text-neutral-600 font-mono">#{ticket.id}</span>
                         <h3 className="text-sm font-medium text-white truncate">{ticket.title}</h3>
                     </div>
-                    <p className="text-sm text-neutral-500 mb-2 line-clamp-1">{ticket.description}</p>
+
+                    {/* commitar esta mudança */}
+                    {ticket.ticketStatus === 0 && isNew(ticket.createdAt) && (
+                        
+                        <span className="px-1.5 py-0.5 text-[10px] font-medium bg-blue-500/20 text-blue-400 rounded">
+                            Novo
+                        </span>
+                    )}
+
+                    <p className="text-sm text-neutral-400 mb-2 line-clamp-1">{ticket.description}</p>
                     <div className="flex items-center gap-3 text-xs">
                         <span className={`px-2 py-0.5 rounded-full border ${status.badge}`}>
                             {status.label}
