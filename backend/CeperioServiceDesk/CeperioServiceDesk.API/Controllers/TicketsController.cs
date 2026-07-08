@@ -16,7 +16,10 @@ public class TicketsController(AppDbContext context) : ControllerBase
     public async Task<ActionResult<IEnumerable<Ticket>>> GetTickets()
     {
         var tickets = await _context.Tickets.ToListAsync();
-        return Ok(tickets);
+
+        var sortedTickets = tickets.OrderByDescending(t => t.CreatedAt);
+
+        return Ok(sortedTickets);
     }
 
     [HttpGet("{id:int}", Name = "ObterTicket")]
