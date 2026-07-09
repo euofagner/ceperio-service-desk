@@ -31,7 +31,8 @@ export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget
                         <p className="text-sm text-neutral-400 mb-2 line-clamp-1">{ticket.description}</p>
 
                         <div className="flex items-center gap-3 text-xs">
-                            <span className={`px-2 py-0.5 rounded-full border ${status.badge}`}>
+                            <span className={`px-2 py-0.5 rounded-full border ${status.badge} flex items-center gap-1`}>
+                                <status.icon className="w-3 h-3" />
                                 {status.label}
                             </span>
 
