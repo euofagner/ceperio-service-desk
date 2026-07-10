@@ -13,13 +13,19 @@ public class TicketsController(AppDbContext context) : ControllerBase
     private readonly AppDbContext _context = context;
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Ticket>>> GetTickets()
+    public async Task<ActionResult<IEnumerable<Ticket>>> GetTickets([FromQuery] string? search)
     {
-        var tickets = await _context.Tickets.ToListAsync();
+        IQueryable<Ticket> query = _context.Tickets.AsNoTracking();
 
-        var sortedTickets = tickets.OrderByDescending(t => t.CreatedAt);
+        if (!string.IsNullOrEmpty(search))
+        {
+            search = search.Trim();
+            query = query.Where(t => t.Title.Contains(search) || t.Description.Contains(search));
+        }
 
-        return Ok(sortedTickets);
+        List<Ticket> tickets = await query.OrderByDescending(t => t.CreatedAt).ToListAsync();
+
+        return Ok(tickets);
     }
 
     [HttpGet("{id:int}", Name = "ObterTicket")]
