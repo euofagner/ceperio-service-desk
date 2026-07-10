@@ -38,7 +38,7 @@ export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget
 
                             <span className="text-neutral-500">|</span>
 
-                            <span className={`px-2 py-0.5 rounded-full border ${priority.color} flex items-center gap-1`}>
+                            <span className={`px-2 py-0.5 rounded-full border ${priority.color} shrink-0 flex items-center gap-1`}>
                                 <priority.icon className="w-3 h-3" />
                                 <span>{priority.label}</span>
                             </span>
