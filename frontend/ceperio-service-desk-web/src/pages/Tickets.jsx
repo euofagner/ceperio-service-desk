@@ -54,7 +54,7 @@ function Tickets() {
                 await api.post("/tickets", formData);
                 showToast("Ticket criado com sucesso!");
             }
-            await refresh(search);  
+            await refresh();
         } catch {
             showToast(ticketId ? "Erro ao salvar ticket." : "Erro ao criar ticket.", "error");
         }
@@ -65,7 +65,7 @@ function Tickets() {
         try {
             await api.delete(`/tickets/${id}`);
             setDeleteTarget(null);
-            await refresh(search);  
+            await refresh();
             showToast("Ticket excluído com sucesso!");
         } catch {
             showToast("Erro ao excluir ticket.", "error");
@@ -74,9 +74,16 @@ function Tickets() {
         }
     }
 
+    const filteredBySearch = search.trim()
+        ? tickets.filter(t =>
+            t.title.toLowerCase().includes(search.toLowerCase()) ||
+            t.description.toLowerCase().includes(search.toLowerCase())
+        )
+        : tickets;
+
     const filteredTickets = filter === "all"
-        ? tickets
-        : tickets.filter(t => t.ticketStatus === parseInt(filter));
+        ? filteredBySearch
+        : filteredBySearch.filter(t => t.ticketStatus === parseInt(filter));
 
     if (loading) {
         return <Skeleton logo={cepelogo} />;
