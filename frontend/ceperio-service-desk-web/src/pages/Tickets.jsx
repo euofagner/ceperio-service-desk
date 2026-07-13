@@ -1,29 +1,19 @@
 import { useToast } from "../hooks/useToast";
-import { formatDate } from "../utils/formatDate";
 import { useEffect, useState } from "react";
+import { useTickets } from "../hooks/useTickets";
+import { formatDate } from "../utils/formatDate";
+import { priorityConfig, statusConfig } from "../constants/ticketConfig";
+import api from "../services/api";
+import Toast from "../components/Toast";
+import Skeleton from "../components/Skeleton";
 import cepelogo from "../assets/cepelogo.png";
 import TicketCard from "../components/TicketCard";
 import TicketModal from "../components/TicketModal";
-import api from "../services/api";
-import { priorityConfig, statusConfig } from "../constants/ticketConfig";
-import Skeleton from "../components/Skeleton";
-import Toast from "../components/Toast";
 
 function Tickets() {
-    const [tickets, setTickets] = useState([]);
     const [filter, setFilter] = useState("all");
 
-    const [loading, setLoading] = useState(true);
-
     const [search, setSearch] = useState("");
-
-    const [summary, setSummary] = useState({
-        total: 0,
-        open: 0,
-        inProgress: 0,
-        resolved: 0,
-        closed: 0
-    });
 
     const [showModal, setShowModal] = useState(false);
     const [editingTicket, setEditingTicket] = useState(null);
@@ -33,32 +23,7 @@ function Tickets() {
 
     const { toast, setToast, showToast, pauseToast, resumeToast } = useToast();
 
-    async function getTickets() {
-        try {
-            const params = search ? { search } : {};
-            const ticketsFromApi = await api.get("/tickets", { params });
-            setTickets(ticketsFromApi.data);
-        } catch {
-            showToast("Erro ao carregar tickets. Verifique sua conexão.", "error");
-        }
-        finally {
-            setLoading(false);
-        }
-    }
-
-    async function getSummary() {
-        try {
-            const response = await api.get("/tickets/summary");
-            setSummary(response.data);
-        } catch {
-
-        }
-    }
-
-    useEffect(() => {
-        getTickets();
-        getSummary();
-    }, [search]);
+    const { tickets, summary, loading, refresh } = useTickets();
 
     function openCreateModal() {
         setEditingTicket(null);
@@ -89,10 +54,9 @@ function Tickets() {
                 await api.post("/tickets", formData);
                 showToast("Ticket criado com sucesso!");
             }
-            await getTickets();
-            await getSummary();
+            await refresh(search);  
         } catch {
-            showToast(ticketId ? "Erro ao salvar ticket. Verifique sua conexão." : "Erro ao criar ticket. Verifique sua conexão.", "error");
+            showToast(ticketId ? "Erro ao salvar ticket." : "Erro ao criar ticket.", "error");
         }
     }
 
@@ -101,13 +65,11 @@ function Tickets() {
         try {
             await api.delete(`/tickets/${id}`);
             setDeleteTarget(null);
-            await getTickets();
-            await getSummary();
+            await refresh(search);  
             showToast("Ticket excluído com sucesso!");
         } catch {
-            showToast("Erro ao excluir ticket. Verifique sua conexão.", "error");
-        }
-        finally {
+            showToast("Erro ao excluir ticket.", "error");
+        } finally {
             setDeleting(false);
         }
     }
