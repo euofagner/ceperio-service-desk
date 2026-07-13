@@ -198,15 +198,27 @@ function Tickets() {
                             </svg>
                             <h3 className="text-white text-lg mt-4">Nenhum ticket encontrado</h3>
                             <p className="text-neutral-500 mt-2">Crie o primeiro ticket para começar</p>
-                            <button onClick={openCreateModal} className="mt-4 px-4 py-2 bg-white text-black rounded-lg hover:bg-neutral-200 ">
+                            <button onClick={openCreateModal} className="mt-4 px-4 py-2 bg-white text-black rounded-lg hover:bg-neutral-200">
                                 Criar Ticket
                             </button>
                         </div>
-                    ) : (
-                        <div className="text-center py-16">
+                    ) : search.trim() ? (
+                        <div className="flex flex-col items-center justify-center py-16 text-neutral-500">
                             <span className="text-4xl">🔍</span>
+                            <h3 className="text-white text-lg mt-4">Nenhum resultado para "{search}"</h3>
+                            <p className="text-neutral-500 mt-2">Tente outro termo de busca</p>
+                            <button onClick={() => setSearch("")} className="mt-4 px-4 py-2 bg-neutral-800 text-neutral-300 rounded-lg hover:bg-neutral-700">
+                                Limpar busca
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-16 text-neutral-500">
+                            <span className="text-4xl">📋</span>
                             <h3 className="text-white text-lg mt-4">Nenhum ticket neste status</h3>
                             <p className="text-neutral-500 mt-2">Tente selecionar outro filtro</p>
+                            <button onClick={() => setFilter("all")} className="mt-4 px-4 py-2 bg-neutral-800 text-neutral-300 rounded-lg hover:bg-neutral-700">
+                                Limpar filtro
+                            </button>
                         </div>
                     )}
                 </div>
