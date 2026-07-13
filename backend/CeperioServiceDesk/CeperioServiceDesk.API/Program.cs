@@ -1,4 +1,5 @@
 using CeperioServiceDesk.API.Data;
+using CeperioServiceDesk.API.Services;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -10,6 +11,8 @@ builder.Services.AddOpenApi();
 string sqlServerConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => 
     options.UseSqlServer(sqlServerConnection));
+
+builder.Services.AddScoped<ITicketService, TicketService>();
 
 var app = builder.Build();
 
