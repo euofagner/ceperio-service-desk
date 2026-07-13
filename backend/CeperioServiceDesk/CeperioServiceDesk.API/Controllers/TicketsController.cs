@@ -1,37 +1,26 @@
-﻿using CeperioServiceDesk.API.Data;
-using CeperioServiceDesk.API.Models;
-using Microsoft.AspNetCore.Http;
+﻿using CeperioServiceDesk.API.Models;
+using CeperioServiceDesk.API.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CeperioServiceDesk.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class TicketsController(AppDbContext context) : ControllerBase
+public class TicketsController(ITicketService service) : ControllerBase
 {
-    private readonly AppDbContext _context = context;
+    private readonly ITicketService _service = service;
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Ticket>>> GetTickets([FromQuery] string? search)
     {
-        IQueryable<Ticket> query = _context.Tickets.AsNoTracking();
-
-        if (!string.IsNullOrEmpty(search))
-        {
-            search = search.Trim();
-            query = query.Where(t => t.Title.Contains(search) || t.Description.Contains(search));
-        }
-
-        List<Ticket> tickets = await query.OrderByDescending(t => t.CreatedAt).ToListAsync();
-
+        var tickets = await _service.GetTickets(search);
         return Ok(tickets);
     }
 
     [HttpGet("{id:int}", Name = "ObterTicket")]
     public async Task<ActionResult<Ticket>> GetTicket(int id)
     {
-        var ticket = await _context.Tickets.FindAsync(id);
+        var ticket = await _service.GetTicket(id);
 
         if (ticket is null)
             return NotFound($"Ticket de id: {id} não encontrado.");
@@ -42,15 +31,7 @@ public class TicketsController(AppDbContext context) : ControllerBase
     [HttpGet("summary")]
     public async Task<ActionResult> GetSummary()
     {
-        var summary = new
-        {
-            total = await _context.Tickets.CountAsync(),
-            open = await _context.Tickets.CountAsync(t => t.TicketStatus == TicketStatus.Open),
-            inProgress = await _context.Tickets.CountAsync(t => t.TicketStatus == TicketStatus.InProgress),
-            resolved = await _context.Tickets.CountAsync(t => t.TicketStatus == TicketStatus.Resolved),
-            closed = await _context.Tickets.CountAsync(t => t.TicketStatus == TicketStatus.Closed)
-        };
-
+        var summary = await _service.GetSummary();
         return Ok(summary);
     }
 
@@ -59,10 +40,8 @@ public class TicketsController(AppDbContext context) : ControllerBase
     {
         if (ticket is null) return BadRequest();
 
-        await _context.Tickets.AddAsync(ticket);
-        await _context.SaveChangesAsync();
-
-        return new CreatedAtRouteResult("ObterTicket", new { id = ticket.Id }, ticket);
+        var created = await _service.CreateTicket(ticket);
+        return new CreatedAtRouteResult("ObterTicket", new { id = created.Id }, created);
     }
 
     [HttpPut("{id:int}")]
@@ -71,32 +50,19 @@ public class TicketsController(AppDbContext context) : ControllerBase
         if (id != ticket.Id)
             return BadRequest("O id da rota não corresponde ao id do ticket");
 
-        var existingTicket = await _context.Tickets.FindAsync(id);
-
-        if (existingTicket is null) 
+        var updatedTicket = await _service.UpdateTicket(id, ticket);
+        if (updatedTicket is null)
             return NotFound($"Ticket de id: {id} não encontrado.");
 
-        existingTicket.Title = ticket.Title;
-        existingTicket.Description = ticket.Description;
-        existingTicket.TicketStatus = ticket.TicketStatus;
-        existingTicket.TicketPriority = ticket.TicketPriority;
-        existingTicket.UpdatedAt = DateTime.UtcNow;
-
-        await _context.SaveChangesAsync();
-
-        return Ok(existingTicket);
+        return Ok(updatedTicket);
     }
 
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteTicket(int id)
     {
-        var existingTicket = await _context.Tickets.FindAsync(id);
+        var deletedTicket = await _service.DeleteTicket(id);
 
-        if (existingTicket is null)
-            return NotFound($"Ticket de id: {id} não encontrado.");
-
-        _context.Tickets.Remove(existingTicket);
-        await _context.SaveChangesAsync();
+        if (!deletedTicket) return NotFound($"Ticket de id: {id} não encontrado.");
 
         return NoContent();
     }
