@@ -1,6 +1,8 @@
 import TicketDate from "./TicketDate";
+import DeleteConfirm from "./DeleteConfirm";
 import { formatDate, isNew } from "../utils/formatDate";
 import { statusConfig, priorityConfig } from "../constants/ticketConfig";
+
 
 export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget, onCancelDelete, onConfirmDelete, deleting }) {
     const status = statusConfig[ticket.ticketStatus] || statusConfig[0];
@@ -69,23 +71,13 @@ export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget
                     </svg>
                 </button>
             </div>
+
             {isDeleteOpen && (
-                <div className="px-5 py-3 bg-neutral-800/50 border-t border-neutral-800 flex items-center justify-between">
-                    <span className="text-sm text-neutral-400">Excluir ticket #{ticket.id}?</span>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={(e) => { e.stopPropagation(); onCancelDelete(); }}
-                            className="px-3 py-1 text-xs text-neutral-400 hover:text-white transition-colors">
-                            Cancelar
-                        </button>
-                        <button
-                            onClick={(e) => { e.stopPropagation(); onConfirmDelete(ticket.id); }}
-                            disabled={deleting}
-                            className="px-3 py-1 text-xs bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors disabled:opacity-50">
-                            {deleting ? "Excluindo..." : "Excluir"}
-                        </button>
-                    </div>
-                </div>
+                <DeleteConfirm
+                    ticketId={ticket.id}
+                    onCancel={onCancelDelete}
+                    onConfirm={onConfirmDelete}
+                    deleting={deleting} />
             )}
         </div>
     );
