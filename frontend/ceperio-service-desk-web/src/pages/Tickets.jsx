@@ -224,12 +224,18 @@ function Tickets() {
                 </div>
 
                 <div className="mt-4 font-bold text-neutral-500">
-                    Mostrando {filteredTickets.length} de {tickets.length} tickets
+                    {tickets.length > 0 ? (
+                        <>
+                            Mostrando {(page - 1) * 5 + 1} a {Math.min(page * 5, summary.total)} de {summary.total} tickets
+                        </>
+                    ) : (
+                        <>Nenhum ticket encontrado</>
+                    )}
                 </div>
 
                 {totalPages > 1 && (
                     <div className="flex items-center justify-between mt-6 pt-4 border-t border-neutral-800">
-                        <span className="text-xs text-neutral-500">
+                        <span className="text-neutral-500">
                             Página {page} de {totalPages}
                         </span>
                         <div className="flex gap-2">
@@ -254,7 +260,7 @@ function Tickets() {
                                 onClick={() => setPage(page + 1)}
                                 disabled={!hasNextPage}
                                 className="px-3 py-2 text-xs bg-neutral-900 border border-neutral-800 rounded-lg text-neutral-400 hover:text-white hover:border-neutral-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
-                                    Próximo →
+                                Próximo →
                             </button>
                         </div>
                     </div>
