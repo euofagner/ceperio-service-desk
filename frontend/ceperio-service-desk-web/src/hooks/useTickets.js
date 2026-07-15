@@ -11,6 +11,7 @@ export function useTickets() {
         closed: 0
     });
     const [loading, setLoading] = useState(true);
+    const [initialLoad, setInitialLoad] = useState(true);
 
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -34,25 +35,38 @@ export function useTickets() {
         setSummary(response.data);
     }, []);
 
-    const fetchAll = useCallback(async (search = "") => {
-        setLoading(true);
+    const fetchAll = useCallback(async (search = "", showLoader = false) => {
+        if (showLoader) setLoading(true);
         try {
             await Promise.all([getTickets(search), getSummary()]);
-        } finally {
-            setLoading(false);
+        } finally 
+        {
+            if (showLoader) setLoading(false);
         }
     }, [getTickets, getSummary]);
 
     useEffect(() => {
-        fetchAll();
-    }, [fetchAll]);
+        if (initialLoad) 
+        {
+            fetchAll("", true);
+            setInitialLoad(false);
+        }
+    }, [initialLoad, fetchAll]);
+
+    useEffect(() => 
+    {
+        if (!initialLoad) 
+        {
+            fetchAll("", false);
+        }
+    }, [page]);
 
     return {
         tickets,
         setTickets,
         summary,
         loading,
-        refresh: fetchAll,
+        refresh: (search = "") => fetchAll(search, false),
         page,
         setPage,
         totalPages,
