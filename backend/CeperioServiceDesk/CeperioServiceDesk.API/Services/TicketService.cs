@@ -8,14 +8,31 @@ public class TicketService(AppDbContext dbContext) : ITicketService
 {
     private readonly AppDbContext _context = dbContext;
 
-    public async Task<IEnumerable<Ticket>> GetTickets(string? search = null)
+    public async Task<Pagination<Ticket>> GetTickets(string? search = null, int page = 1, int pageSize = 10)
     {
+        page = Pagination<Ticket>.ValidatePage(page);
+        pageSize = Pagination<Ticket>.ValidatePageSize(pageSize);
+
         var query = _context.Tickets.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(search))
             query = query.Where(t => t.Title.Contains(search) || t.Description.Contains(search));
 
-        return await query.OrderByDescending(t => t.CreatedAt).ToListAsync();
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderByDescending(t => t.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new Pagination<Ticket>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
+        };
     }
 
     public async Task<Ticket?> GetTicket(int id)

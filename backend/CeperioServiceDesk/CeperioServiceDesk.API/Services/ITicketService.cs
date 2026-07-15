@@ -4,7 +4,7 @@ namespace CeperioServiceDesk.API.Services;
 
 public interface ITicketService
 {
-    Task<IEnumerable<Ticket>> GetTickets(string? search = null);
+    Task<Pagination<Ticket>> GetTickets(string? search = null, int page = 1, int pageSize = 10);
     Task<Ticket?> GetTicket(int id);
     Task<object> GetSummary();
     Task<Ticket> CreateTicket(Ticket ticket);
