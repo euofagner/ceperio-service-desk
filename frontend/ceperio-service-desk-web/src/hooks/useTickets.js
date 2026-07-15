@@ -12,11 +12,22 @@ export function useTickets() {
     });
     const [loading, setLoading] = useState(true);
 
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [hasNextPage, setHasNextPage] = useState(false);
+    const [hasPreviousPage, setHasPreviousPage] = useState(false);
+    const pageSize = 5;
+
     const getTickets = useCallback(async (search = "") => {
-        const params = search ? { search } : {};
+        const params = { page, pageSize };
+        if (search) params.search = search;
+
         const response = await api.get("/tickets", { params });
-        setTickets(response.data);
-    }, []);
+        setTickets(response.data.items);
+        setTotalPages(response.data.totalPages);
+        setHasNextPage(response.data.hasNextPage);
+        setHasPreviousPage(response.data.hasPreviousPage);
+    }, [page]);
 
     const getSummary = useCallback(async () => {
         const response = await api.get("/tickets/summary");
@@ -42,7 +53,10 @@ export function useTickets() {
         summary,
         loading,
         refresh: fetchAll,
-        getTickets,
-        getSummary
+        page,
+        setPage,
+        totalPages,
+        hasNextPage,
+        hasPreviousPage
     };
 }
