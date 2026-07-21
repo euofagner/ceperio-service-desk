@@ -92,26 +92,28 @@ function Tickets() {
     return (
         <div className="min-h-screen bg-neutral-950 text-neutral-200">
             <div className="max-w-5xl mx-auto px-6 py-12">
-                <div className="mb-5">
-                    <div className="flex items-center mb-2">
-                        <img
-                            src={cepelogo}
-                            alt="Company Logo"
-                            className="h-15 w-auto" />
-                        <div>
-                            <h1 className="text-2xl font-semibold text-white">
-                                CepeRio Service Desk
-                            </h1>
-
-                            <div className="flex gap-4 mt-2 text-xs text-neutral-500">
-                                <span>{tickets.length} tickets</span>
-                                <span>Atualizado agora</span>
-                            </div>
-                        </div>
+                <div className="flex items-center justify-between mb-8">
+                    <div>
+                        <h1 className="text-xl font-semibold text-white">
+                            Olá, Fagner! 👋
+                        </h1>
+                        <p className="text-sm text-neutral-500 mt-1">
+                            Bem-vindo ao CepeRio Service Desk
+                        </p>
                     </div>
-                    <p className="text-neutral-500 text-sm">
-                        Tickets de chamados de TI dos departamentos
-                    </p>
+                    <div className="flex items-center gap-3">
+                        <button className="relative p-2 text-neutral-400 hover:text-white transition-colors rounded-lg hover:bg-neutral-800">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        <button
+                            onClick={openCreateModal}
+                            className="inline-flex items-center gap-2 px-3 py-3 bg-white text-black text-sm font-medium rounded-lg hover:bg-neutral-200 transition-colors">
+                            <span className="text-lg leading-none">+</span> Novo Ticket
+                        </button>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-4 gap-4 mb-6">
@@ -159,13 +161,8 @@ function Tickets() {
                     </div>
                 </div>
 
-                {/* tickets filter and +ticket button*/}
-                <div className="flex items-center justify-between mb-5 gap-3">
-                    <button
-                        onClick={openCreateModal}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-white text-black text-sm font-medium rounded-lg hover:bg-neutral-200 transition-colors cursor-pointer">
-                        <span className="text-lg leading-none">+</span> Novo Ticket
-                    </button>
+                {/* tickets filter*/}
+                <div className="flex items-center justify-end mb-5 gap-3">
                     <select
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
