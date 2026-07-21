@@ -114,16 +114,23 @@ function Tickets() {
                     </p>
                 </div>
 
-                <div className="flex gap-3 mb-6">
-                    <span className="bg-red-500/10 text-red-400 text-xs font-semibold rounded-full px-3 py-1">
-                        {summary.open} ticket{summary.open !== 1 && "s"} aberto{summary.open !== 1 && "s"}
-                    </span>
-                    <span className="bg-yellow-500/10 text-yellow-400 text-xs items-center font-semibold rounded-full px-3 py-1">
-                        {summary.inProgress} ticket{summary.inProgress !== 1 && "s"} em andamento
-                    </span>
-                    <span className="bg-green-500/10 text-green-400 items-center font-semibold text-xs px-3 py-1 rounded-full">
-                        {summary.resolved} ticket{summary.resolved !== 1 && "s"} resolvido{summary.resolved !== 1 && "s"}
-                    </span>
+                <div className="grid grid-cols-4 gap-4 mb-6">
+                    <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
+                        <p className="text-2xl font-bold text-red-400">{summary.open}</p>
+                        <p className="text-xs text-red-400/70 mt-1">Abertos</p>
+                    </div>
+                    <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4">
+                        <p className="text-2xl font-bold text-yellow-400">{summary.inProgress}</p>
+                        <p className="text-xs text-yellow-400/70 mt-1">Em andamento</p>
+                    </div>
+                    <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4">
+                        <p className="text-2xl font-bold text-green-400">{summary.resolved}</p>
+                        <p className="text-xs text-green-400/70 mt-1">Resolvidos</p>
+                    </div>
+                    <div className="bg-neutral-500/10 border border-neutral-500/20 rounded-xl p-4">
+                        <p className="text-2xl font-bold text-neutral-400">{summary.closed}</p>
+                        <p className="text-xs text-neutral-400/70 mt-1">Fechados</p>
+                    </div>
                 </div>
 
                 {/* Search input */}
