@@ -8,8 +8,10 @@ import Skeleton from "../components/Skeleton";
 import cepelogo from "../assets/cepelogo.png";
 import TicketCard from "../components/TicketCard";
 import TicketModal from "../components/TicketModal";
+import TicketList from "../components/tickets/TicketList";
 import TicketHeader from "../components/tickets/TicketHeader";
 import TicketToolbar from "../components/tickets/TicketToolbar";
+import TicketSummary from "../components/tickets/TicketSummary";
 
 function TicketsPage() {
     const [filter, setFilter] = useState("all");
@@ -95,81 +97,29 @@ function TicketsPage() {
             <div className="max-w-5xl mx-auto">
                 <TicketHeader userName="Fagner" onCreateTicket={openCreateModal} />
 
-                <div className="grid grid-cols-4 gap-4 mb-6">
-                    <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
-                        <p className="text-2xl font-bold text-red-400">{summary.open}</p>
-                        <p className="text-xs text-red-400/70 mt-1">Abertos</p>
-                    </div>
-                    <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4">
-                        <p className="text-2xl font-bold text-yellow-400">{summary.inProgress}</p>
-                        <p className="text-xs text-yellow-400/70 mt-1">Em andamento</p>
-                    </div>
-                    <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4">
-                        <p className="text-2xl font-bold text-green-400">{summary.resolved}</p>
-                        <p className="text-xs text-green-400/70 mt-1">Resolvidos</p>
-                    </div>
-                    <div className="bg-neutral-500/10 border border-neutral-500/20 rounded-xl p-4">
-                        <p className="text-2xl font-bold text-neutral-400">{summary.closed}</p>
-                        <p className="text-xs text-neutral-400/70 mt-1">Fechados</p>
-                    </div>
-                </div>
+                <TicketSummary summary={summary} />
 
-                <TicketToolbar 
+                <TicketToolbar
                     search={search}
                     filter={filter}
                     onSearchChange={setSearch}
                     onFilterChange={setFilter} />
 
                 {/* tickets list */}
-                <div className="space-y-3">
-                    {filteredTickets.length > 0 ? (
-                        filteredTickets.map((ticket) => {
-                            const status = statusConfig[ticket.ticketStatus] || statusConfig[0];
-                            const priority = priorityConfig[ticket.ticketPriority] || priorityConfig[1];
-
-                            return (
-                                <TicketCard
-                                    key={ticket.id}
-                                    ticket={ticket}
-                                    onEdit={openEditModal}
-                                    onDeleteClick={(id) => setDeleteTarget(deleteTarget === id ? null : id)}
-                                    deleteTarget={deleteTarget}
-                                    onCancelDelete={() => setDeleteTarget(null)}
-                                    onConfirmDelete={handleDeleteTicket}
-                                    deleting={deleting} />
-                            );
-                        })
-                    ) : tickets.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-16 text-neutral-500">
-                            <svg className="w-17 h-17 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <h3 className="text-white text-lg mt-4">Nenhum ticket encontrado</h3>
-                            <p className="text-neutral-500 mt-2">Crie o primeiro ticket para começar</p>
-                            <button onClick={openCreateModal} className="mt-4 px-4 py-2 bg-white text-black rounded-lg hover:bg-neutral-200">
-                                Criar Ticket
-                            </button>
-                        </div>
-                    ) : search.trim() ? (
-                        <div className="flex flex-col items-center justify-center py-16 text-neutral-500">
-                            <span className="text-4xl">🔍</span>
-                            <h3 className="text-white text-lg mt-4">Nenhum resultado para "{search}"</h3>
-                            <p className="text-neutral-500 mt-2">Tente outro termo de busca</p>
-                            <button onClick={() => setSearch("")} className="mt-4 px-4 py-2 bg-neutral-800 text-neutral-300 rounded-lg hover:bg-neutral-700">
-                                Limpar busca
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center py-16 text-neutral-500">
-                            <span className="text-4xl">📋</span>
-                            <h3 className="text-white text-lg mt-4">Nenhum ticket neste status</h3>
-                            <p className="text-neutral-500 mt-2">Tente selecionar outro filtro</p>
-                            <button onClick={() => setFilter("all")} className="mt-4 px-4 py-2 bg-neutral-800 text-neutral-300 rounded-lg hover:bg-neutral-700">
-                                Limpar filtro
-                            </button>
-                        </div>
-                    )}
-                </div>
+                <TicketList
+                    tickets={filteredTickets}
+                    allTickets={tickets}
+                    search={search}
+                    onClearSearch={() => setSearch("")}
+                    onClearFilter={() => setFilter("all")}
+                    onCreateTicket={openCreateModal}
+                    onEdit={openEditModal}
+                    onDeleteClick={(id) => setDeleteTarget(deleteTarget === id ? null : id)}
+                    deleteTarget={deleteTarget}
+                    onCancelDelete={() => setDeleteTarget(null)}
+                    onConfirmDelete={handleDeleteTicket}
+                    deleting={deleting}
+                />
 
                 <div className="mt-4 font-bold text-neutral-500">
                     {tickets.length > 0 ? (

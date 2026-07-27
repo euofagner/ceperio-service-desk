@@ -1,4 +1,4 @@
-function TicketHeader({ onCreateTicket }) {
+function TicketHeader({ userName, onCreateTicket }) {
     return (
         <div className="flex items-center justify-between mb-8">
             <div>
