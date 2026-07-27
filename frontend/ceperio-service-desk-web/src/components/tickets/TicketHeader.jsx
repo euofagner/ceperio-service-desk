@@ -3,7 +3,7 @@ function TicketHeader({ onCreateTicket }) {
         <div className="flex items-center justify-between mb-8">
             <div>
                 <h1 className="text-xl font-semibold text-white">
-                    Olá, Fagner 👋
+                    Olá, {userName} 👋
                 </h1>
                 <p className="text-sm text-neutral-500 mt-1">
                     Bem-vindo ao Ceperio Service Desk
@@ -18,8 +18,7 @@ function TicketHeader({ onCreateTicket }) {
                 </button>
                 <button
                     onClick={onCreateTicket}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-white text-black text-sm font-medium rounded-lg hover:bg-neutral-200 transition-colors"
-                >
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-white text-black text-sm font-medium rounded-lg hover:bg-neutral-200 transition-colors">
                     <span className="text-lg leading-none">+</span> Novo Ticket
                 </button>
             </div>

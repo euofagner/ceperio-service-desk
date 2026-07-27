@@ -17,8 +17,7 @@ function TicketToolbar({ search, filter, onSearchChange, onFilterChange }) {
                     {search && (
                         <button
                             onClick={() => onSearchChange("")}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white"
-                        >
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white">
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
@@ -32,8 +31,7 @@ function TicketToolbar({ search, filter, onSearchChange, onFilterChange }) {
                 <select
                     value={filter}
                     onChange={(e) => onFilterChange(e.target.value)}
-                    className="bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-neutral-300 focus:outline-none focus:border-neutral-700"
-                >
+                    className="bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-neutral-300 focus:outline-none focus:border-neutral-700">
                     <option value="all">Todos os status</option>
                     <option value="0">Aberto</option>
                     <option value="1">Em andamento</option>

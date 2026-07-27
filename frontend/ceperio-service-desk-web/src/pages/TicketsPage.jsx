@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useToast } from "../hooks/useToast";
 import { useTickets } from "../hooks/useTickets";
-import { formatDate } from "../utils/formatDate";
-import { priorityConfig, statusConfig } from "../constants/ticketConfig";
 
 import api from "../services/api";
 import Toast from "../components/Toast";
@@ -95,7 +93,7 @@ function TicketsPage() {
     return (
         <div>
             <div className="max-w-5xl mx-auto">
-                <TicketHeader onCreateTicket={openCreateModal} />
+                <TicketHeader userName="Fagner" onCreateTicket={openCreateModal} />
 
                 <div className="grid grid-cols-4 gap-4 mb-6">
                     <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
