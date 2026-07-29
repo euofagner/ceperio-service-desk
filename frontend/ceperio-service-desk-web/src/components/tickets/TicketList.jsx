@@ -1,4 +1,4 @@
-import TicketCard from "./TicketCard";
+import TicketCard from "../TicketCard";
 
 function TicketList({
     tickets,
@@ -26,8 +26,7 @@ function TicketList({
                         deleteTarget={deleteTarget}
                         onCancelDelete={onCancelDelete}
                         onConfirmDelete={onConfirmDelete}
-                        deleting={deleting}
-                    />
+                        deleting={deleting} />
                 ))}
             </div>
         );

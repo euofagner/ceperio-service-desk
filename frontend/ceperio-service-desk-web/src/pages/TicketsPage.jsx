@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
+
 import { useToast } from "../hooks/useToast";
 import { useTickets } from "../hooks/useTickets";
 
 import api from "../services/api";
-import Toast from "../components/Toast";
+
 import Skeleton from "../components/Skeleton";
-import cepelogo from "../assets/cepelogo.png";
 import TicketCard from "../components/TicketCard";
+import Toast from "../components/Toast";
 import TicketModal from "../components/TicketModal";
 import TicketList from "../components/tickets/TicketList";
+import TicketPagination from "../components/tickets/TicketPagination";
 import TicketHeader from "../components/tickets/TicketHeader";
 import TicketToolbar from "../components/tickets/TicketToolbar";
 import TicketSummary from "../components/tickets/TicketSummary";
-import TicketPagination from "../components/tickets/TicketPagination";
+
+import cepelogo from "../assets/cepelogo.png";
 
 function TicketsPage() {
     const [filter, setFilter] = useState("all");
@@ -106,7 +109,6 @@ function TicketsPage() {
                     onSearchChange={setSearch}
                     onFilterChange={setFilter} />
 
-                {/* tickets list */}
                 <TicketList
                     tickets={filteredTickets}
                     allTickets={tickets}
@@ -119,8 +121,7 @@ function TicketsPage() {
                     deleteTarget={deleteTarget}
                     onCancelDelete={() => setDeleteTarget(null)}
                     onConfirmDelete={handleDeleteTicket}
-                    deleting={deleting}
-                />
+                    deleting={deleting} />
 
                 <TicketPagination
                     ticketsCount={tickets.length}
