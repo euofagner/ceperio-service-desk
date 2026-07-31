@@ -12,13 +12,17 @@ function Button({ children, variant = "primary", size = "md", className = "", ..
         sm: "px-3 py-1.5 text-xs",
         md: "px-4 py-2 text-sm",
         lg: "px-6 py-3 text-base",
+        icon: "p-2",
     };
+
+    const variantClass = variants[variant] ?? variants.primary;
+    const sizeClass = sizes[size] ?? sizes.md;
 
     return (
         <button
-            className={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
-            {...props}>
-                
+            className={`${base} ${variantClass} ${sizeClass} ${className}`}
+            {...props}
+        >
             {children}
         </button>
     );
