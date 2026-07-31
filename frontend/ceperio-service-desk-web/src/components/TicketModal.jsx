@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+import Button from "./ui/Button";
+
 function TicketModal({ ticket, onSubmit, onClose }) {
     const editing = ticket !== null;
 
@@ -23,14 +25,14 @@ function TicketModal({ ticket, onSubmit, onClose }) {
     async function handleSubmit(e) {
         e.preventDefault();
         if (!formData.title.trim()) return;
-        
+
         if (editing) {
-            const nothingChanged = 
+            const nothingChanged =
                 formData.title === ticket.title &&
                 formData.description === (ticket.description || "") &&
                 formData.ticketPriority === ticket.ticketPriority &&
                 formData.ticketStatus === ticket.ticketStatus;
-                
+
             if (nothingChanged) {
                 onClose();
                 return;
@@ -49,9 +51,9 @@ function TicketModal({ ticket, onSubmit, onClose }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-            <div className="relative bg-neutral-900 border border-neutral-800 rounded-xl w-full max-w-lg mx-4 p-6" 
+            <div className="relative bg-neutral-900 border border-neutral-800 rounded-xl w-full max-w-lg mx-4 p-6"
                 onClick={(e) => e.stopPropagation()}>
-                    
+
                 <h2 className="text-lg font-semibold text-white mb-4">
                     {editing ? "Editar Ticket" : "Novo Ticket"}
                 </h2>
@@ -107,18 +109,13 @@ function TicketModal({ ticket, onSubmit, onClose }) {
                     </div>
 
                     <div className="flex gap-3 pt-2">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="flex-1 px-4 py-2 bg-neutral-800 text-neutral-300 text-sm rounded-lg hover:bg-neutral-700 transition-colors">
+                        <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>
                             Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={submitting || !formData.title.trim()}
-                            className="flex-1 px-4 py-2 bg-white text-black text-sm font-medium rounded-lg hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        </Button>
+                        
+                        <Button type="submit" variant="primary" className="flex-1" disabled={submitting || !formData.title.trim()}>
                             {submitting ? "Salvando..." : editing ? "Salvar" : "Criar Ticket"}
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>

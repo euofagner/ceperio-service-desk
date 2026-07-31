@@ -1,4 +1,6 @@
-import TicketCard from "../TicketCard";
+import Button from "../ui/Button";
+
+import TicketCard from "../TicketCard"
 
 function TicketList({
     tickets,
@@ -26,7 +28,8 @@ function TicketList({
                         deleteTarget={deleteTarget}
                         onCancelDelete={onCancelDelete}
                         onConfirmDelete={onConfirmDelete}
-                        deleting={deleting} />
+                        deleting={deleting}
+                    />
                 ))}
             </div>
         );
@@ -40,9 +43,7 @@ function TicketList({
                 </svg>
                 <h3 className="text-white text-lg mt-4">Nenhum ticket encontrado</h3>
                 <p className="text-neutral-500 mt-2">Crie o primeiro ticket para começar</p>
-                <button onClick={onCreateTicket} className="mt-4 px-4 py-2 bg-white text-black rounded-lg hover:bg-neutral-200">
-                    Criar Ticket
-                </button>
+                <Button onClick={onCreateTicket}>Criar Ticket</Button>
             </div>
         );
     }
@@ -53,9 +54,7 @@ function TicketList({
                 <span className="text-4xl">🔍</span>
                 <h3 className="text-white text-lg mt-4">Nenhum resultado para "{search}"</h3>
                 <p className="text-neutral-500 mt-2">Tente outro termo de busca</p>
-                <button onClick={onClearSearch} className="mt-4 px-4 py-2 bg-neutral-800 text-neutral-300 rounded-lg hover:bg-neutral-700">
-                    Limpar busca
-                </button>
+                <Button variant="secondary" onClick={onClearSearch}>Limpar busca</Button>
             </div>
         );
     }
@@ -65,9 +64,7 @@ function TicketList({
             <span className="text-4xl">📋</span>
             <h3 className="text-white text-lg mt-4">Nenhum ticket neste status</h3>
             <p className="text-neutral-500 mt-2">Tente selecionar outro filtro</p>
-            <button onClick={onClearFilter} className="mt-4 px-4 py-2 bg-neutral-800 text-neutral-300 rounded-lg hover:bg-neutral-700">
-                Limpar filtro
-            </button>
+            <Button variant="secondary" onClick={onClearFilter}>Limpar filtro</Button>
         </div>
     );
 }
