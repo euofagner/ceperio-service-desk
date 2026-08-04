@@ -1,3 +1,5 @@
+import Button from "../ui/Button";
+
 function TicketPagination({
     ticketsCount,
     summary,
@@ -25,32 +27,33 @@ function TicketPagination({
                         Página {page} de {totalPages}
                     </span>
                     <div className="flex gap-2">
-                        <button
+                        <Button
+                            variant="secondary"
+                            size="sm"
                             onClick={() => onPageChange(page - 1)}
                             disabled={!hasPreviousPage}
-                            className="px-3 py-1.5 text-xs bg-neutral-900 border border-neutral-800 rounded-lg text-neutral-400 hover:text-white hover:border-neutral-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                         >
                             ← Anterior
-                        </button>
+                        </Button>
                         {pages.map((p) => (
-                            <button
+                            <Button
                                 key={p}
+                                variant="secondary"
+                                size="sm"
+                                className={p === page ? "bg-white text-black hover:bg-neutral-200" : ""}
                                 onClick={() => onPageChange(p)}
-                                className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${p === page
-                                        ? "bg-white text-black"
-                                        : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700"
-                                    }`}
                             >
                                 {p}
-                            </button>
+                            </Button>
                         ))}
-                        <button
+                        <Button
+                            variant="secondary"
+                            size="sm"
                             onClick={() => onPageChange(page + 1)}
                             disabled={!hasNextPage}
-                            className="px-3 py-1.5 text-xs bg-neutral-900 border border-neutral-800 rounded-lg text-neutral-400 hover:text-white hover:border-neutral-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                         >
                             Próximo →
-                        </button>
+                        </Button>
                     </div>
                 </div>
             )}
