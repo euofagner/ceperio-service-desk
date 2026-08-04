@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+import Input from "./ui/Input";
+
 import Button from "./ui/Button";
 
 function TicketModal({ ticket, onSubmit, onClose }) {
@@ -61,11 +63,10 @@ function TicketModal({ ticket, onSubmit, onClose }) {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label className="block text-sm text-neutral-400 mb-1">Título</label>
-                        <input
+                        <Input
                             type="text"
                             value={formData.title}
                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                            className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500"
                             placeholder="Ex: Impressora não funciona"
                             required />
                     </div>
@@ -112,7 +113,7 @@ function TicketModal({ ticket, onSubmit, onClose }) {
                         <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>
                             Cancelar
                         </Button>
-                        
+
                         <Button type="submit" variant="primary" className="flex-1" disabled={submitting || !formData.title.trim()}>
                             {submitting ? "Salvando..." : editing ? "Salvar" : "Criar Ticket"}
                         </Button>
