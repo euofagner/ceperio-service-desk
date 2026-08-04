@@ -4,7 +4,7 @@ function Button({ children, variant = "primary", size = "md", className = "", ..
     const variants = {
         primary: "bg-white text-black hover:bg-neutral-200",
         secondary: "bg-neutral-800 text-neutral-300 hover:bg-neutral-700",
-        danger: "bg-red-500/20 text-red-400 hover:bg-red-500/30",
+        danger: "bg-red-600 text-white hover:bg-red-500",
         ghost: "text-neutral-400 hover:text-white hover:bg-neutral-800",
     };
 
