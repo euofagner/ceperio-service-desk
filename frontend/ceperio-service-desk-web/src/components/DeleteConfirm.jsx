@@ -1,3 +1,5 @@
+import Button from "./ui/Button";
+
 function DeleteConfirm({ ticketId, onCancel, onConfirm, deleting }) {
     return (
         <div className="px-5 py-3 bg-neutral-800/50 border-t border-neutral-800 flex items-center justify-between">
@@ -5,19 +7,12 @@ function DeleteConfirm({ ticketId, onCancel, onConfirm, deleting }) {
                 Excluir ticket #{ticketId}?
             </span>
             <div className="flex gap-2">
-                <button
-                    onClick={(e) => { e.stopPropagation(); onCancel(); }}
-                    className="px-3 py-1 text-xs text-neutral-400 hover:text-white transition-colors"
-                >
+                <Button variant="secondary" size="sm" onClick={onCancel}>
                     Cancelar
-                </button>
-                <button
-                    onClick={(e) => { e.stopPropagation(); onConfirm(ticketId); }}
-                    disabled={deleting}
-                    className="px-3 py-1 text-xs bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors disabled:opacity-50"
-                >
+                </Button>
+                <Button variant="danger" size="sm" onClick={() => onConfirm(ticketId)} disabled={deleting}>
                     {deleting ? "Excluindo..." : "Excluir"}
-                </button>
+                </Button>
             </div>
         </div>
     );
