@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 
-import Input from "./ui/Input";
-
 import Button from "./ui/Button";
+import Input from "./ui/Input";
+import Textarea from "./ui/Textarea"
 
 function TicketModal({ ticket, onSubmit, onClose }) {
     const editing = ticket !== null;
@@ -73,11 +73,10 @@ function TicketModal({ ticket, onSubmit, onClose }) {
 
                     <div>
                         <label className="block text-sm text-neutral-400 mb-1">Descrição</label>
-                        <textarea
+                        <Textarea
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                             rows={3}
-                            className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 resize-none"
                             placeholder="Descreva o problema..." />
                     </div>
 
