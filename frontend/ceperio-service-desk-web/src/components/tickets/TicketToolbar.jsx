@@ -1,4 +1,4 @@
-import {Input, Select} from "../ui";
+import { Input, Select } from "../ui";
 
 function TicketToolbar({ search, filter, onSearchChange, onFilterChange }) {
     return (
@@ -30,16 +30,17 @@ function TicketToolbar({ search, filter, onSearchChange, onFilterChange }) {
 
             {/* Filter */}
             <div className="flex items-center justify-end mb-5 gap-3">
-                <select
+                <Select
                     value={filter}
                     onChange={(e) => onFilterChange(e.target.value)}
-                    className="bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-neutral-300 focus:outline-none focus:border-neutral-700">
+                    fullWidth={false}
+                    className="ml-auto bg-neutral-900 border-neutral-800 text-neutral-300">
                     <option value="all">Todos os status</option>
                     <option value="0">Aberto</option>
                     <option value="1">Em andamento</option>
                     <option value="2">Resolvido</option>
                     <option value="3">Fechado</option>
-                </select>
+                </Select>
             </div>
         </>
     );
