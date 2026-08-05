@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 
-import Button from "./ui/Button";
-import Input from "./ui/Input";
-import { Select } from "./ui";
-import Textarea from "./ui/Textarea"
+import { Button, Input, Select, Textarea } from "./ui";
 
 function TicketModal({ ticket, onSubmit, onClose }) {
     const editing = ticket !== null;
