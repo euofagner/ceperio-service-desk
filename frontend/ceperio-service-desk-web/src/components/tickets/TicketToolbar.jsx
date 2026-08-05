@@ -1,4 +1,4 @@
-import Input from "../ui/Input";
+import {Input, Select} from "../ui";
 
 function TicketToolbar({ search, filter, onSearchChange, onFilterChange }) {
     return (

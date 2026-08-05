@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 import Button from "./ui/Button";
 import Input from "./ui/Input";
+import { Select } from "./ui";
 import Textarea from "./ui/Textarea"
 
 function TicketModal({ ticket, onSubmit, onClose }) {
@@ -83,29 +84,27 @@ function TicketModal({ ticket, onSubmit, onClose }) {
                     {editing && (
                         <div>
                             <label className="block text-sm text-neutral-400 mb-1">Status</label>
-                            <select
+                            <Select
                                 value={formData.ticketStatus}
-                                onChange={(e) => setFormData({ ...formData, ticketStatus: parseInt(e.target.value) })}
-                                className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-500">
+                                onChange={(e) => setFormData({ ...formData, ticketStatus: parseInt(e.target.value) })}>
                                 <option value={0}>Aberto</option>
                                 <option value={1}>Em andamento</option>
                                 <option value={2}>Resolvido</option>
                                 <option value={3}>Fechado</option>
-                            </select>
+                            </Select>
                         </div>
                     )}
 
                     <div>
                         <label className="block text-sm text-neutral-400 mb-1">Prioridade</label>
-                        <select
+                        <Select
                             value={formData.ticketPriority}
-                            onChange={(e) => setFormData({ ...formData, ticketPriority: parseInt(e.target.value) })}
-                            className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-500">
+                            onChange={(e) => setFormData({ ...formData, ticketPriority: parseInt(e.target.value) })}>
                             <option value={0}>Baixa</option>
                             <option value={1}>Média</option>
                             <option value={2}>Alta</option>
                             <option value={3}>Crítica</option>
-                        </select>
+                        </Select>
                     </div>
 
                     <div className="flex gap-3 pt-2">
