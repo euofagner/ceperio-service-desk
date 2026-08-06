@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { Button, Input, Modal, Select, Textarea } from "./ui";
+import { Button, FormField, Input, Modal, Select, Textarea } from "./ui";
 
 function TicketModal({ ticket, onSubmit, onClose }) {
     const editing = ticket !== null;
@@ -47,6 +47,7 @@ function TicketModal({ ticket, onSubmit, onClose }) {
             setSubmitting(false);
         }
     }
+
     return (
         <Modal onClose={onClose}>
             <h2 className="text-lg font-semibold text-white mb-4">
@@ -54,56 +55,42 @@ function TicketModal({ ticket, onSubmit, onClose }) {
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label className="block text-sm text-neutral-400 mb-1">Título</label>
-                    <Input
-                        type="text"
-                        value={formData.title}
+                <FormField label="Título">
+                    <Input type="text" value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        placeholder="Ex: Impressora não funciona"
-                        required />
-                </div>
+                        placeholder="Ex: Impressora não funciona" required />
+                </FormField>
 
-                <div>
-                    <label className="block text-sm text-neutral-400 mb-1">Descrição</label>
-                    <Textarea
-                        value={formData.description}
+                <FormField label="Descrição">
+                    <Textarea value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        rows={3}
-                        placeholder="Descreva o problema..." />
-                </div>
+                        rows={3} placeholder="Descreva o problema..." />
+                </FormField>
 
                 {editing && (
-                    <div>
-                        <label className="block text-sm text-neutral-400 mb-1">Status</label>
-                        <Select
-                            value={formData.ticketStatus}
+                    <FormField label="Status">
+                        <Select value={formData.ticketStatus}
                             onChange={(e) => setFormData({ ...formData, ticketStatus: parseInt(e.target.value) })}>
                             <option value={0}>Aberto</option>
                             <option value={1}>Em andamento</option>
                             <option value={2}>Resolvido</option>
                             <option value={3}>Fechado</option>
                         </Select>
-                    </div>
+                    </FormField>
                 )}
 
-                <div>
-                    <label className="block text-sm text-neutral-400 mb-1">Prioridade</label>
-                    <Select
-                        value={formData.ticketPriority}
-                        onChange={(e) => setFormData({ ...formData, ticketPriority: parseInt(e.target.value) })}
-                    >
+                <FormField label="Prioridade">
+                    <Select value={formData.ticketPriority}
+                        onChange={(e) => setFormData({ ...formData, ticketPriority: parseInt(e.target.value) })}>
                         <option value={0}>Baixa</option>
                         <option value={1}>Média</option>
                         <option value={2}>Alta</option>
                         <option value={3}>Crítica</option>
                     </Select>
-                </div>
+                </FormField>
 
                 <div className="flex gap-3 pt-2">
-                    <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>
-                        Cancelar
-                    </Button>
+                    <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>Cancelar</Button>
                     <Button type="submit" variant="primary" className="flex-1" disabled={submitting || !formData.title.trim()}>
                         {submitting ? "Salvando..." : editing ? "Salvar" : "Criar Ticket"}
                     </Button>
