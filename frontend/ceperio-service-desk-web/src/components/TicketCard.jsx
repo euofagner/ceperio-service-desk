@@ -3,6 +3,8 @@ import DeleteConfirm from "./DeleteConfirm";
 import { formatDate, isNew } from "../utils/formatDate";
 import { statusConfig, priorityConfig } from "../constants/ticketConfig";
 
+import { Button } from "./ui";
+
 
 export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget, onCancelDelete, onConfirmDelete, deleting }) {
     const status = statusConfig[ticket.ticketStatus] || statusConfig[0];
@@ -60,16 +62,18 @@ export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget
                     </span>
                 </TicketDate>
 
-                <button
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="opacity-0 group-hover:opacity-100 shrink-0"
                     onClick={(e) => {
                         e.stopPropagation();
                         onDeleteClick(ticket.id);
-                    }}
-                    className="opacity-0 group-hover:opacity-100 text-neutral-600 hover:text-neutral-300 transition-all p-1 rounded shrink-0">
+                    }}>
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                     </svg>
-                </button>
+                </Button>
             </div>
 
             {isDeleteOpen && (
