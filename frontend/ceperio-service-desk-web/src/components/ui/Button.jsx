@@ -21,8 +21,7 @@ function Button({ children, variant = "primary", size = "md", className = "", ..
     return (
         <button
             className={`${base} ${variantClass} ${sizeClass} ${className}`}
-            {...props}
-        >
+            {...props}>
             {children}
         </button>
     );
