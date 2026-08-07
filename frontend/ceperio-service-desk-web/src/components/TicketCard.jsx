@@ -1,9 +1,10 @@
-import TicketDate from "./TicketDate";
-import DeleteConfirm from "./DeleteConfirm";
 import { formatDate, isNew } from "../utils/formatDate";
 import { statusConfig, priorityConfig } from "../constants/ticketConfig";
 
-import { Button } from "./ui";
+import TicketDate from "./TicketDate";
+import DeleteConfirm from "./DeleteConfirm";
+
+import { Button, Card } from "./ui";
 
 
 export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget, onCancelDelete, onConfirmDelete, deleting }) {
@@ -12,7 +13,7 @@ export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget
     const isDeleteOpen = deleteTarget === ticket.id;
 
     return (
-        <div className="group bg-neutral-900 hover:border-neutral-600 hover:shadow-lg transition-colors rounded-lg border border-neutral-800/50">
+        <Card className="group border-neutral-800/50 hover:border-neutral-600 hover:shadow-lg transition-colors">
             <div
                 onClick={() => onEdit(ticket)}
                 className="flex items-center gap-4 px-5 py-4 cursor-pointer">
@@ -83,6 +84,6 @@ export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget
                     onConfirm={onConfirmDelete}
                     deleting={deleting} />
             )}
-        </div>
+        </Card>
     );
 }

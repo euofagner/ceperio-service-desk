@@ -1,3 +1,5 @@
+import { Card } from "../ui";
+
 function TicketSummary({ summary }) {
     const items = [
         { label: "Abertos", value: summary.open, color: "bg-red-500/10 border-red-500/20 text-red-400" },
@@ -9,10 +11,10 @@ function TicketSummary({ summary }) {
     return (
         <div className="grid grid-cols-4 gap-4 mb-6">
             {items.map(item => (
-                <div key={item.label} className={`rounded-xl border p-4 ${item.color}`}>
+                <Card key={item.label} className={`p-4 ${item.color}`}>
                     <p className="text-2xl font-bold">{item.value}</p>
                     <p className="text-xs mt-1 opacity-70">{item.label}</p>
-                </div>
+                </Card>
             ))}
         </div>
     );
