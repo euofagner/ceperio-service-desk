@@ -4,7 +4,7 @@ import { statusConfig, priorityConfig } from "../constants/ticketConfig";
 import TicketDate from "./TicketDate";
 import DeleteConfirm from "./DeleteConfirm";
 
-import { Button, Card } from "./ui";
+import { Badge, Button, Card } from "./ui";
 
 
 export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget, onCancelDelete, onConfirmDelete, deleting }) {
@@ -27,26 +27,24 @@ export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget
                             <h3 className="text-[15px] font-medium text-white truncate">{ticket.title}</h3>
 
                             {ticket.ticketStatus === 0 && isNew(ticket.createdAt) && (
-                                <span className="px-1.5 py-0.5 text-[12px] flex font-medium bg-blue-500/20 text-blue-400 rounded shrink-0">
+                                <Badge className="bg-blue-500/20 border-blue-500/20 text-blue-400 text-[12px] rounded-sm font-medium shrink-0">
                                     Novo
-                                </span>
+                                </Badge>
                             )}
                         </div>
 
                         <p className="text-sm text-neutral-400 mb-2 line-clamp-1">{ticket.description}</p>
 
                         <div className="flex items-center gap-3 text-xs">
-                            <span className={`px-2 py-0.5 rounded-full border ${status.badge} flex items-center gap-1`}>
-                                <status.icon className="w-3 h-3" />
+                            <Badge icon={status.icon} className={status.badge}>
                                 {status.label}
-                            </span>
+                            </Badge>
 
                             <span className="text-neutral-500">|</span>
 
-                            <span className={`px-2 py-0.5 rounded-full border ${priority.color} shrink-0 flex items-center gap-1`}>
-                                <priority.icon className="w-3 h-3" />
-                                <span>{priority.label}</span>
-                            </span>
+                            <Badge icon={priority.icon} className={priority.color}>
+                                {priority.label}
+                            </Badge>
                         </div>
                     </div>
                 </div>
