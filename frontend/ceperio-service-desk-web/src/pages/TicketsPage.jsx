@@ -61,18 +61,18 @@ function TicketsPage() {
                 await api.post("/tickets", formData);
                 showToast("Ticket criado com sucesso!");
             }
-            await refresh();
+            await refresh("", filter === "all" ? null : parseInt(filter));
         } catch {
             showToast(ticketId ? "Erro ao salvar ticket." : "Erro ao criar ticket.", "error");
         }
     }
 
-    async function handleDeleteTicket(id) {
+    async function handleDeleteTicket(id) { 
         setDeleting(true);
         try {
             await api.delete(`/tickets/${id}`);
             setDeleteTarget(null);
-            await refresh();
+            await refresh("", filter === "all" ? null : parseInt(filter));
             showToast("Ticket excluído com sucesso!");
         } catch {
             showToast("Erro ao excluir ticket.", "error");
@@ -81,16 +81,11 @@ function TicketsPage() {
         }
     }
 
-    const filteredBySearch = search.trim()
-        ? tickets.filter(t =>
-            t.title.toLowerCase().includes(search.toLowerCase()) ||
-            t.description.toLowerCase().includes(search.toLowerCase())
-        )
-        : tickets;
-
-    const filteredTickets = filter === "all"
-        ? filteredBySearch
-        : filteredBySearch.filter(t => t.ticketStatus === parseInt(filter));
+    useEffect(() => {
+        const statusParam = filter === "all" ? null : parseInt(filter);
+        setPage(1);
+        refresh(search, statusParam);
+    }, [search, filter]);
 
     if (loading) {
         return <Skeleton logo={cepelogo} />;
@@ -110,7 +105,7 @@ function TicketsPage() {
                     onFilterChange={setFilter} />
 
                 <TicketList
-                    tickets={filteredTickets}
+                    tickets={tickets}
                     allTickets={tickets}
                     search={search}
                     onClearSearch={() => setSearch("")}
