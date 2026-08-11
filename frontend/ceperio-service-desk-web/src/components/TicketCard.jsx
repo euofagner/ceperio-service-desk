@@ -4,7 +4,7 @@ import { statusConfig, priorityConfig } from "../constants/ticketConfig";
 import TicketDate from "./TicketDate";
 import DeleteConfirm from "./DeleteConfirm";
 
-import { Badge, Button, Card } from "./ui";
+import { Badge, Button, Card, IconButton } from "./ui";
 
 
 export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget, onCancelDelete, onConfirmDelete, deleting }) {
@@ -61,9 +61,9 @@ export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget
                     </span>
                 </TicketDate>
 
-                <Button
+                <IconButton
                     variant="ghost"
-                    size="icon"
+                    label="Excluir ticket"
                     className="opacity-0 group-hover:opacity-100 shrink-0"
                     onClick={(e) => {
                         e.stopPropagation();
@@ -72,7 +72,7 @@ export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                     </svg>
-                </Button>
+                </IconButton>
             </div>
 
             {isDeleteOpen && (
