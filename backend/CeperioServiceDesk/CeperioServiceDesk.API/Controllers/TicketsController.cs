@@ -13,10 +13,11 @@ public class TicketsController(ITicketService service) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Ticket>>> GetTickets(
         [FromQuery] string? search,
+        [FromQuery] TicketStatus? status,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10)
     {
-        var tickets = await _service.GetTickets(search, page, pageSize);
+        var tickets = await _service.GetTickets(search, status, page, pageSize);
         return Ok(tickets);
     }
 

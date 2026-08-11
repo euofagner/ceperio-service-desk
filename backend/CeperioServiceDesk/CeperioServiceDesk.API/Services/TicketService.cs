@@ -8,7 +8,7 @@ public class TicketService(AppDbContext dbContext) : ITicketService
 {
     private readonly AppDbContext _context = dbContext;
 
-    public async Task<Pagination<Ticket>> GetTickets(string? search = null, int page = 1, int pageSize = 10)
+    public async Task<Pagination<Ticket>> GetTickets(string? search = null, TicketStatus? status = null, int page = 1, int pageSize = 5)
     {
         page = Pagination<Ticket>.ValidatePage(page);
         pageSize = Pagination<Ticket>.ValidatePageSize(pageSize);
@@ -17,6 +17,9 @@ public class TicketService(AppDbContext dbContext) : ITicketService
 
         if (!string.IsNullOrWhiteSpace(search))
             query = query.Where(t => t.Title.Contains(search) || t.Description.Contains(search));
+
+        if (status.HasValue)
+            query = query.Where(t => t.TicketStatus == status.Value);
 
         var totalCount = await query.CountAsync();
 
