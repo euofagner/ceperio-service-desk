@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { Button, FormField, Input, Modal, Select, Textarea } from "./ui";
+import { Button, FormField, Input, Modal, Select, Spinner, Textarea } from "./ui";
 
 function TicketModal({ ticket, onSubmit, onClose }) {
     const editing = ticket !== null;
@@ -65,7 +65,7 @@ function TicketModal({ ticket, onSubmit, onClose }) {
                     <Textarea value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         rows={3} placeholder="Descreva o problema..." />
-                </FormField>
+            </FormField>
 
                 {editing && (
                     <FormField label="Status">
@@ -91,7 +91,9 @@ function TicketModal({ ticket, onSubmit, onClose }) {
 
                 <div className="flex gap-3 pt-2">
                     <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>Cancelar</Button>
+
                     <Button type="submit" variant="primary" className="flex-1" disabled={submitting || !formData.title.trim()}>
+                        {submitting && <Spinner size="sm" />}
                         {submitting ? "Salvando..." : editing ? "Salvar" : "Criar Ticket"}
                     </Button>
                 </div>
