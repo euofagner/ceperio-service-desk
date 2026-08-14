@@ -15,7 +15,7 @@ public class TicketsController(ITicketService service) : ControllerBase
         [FromQuery] string? search,
         [FromQuery] TicketStatus? status,
         [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 10)
+        [FromQuery] int pageSize = 5)
     {
         var tickets = await _service.GetTickets(search, status, page, pageSize);
         return Ok(tickets);
