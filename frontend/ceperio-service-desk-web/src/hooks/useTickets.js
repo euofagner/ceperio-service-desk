@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import api from "../services/api";
 
 export function useTickets(search = "", status = null) {
@@ -7,12 +7,12 @@ export function useTickets(search = "", status = null) {
         total: 0, open: 0, inProgress: 0, resolved: 0, closed: 0
     });
     const [loading, setLoading] = useState(true);
-
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [hasNextPage, setHasNextPage] = useState(false);
     const [hasPreviousPage, setHasPreviousPage] = useState(false);
     const pageSize = 5;
+    const firstLoad = useRef(true);
 
     const getTickets = useCallback(async () => {
         const params = { page, pageSize };
@@ -41,12 +41,16 @@ export function useTickets(search = "", status = null) {
     }, [getTickets, getSummary]);
 
     useEffect(() => {
-        setPage(1);
-    }, [search, status]);
-
-    useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    useEffect(() => {
+        if (firstLoad.current) {
+            firstLoad.current = false;
+            return;
+        }
+        setPage(1);
+    }, [search, status]);
 
     return {
         tickets,

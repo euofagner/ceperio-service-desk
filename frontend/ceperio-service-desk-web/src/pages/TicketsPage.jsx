@@ -63,7 +63,7 @@ function TicketsPage() {
         }
     }
 
-    if (loading) return <Skeleton logo={cepelogo} />;
+    if (loading && tickets.length === 0) return <Skeleton logo={cepelogo} />;
 
     return (
         <div>
@@ -71,19 +71,28 @@ function TicketsPage() {
                 <TicketHeader userName="Fagner" onCreateTicket={openCreateModal} />
                 <TicketSummary summary={summary} />
                 <TicketToolbar search={search} filter={filter} onSearchChange={setSearch} onFilterChange={setFilter} />
-                <TicketList
-                    tickets={tickets}
-                    search={search}
-                    onClearSearch={() => setSearch("")}
-                    onClearFilter={() => setFilter("all")}
-                    onCreateTicket={openCreateModal}
-                    onEdit={openEditModal}
-                    onDeleteClick={(id) => setDeleteTarget(deleteTarget === id ? null : id)}
-                    deleteTarget={deleteTarget}
-                    onCancelDelete={() => setDeleteTarget(null)}
-                    onConfirmDelete={handleDeleteTicket}
-                    deleting={deleting}
-                />
+                <div className="relative">
+                    {loading && tickets.length > 0 && (
+                        <div className="absolute right-0 -top-8 flex items-center gap-2 text-xs text-neutral-500">
+                            <span className="w-3 h-3 border-2 border-neutral-700 border-t-white rounded-full animate-spin" />
+                            Carregando...
+                        </div>
+                    )}
+
+                    <TicketList
+                        tickets={tickets}
+                        search={search}
+                        onClearSearch={() => setSearch("")}
+                        onClearFilter={() => setFilter("all")}
+                        onCreateTicket={openCreateModal}
+                        onEdit={openEditModal}
+                        onDeleteClick={(id) => setDeleteTarget(deleteTarget === id ? null : id)}
+                        deleteTarget={deleteTarget}
+                        onCancelDelete={() => setDeleteTarget(null)}
+                        onConfirmDelete={handleDeleteTicket}
+                        deleting={deleting}
+                    />
+                </div>
                 <TicketPagination
                     ticketsCount={tickets.length}
                     summary={summary}
