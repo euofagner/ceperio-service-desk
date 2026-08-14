@@ -1,13 +1,9 @@
-import { useEffect, useState } from "react";
-
+import { useState } from "react";
 import { useToast } from "../hooks/useToast";
 import { useTickets } from "../hooks/useTickets";
 import { useDebounce } from "../hooks/useDebounce";
-
 import api from "../services/api";
-
 import Skeleton from "../components/Skeleton";
-import TicketCard from "../components/TicketCard";
 import Toast from "../components/Toast";
 import TicketModal from "../components/TicketModal";
 import TicketList from "../components/tickets/TicketList";
@@ -15,7 +11,6 @@ import TicketPagination from "../components/tickets/TicketPagination";
 import TicketHeader from "../components/tickets/TicketHeader";
 import TicketToolbar from "../components/tickets/TicketToolbar";
 import TicketSummary from "../components/tickets/TicketSummary";
-
 import cepelogo from "../assets/cepelogo.png";
 
 function TicketsPage() {
@@ -25,44 +20,30 @@ function TicketsPage() {
 
     const [showModal, setShowModal] = useState(false);
     const [editingTicket, setEditingTicket] = useState(null);
-
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [deleting, setDeleting] = useState(false);
 
     const { toast, setToast, showToast, pauseToast, resumeToast } = useToast();
 
-    const { tickets, summary, loading, refresh, page, setPage, totalPages, hasNextPage, hasPreviousPage } = useTickets();
+    const statusParam = filter === "all" ? null : parseInt(filter);
 
-    function openCreateModal() {
-        setEditingTicket(null);
-        setShowModal(true);
-    }
+    const { tickets, summary, loading, refresh, page, setPage, totalPages, hasNextPage, hasPreviousPage } = useTickets(debouncedSearch, statusParam);
 
-    function openEditModal(ticket) {
-        setEditingTicket(ticket);
-        setShowModal(true);
-    }
-
-    function closeModal() {
-        setShowModal(false);
-        setEditingTicket(null);
-    }
+    function openCreateModal() { setEditingTicket(null); setShowModal(true); }
+    function openEditModal(ticket) { setEditingTicket(ticket); setShowModal(true); }
+    function closeModal() { setShowModal(false); setEditingTicket(null); }
 
     async function handleSubmit(ticketId, formData) {
         try {
             if (ticketId) {
                 const ticket = tickets.find(t => t.id === ticketId);
-                await api.put(`/tickets/${ticketId}`, {
-                    id: ticketId,
-                    ...formData,
-                    createdAt: ticket.createdAt,
-                });
+                await api.put(`/tickets/${ticketId}`, { id: ticketId, ...formData, createdAt: ticket.createdAt });
                 showToast("Ticket atualizado com sucesso!");
             } else {
                 await api.post("/tickets", formData);
                 showToast("Ticket criado com sucesso!");
             }
-            await refresh("", filter === "all" ? null : parseInt(filter));
+            await refresh();
         } catch {
             showToast(ticketId ? "Erro ao salvar ticket." : "Erro ao criar ticket.", "error");
         }
@@ -73,7 +54,7 @@ function TicketsPage() {
         try {
             await api.delete(`/tickets/${id}`);
             setDeleteTarget(null);
-            await refresh("", filter === "all" ? null : parseInt(filter));
+            await refresh();
             showToast("Ticket excluído com sucesso!");
         } catch {
             showToast("Erro ao excluir ticket.", "error");
@@ -82,32 +63,16 @@ function TicketsPage() {
         }
     }
 
-    useEffect(() => {
-        const statusParam = filter === "all" ? null : parseInt(filter);
-        setPage(1);
-        refresh(debouncedSearch, statusParam);
-    }, [debouncedSearch, filter]);
-
-    if (loading) {
-        return <Skeleton logo={cepelogo} />;
-    }
+    if (loading) return <Skeleton logo={cepelogo} />;
 
     return (
         <div>
             <div className="max-w-5xl mx-auto">
                 <TicketHeader userName="Fagner" onCreateTicket={openCreateModal} />
-
                 <TicketSummary summary={summary} />
-
-                <TicketToolbar
-                    search={search}
-                    filter={filter}
-                    onSearchChange={setSearch}
-                    onFilterChange={setFilter} />
-
+                <TicketToolbar search={search} filter={filter} onSearchChange={setSearch} onFilterChange={setFilter} />
                 <TicketList
                     tickets={tickets}
-                    allTickets={tickets}
                     search={search}
                     onClearSearch={() => setSearch("")}
                     onClearFilter={() => setFilter("all")}
@@ -117,8 +82,8 @@ function TicketsPage() {
                     deleteTarget={deleteTarget}
                     onCancelDelete={() => setDeleteTarget(null)}
                     onConfirmDelete={handleDeleteTicket}
-                    deleting={deleting} />
-
+                    deleting={deleting}
+                />
                 <TicketPagination
                     ticketsCount={tickets.length}
                     summary={summary}
@@ -126,22 +91,11 @@ function TicketsPage() {
                     totalPages={totalPages}
                     hasPreviousPage={hasPreviousPage}
                     hasNextPage={hasNextPage}
-                    onPageChange={setPage} />
+                    onPageChange={setPage}
+                />
             </div>
-
-            {/* create and update ticket */}
-            {showModal && (
-                <TicketModal
-                    ticket={editingTicket}
-                    onSubmit={handleSubmit}
-                    onClose={closeModal} />
-            )}
-
-            <Toast
-                toast={toast}
-                onClose={() => setToast(null)}
-                onMouseEnter={pauseToast}
-                onMouseLeave={resumeToast} />
+            {showModal && <TicketModal ticket={editingTicket} onSubmit={handleSubmit} onClose={closeModal} />}
+            <Toast toast={toast} onClose={() => setToast(null)} onMouseEnter={pauseToast} onMouseLeave={resumeToast} />
         </div>
     );
 }
