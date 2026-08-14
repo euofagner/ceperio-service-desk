@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { useToast } from "../hooks/useToast";
 import { useTickets } from "../hooks/useTickets";
+import { useDebounce } from "../hooks/useDebounce";
 
 import api from "../services/api";
 
@@ -19,8 +20,8 @@ import cepelogo from "../assets/cepelogo.png";
 
 function TicketsPage() {
     const [filter, setFilter] = useState("all");
-
     const [search, setSearch] = useState("");
+    const debouncedSearch = useDebounce(search, 300);
 
     const [showModal, setShowModal] = useState(false);
     const [editingTicket, setEditingTicket] = useState(null);
@@ -67,7 +68,7 @@ function TicketsPage() {
         }
     }
 
-    async function handleDeleteTicket(id) { 
+    async function handleDeleteTicket(id) {
         setDeleting(true);
         try {
             await api.delete(`/tickets/${id}`);
@@ -84,8 +85,8 @@ function TicketsPage() {
     useEffect(() => {
         const statusParam = filter === "all" ? null : parseInt(filter);
         setPage(1);
-        refresh(search, statusParam);
-    }, [search, filter]);
+        refresh(debouncedSearch, statusParam);
+    }, [debouncedSearch, filter]);
 
     if (loading) {
         return <Skeleton logo={cepelogo} />;

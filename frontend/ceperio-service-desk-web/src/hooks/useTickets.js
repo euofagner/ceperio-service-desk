@@ -24,7 +24,7 @@ export function useTickets() {
         if (status !== null && status !== undefined) params.status = status;
 
         const response = await api.get("/tickets", { params });
-        setTickets(response.data.items);
+        setTickets(response.data.items);  
         setTotalPages(response.data.totalPages);
         setHasNextPage(response.data.hasNextPage);
         setHasPreviousPage(response.data.hasPreviousPage);
