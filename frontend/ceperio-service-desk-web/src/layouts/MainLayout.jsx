@@ -5,10 +5,9 @@ import Sidebar from "../components/layout/Sidebar";
 function MainLayout() {
     return (
         <div className="min-h-screen bg-neutral-950 text-neutral-200">
-            <div className="flex">
                 <Sidebar />
 
-                <div className="flex-1 flex flex-col">
+                <div className="ml-64 flex min-h-screen flex-col">
                     <Header />
 
                     <main className="flex-1 p-6">
@@ -16,7 +15,6 @@ function MainLayout() {
                     </main>
                 </div>
             </div>
-        </div>
     );
 }
 
