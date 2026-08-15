@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useToast } from "../hooks/useToast";
 import { useTickets } from "../hooks/useTickets";
 import { useDebounce } from "../hooks/useDebounce";
-import api from "../services/api";
+import { createTicket, updateTicket, deleteTicket } from "../services/ticketService";
 import Skeleton from "../components/Skeleton";
 import Toast from "../components/Toast";
 import TicketModal from "../components/TicketModal";
@@ -37,10 +37,10 @@ function TicketsPage() {
         try {
             if (ticketId) {
                 const ticket = tickets.find(t => t.id === ticketId);
-                await api.put(`/tickets/${ticketId}`, { id: ticketId, ...formData, createdAt: ticket.createdAt });
+                await updateTicket(ticketId, formData, ticket);
                 showToast("Ticket atualizado com sucesso!");
             } else {
-                await api.post("/tickets", formData);
+                await createTicket(formData);
                 showToast("Ticket criado com sucesso!");
             }
             await refresh();
@@ -52,7 +52,7 @@ function TicketsPage() {
     async function handleDeleteTicket(id) {
         setDeleting(true);
         try {
-            await api.delete(`/tickets/${id}`);
+            await deleteTicket(id);
             setDeleteTarget(null);
             await refresh();
             showToast("Ticket excluído com sucesso!");

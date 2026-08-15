@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import api from "../services/api";
+import { getTickets, getSummary } from "../services/ticketService";
 
 export function useTickets(search = "", status = null) {
     const [tickets, setTickets] = useState([]);
@@ -14,31 +14,27 @@ export function useTickets(search = "", status = null) {
     const pageSize = 5;
     const firstLoad = useRef(true);
 
-    const getTickets = useCallback(async () => {
-        const params = { page, pageSize };
-        if (search.trim()) params.search = search.trim();
-        if (status !== null && status !== undefined) params.status = status;
-
-        const response = await api.get("/tickets", { params });
-        setTickets(response.data.items);
-        setTotalPages(response.data.totalPages);
-        setHasNextPage(response.data.hasNextPage);
-        setHasPreviousPage(response.data.hasPreviousPage);
+    const fetchTickets = useCallback(async () => {
+        const data = await getTickets({ search, status, page, pageSize });
+        setTickets(data.items);
+        setTotalPages(data.totalPages);
+        setHasNextPage(data.hasNextPage);
+        setHasPreviousPage(data.hasPreviousPage);
     }, [search, status, page]);
 
-    const getSummary = useCallback(async () => {
-        const response = await api.get("/tickets/summary");
-        setSummary(response.data);
+    const fetchSummary = useCallback(async () => {
+        const data = await getSummary();
+        setSummary(data);
     }, []);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            await Promise.all([getTickets(), getSummary()]);
+            await Promise.all([fetchTickets(), fetchSummary()]);
         } finally {
             setLoading(false);
         }
-    }, [getTickets, getSummary]);
+    }, [fetchTickets, fetchSummary]);
 
     useEffect(() => {
         fetchData();
@@ -61,6 +57,6 @@ export function useTickets(search = "", status = null) {
         totalPages,
         hasNextPage,
         hasPreviousPage,
-        refresh: fetchData
+        refresh: fetchData,
     };
 }
