@@ -12,41 +12,33 @@ export function useTickets(search = "", status = null) {
     const [hasNextPage, setHasNextPage] = useState(false);
     const [hasPreviousPage, setHasPreviousPage] = useState(false);
     const pageSize = 5;
-    const firstLoad = useRef(true);
 
-    const fetchTickets = useCallback(async () => {
-        const data = await getTickets({ search, status, page, pageSize });
-        setTickets(data.items);
-        setTotalPages(data.totalPages);
-        setHasNextPage(data.hasNextPage);
-        setHasPreviousPage(data.hasPreviousPage);
-    }, [search, status, page]);
-
-    const fetchSummary = useCallback(async () => {
-        const data = await getSummary();
-        setSummary(data);
-    }, []);
-
-    const fetchData = useCallback(async () => {
+    const fetchData = useCallback(async (targetPage = page) => {
         setLoading(true);
         try {
-            await Promise.all([fetchTickets(), fetchSummary()]);
+            const [ticketsData, summaryData] = await Promise.all([
+                getTickets({ search, status, page: targetPage, pageSize }),
+                getSummary()
+            ]);
+
+            setTickets(ticketsData.items);
+            setTotalPages(ticketsData.totalPages);
+            setHasNextPage(ticketsData.hasNextPage);
+            setHasPreviousPage(ticketsData.hasPreviousPage);
+            setSummary(summaryData);
         } finally {
             setLoading(false);
         }
-    }, [fetchTickets, fetchSummary]);
+    }, [search, status, page, pageSize]);
 
     useEffect(() => {
-        fetchData();
-    }, [fetchData]);
-
-    useEffect(() => {
-        if (firstLoad.current) {
-            firstLoad.current = false;
-            return;
-        }
         setPage(1);
+        fetchData(1);
     }, [search, status]);
+
+    useEffect(() => {
+        fetchData(page);
+    }, [page]);
 
     return {
         tickets,
@@ -57,6 +49,6 @@ export function useTickets(search = "", status = null) {
         totalPages,
         hasNextPage,
         hasPreviousPage,
-        refresh: fetchData,
+        refresh: () => fetchData(page),
     };
 }
