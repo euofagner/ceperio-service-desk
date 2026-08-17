@@ -14,14 +14,53 @@ export function useTickets(search = "", status = null) {
     const [hasPreviousPage, setHasPreviousPage] = useState(false);
     const pageSize = 5;
 
-    const fetchData = useCallback(async (targetPage = page) => {
+    useEffect(() => {
+        setPage(1);
+    }, [search, status]);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        async function loadTickets() {
+            setLoading(true);
+            try {
+                const data = await getTickets({ search, status, page, pageSize });
+                if (cancelled) return;
+                setTickets(data.items);
+                setTotalCount(data.totalCount);
+                setTotalPages(data.totalPages);
+                setHasNextPage(data.hasNextPage);
+                setHasPreviousPage(data.hasPreviousPage);
+            } catch (error) {
+                if (!cancelled) console.error("Erro ao carregar tickets:", error);
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        }
+
+        loadTickets();
+        return () => { cancelled = true; };
+    }, [search, status, page]);
+
+    useEffect(() => {
+        async function loadSummary() {
+            try {
+                const data = await getSummary();
+                setSummary(data);
+            } catch (error) {
+                console.error("Erro ao carregar resumo:", error);
+            }
+        }
+        loadSummary();
+    }, []);
+
+    const refresh = useCallback(async () => {
         setLoading(true);
         try {
             const [ticketsData, summaryData] = await Promise.all([
-                getTickets({ search, status, page: targetPage, pageSize }),
+                getTickets({ search, status, page, pageSize }),
                 getSummary()
             ]);
-
             setTickets(ticketsData.items);
             setTotalCount(ticketsData.totalCount);
             setTotalPages(ticketsData.totalPages);
@@ -31,16 +70,7 @@ export function useTickets(search = "", status = null) {
         } finally {
             setLoading(false);
         }
-    }, [search, status, page, pageSize]);
-
-    useEffect(() => {
-        setPage(1);
-        fetchData(1);
-    }, [search, status]);
-
-    useEffect(() => {
-        fetchData(page);
-    }, [page]);
+    }, [search, status, page]);
 
     return {
         tickets,
@@ -53,6 +83,6 @@ export function useTickets(search = "", status = null) {
         totalPages,
         hasNextPage,
         hasPreviousPage,
-        refresh: () => fetchData(page),
+        refresh,
     };
 }
