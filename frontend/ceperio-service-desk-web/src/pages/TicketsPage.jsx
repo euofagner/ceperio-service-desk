@@ -1,17 +1,23 @@
 import { useState } from "react";
-import { useToast } from "../hooks/useToast";
-import { useTickets } from "../hooks/useTickets";
-import { useDebounce } from "../hooks/useDebounce";
-import { createTicket, updateTicket, deleteTicket } from "../services/ticketService";
+
+import cepelogo from "../assets/cepelogo.png";
+
 import Skeleton from "../components/Skeleton";
 import Toast from "../components/Toast";
 import TicketModal from "../components/TicketModal";
+import TicketHeader from "../components/tickets/TicketHeader";
 import TicketList from "../components/tickets/TicketList";
 import TicketPagination from "../components/tickets/TicketPagination";
-import TicketHeader from "../components/tickets/TicketHeader";
-import TicketToolbar from "../components/tickets/TicketToolbar";
 import TicketSummary from "../components/tickets/TicketSummary";
-import cepelogo from "../assets/cepelogo.png";
+import TicketToolbar from "../components/tickets/TicketToolbar";
+
+import { useDebounce } from "../hooks/useDebounce";
+import { useTickets } from "../hooks/useTickets";
+import { useToast } from "../hooks/useToast";
+
+import { createTicket, deleteTicket, updateTicket } from "../services/ticketService";
+
+import { getHttpErrorMessage } from "../utils/httpError";
 
 function TicketsPage() {
     const [filter, setFilter] = useState("all");
@@ -44,8 +50,11 @@ function TicketsPage() {
                 showToast("Ticket criado com sucesso!");
             }
             await refresh();
-        } catch {
-            showToast(ticketId ? "Erro ao salvar ticket." : "Erro ao criar ticket.", "error");
+        } catch (error) {
+            showToast(
+                getHttpErrorMessage(error, ticketId ? "Erro ao salvar ticket." : "Erro ao criar ticket."),
+                "error"
+            );
         }
     }
 
@@ -56,8 +65,8 @@ function TicketsPage() {
             setDeleteTarget(null);
             await refresh();
             showToast("Ticket excluído com sucesso!");
-        } catch {
-            showToast("Erro ao excluir ticket.", "error");
+        } catch (error) {
+            showToast(getHttpErrorMessage(error, "Erro ao excluir ticket."), "error");
         } finally {
             setDeleting(false);
         }
