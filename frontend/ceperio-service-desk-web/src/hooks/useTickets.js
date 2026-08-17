@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getTickets, getSummary } from "../services/ticketService";
 
 export function useTickets(search = "", status = null) {
@@ -8,6 +8,7 @@ export function useTickets(search = "", status = null) {
     });
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const [hasNextPage, setHasNextPage] = useState(false);
     const [hasPreviousPage, setHasPreviousPage] = useState(false);
@@ -22,6 +23,7 @@ export function useTickets(search = "", status = null) {
             ]);
 
             setTickets(ticketsData.items);
+            setTotalCount(ticketsData.totalCount);
             setTotalPages(ticketsData.totalPages);
             setHasNextPage(ticketsData.hasNextPage);
             setHasPreviousPage(ticketsData.hasPreviousPage);
@@ -46,6 +48,8 @@ export function useTickets(search = "", status = null) {
         loading,
         page,
         setPage,
+        totalCount,
+        pageSize,
         totalPages,
         hasNextPage,
         hasPreviousPage,

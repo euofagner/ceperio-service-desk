@@ -2,20 +2,23 @@ import Button from "../ui/Button";
 
 function TicketPagination({
     ticketsCount,
-    summary,
+    totalCount,
     page,
+    pageSize,
     totalPages,
     hasPreviousPage,
     hasNextPage,
     onPageChange,
 }) {
     const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
+    const firstItem = ticketsCount > 0 ? (page - 1) * pageSize + 1 : 0;
+    const lastItem = Math.min(page * pageSize, totalCount);
 
     return (
         <>
             <div className="mt-4 font-bold text-neutral-500 text-xs">
                 {ticketsCount > 0 ? (
-                    <>Mostrando {(page - 1) * 5 + 1} a {Math.min(page * 5, summary.total)} de {summary.total} tickets</>
+                    <>Mostrando {firstItem} a {lastItem} de {totalCount} tickets</>
                 ) : (
                     <>Nenhum ticket encontrado</>
                 )}

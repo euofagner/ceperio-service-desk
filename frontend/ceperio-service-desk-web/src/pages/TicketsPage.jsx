@@ -27,7 +27,7 @@ function TicketsPage() {
 
     const statusParam = filter === "all" ? null : parseInt(filter);
 
-    const { tickets, summary, loading, refresh, page, setPage, totalPages, hasNextPage, hasPreviousPage } = useTickets(debouncedSearch, statusParam);
+    const { tickets, summary, loading, refresh, page, setPage, totalCount, pageSize, totalPages, hasNextPage, hasPreviousPage } = useTickets(debouncedSearch, statusParam);
 
     function openCreateModal() { setEditingTicket(null); setShowModal(true); }
     function openEditModal(ticket) { setEditingTicket(ticket); setShowModal(true); }
@@ -95,8 +95,9 @@ function TicketsPage() {
                 </div>
                 <TicketPagination
                     ticketsCount={tickets.length}
-                    summary={summary}
+                    totalCount={totalCount}
                     page={page}
+                    pageSize={pageSize}
                     totalPages={totalPages}
                     hasPreviousPage={hasPreviousPage}
                     hasNextPage={hasNextPage}
