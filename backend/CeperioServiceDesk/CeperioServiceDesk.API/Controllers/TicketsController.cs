@@ -11,7 +11,7 @@ public class TicketsController(ITicketService service) : ControllerBase
     private readonly ITicketService _service = service;
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Ticket>>> GetTickets(
+    public async Task<ActionResult<Pagination<Ticket>>> GetTickets(
         [FromQuery] string? search,
         [FromQuery] TicketStatus? status,
         [FromQuery] int page = 1,
@@ -27,7 +27,14 @@ public class TicketsController(ITicketService service) : ControllerBase
         var ticket = await _service.GetTicket(id);
 
         if (ticket is null)
-            return NotFound($"Ticket de id: {id} não encontrado.");
+        {
+            return NotFound(new ProblemDetails 
+            {
+                Title = "Ticket não encontrado",
+                Detail = $"O ticket de id {id} não foi encontrado.",
+                Status = StatusCodes.Status404NotFound
+            });
+        }
 
         return Ok(ticket);
     }
@@ -42,7 +49,15 @@ public class TicketsController(ITicketService service) : ControllerBase
     [HttpPost]
     public async Task<ActionResult> PostTicket(Ticket ticket)
     {
-        if (ticket is null) return BadRequest();
+        if (ticket is null)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Requisição inválida",
+                Detail = "Os dados do ticket são obrigatórios.",
+                Status = StatusCodes.Status400BadRequest
+            });
+        }
 
         var created = await _service.CreateTicket(ticket);
         return new CreatedAtRouteResult("ObterTicket", new { id = created.Id }, created);
@@ -52,11 +67,26 @@ public class TicketsController(ITicketService service) : ControllerBase
     public async Task<ActionResult> PutTicket(int id, Ticket ticket)
     {
         if (id != ticket.Id)
-            return BadRequest("O id da rota não corresponde ao id do ticket");
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "ID inválido",
+                Detail = "O ID informado na rota não corresponde ao ID do ticket.",
+                Status = StatusCodes.Status400BadRequest
+            });
+        }
 
         var updatedTicket = await _service.UpdateTicket(id, ticket);
+
         if (updatedTicket is null)
-            return NotFound($"Ticket de id: {id} não encontrado.");
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Ticket não encontrado",
+                Detail = $"O ticket de id {id} não foi encontrado.",
+                Status = StatusCodes.Status404NotFound
+            });
+        }
 
         return Ok(updatedTicket);
     }
@@ -66,7 +96,15 @@ public class TicketsController(ITicketService service) : ControllerBase
     {
         var deletedTicket = await _service.DeleteTicket(id);
 
-        if (!deletedTicket) return NotFound($"Ticket de id: {id} não encontrado.");
+        if (!deletedTicket)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Ticket não encontrado",
+                Detail = $"O ticket de id {id} não foi encontrado.",
+                Status = StatusCodes.Status404NotFound
+            });
+        }
 
         return NoContent();
     }
