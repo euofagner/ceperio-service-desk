@@ -1,4 +1,5 @@
 import Button from "../ui/Button";
+import { getPaginationPages } from "../../utils/pagination";
 
 function TicketPagination({
     ticketsCount,
@@ -10,7 +11,7 @@ function TicketPagination({
     hasNextPage,
     onPageChange,
 }) {
-    const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
+    const pages = getPaginationPages(page, totalPages);
     const firstItem = ticketsCount > 0 ? (page - 1) * pageSize + 1 : 0;
     const lastItem = Math.min(page * pageSize, totalCount);
 
@@ -30,31 +31,30 @@ function TicketPagination({
                         Página {page} de {totalPages}
                     </span>
                     <div className="flex gap-2">
-                        <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => onPageChange(page - 1)}
-                            disabled={!hasPreviousPage}
-                        >
+                        <Button variant="secondary" size="sm" onClick={() => onPageChange(page - 1)} disabled={!hasPreviousPage}>
                             ← Anterior
                         </Button>
-                        {pages.map((p) => (
-                            <Button
-                                key={p}
-                                variant="secondary"
-                                size="sm"
-                                className={p === page ? "bg-white text-black hover:bg-neutral-200" : ""}
-                                onClick={() => onPageChange(p)}
-                            >
-                                {p}
-                            </Button>
-                        ))}
-                        <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => onPageChange(page + 1)}
-                            disabled={!hasNextPage}
-                        >
+                        {pages.map((p, index) => {
+                            if (p === "...") {
+                                return (
+                                    <span key={`ellipsis-${index}`} className="flex items-center justify-center px-2 text-neutral-500 text-sm">
+                                        ...
+                                    </span>
+                                );
+                            }
+                            return (
+                                <Button
+                                    key={p}
+                                    variant="secondary"
+                                    size="sm"
+                                    className={p === page ? "bg-white text-black hover:bg-neutral-200" : ""}
+                                    onClick={() => onPageChange(p)}
+                                >
+                                    {p}
+                                </Button>
+                            );
+                        })}
+                        <Button variant="secondary" size="sm" onClick={() => onPageChange(page + 1)} disabled={!hasNextPage}>
                             Próximo →
                         </Button>
                     </div>
