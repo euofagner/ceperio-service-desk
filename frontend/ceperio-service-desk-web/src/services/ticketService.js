@@ -19,12 +19,8 @@ export async function createTicket(formData) {
     return response.data;
 }
 
-export async function updateTicket(id, formData, originalTicket) {
-    const response = await api.put(`/tickets/${id}`, {
-        id,
-        ...formData,
-        createdAt: originalTicket.createdAt,
-    });
+export async function updateTicket(id, formData) {
+    const response = await api.put(`/tickets/${id}`, formData);
     return response.data;
 }
 

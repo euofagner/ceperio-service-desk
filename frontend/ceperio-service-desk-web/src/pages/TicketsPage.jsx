@@ -43,7 +43,7 @@ function TicketsPage() {
         try {
             if (ticketId) {
                 const ticket = tickets.find(t => t.id === ticketId);
-                await updateTicket(ticketId, formData, ticket);
+                await updateTicket(ticketId, formData);
                 showToast("Ticket atualizado com sucesso!");
             } else {
                 await createTicket(formData);
