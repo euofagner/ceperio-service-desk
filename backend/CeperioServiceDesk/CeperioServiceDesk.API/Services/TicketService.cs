@@ -1,5 +1,6 @@
 ﻿using CeperioServiceDesk.API.Data;
 using CeperioServiceDesk.API.DTOs.Tickets;
+using CeperioServiceDesk.API.Mappers;
 using CeperioServiceDesk.API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -51,19 +52,8 @@ public class TicketService(AppDbContext dbContext) : ITicketService
 
     public async Task<TicketResponseDto?> GetTicket(int id)
     {
-        return await _context.Tickets
-            .Where(t => t.Id == id)
-            .Select(t => new TicketResponseDto
-            {
-                Id = t.Id,
-                Title = t.Title,
-                Description = t.Description,
-                CreatedAt = t.CreatedAt,
-                UpdatedAt = t.UpdatedAt,
-                TicketStatus = t.TicketStatus,
-                TicketPriority = t.TicketPriority
-            })
-            .FirstOrDefaultAsync();
+        var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == id);
+        return ticket?.ToResponseDto();
     }
 
     public async Task<object> GetSummary()
@@ -80,28 +70,10 @@ public class TicketService(AppDbContext dbContext) : ITicketService
 
     public async Task<TicketResponseDto> CreateTicket(CreateTicketDto ticket)
     {
-        var entity = new Ticket
-        {
-            Title = ticket.Title,
-            Description = ticket.Description,
-            TicketPriority = ticket.TicketPriority,
-            TicketStatus = TicketStatus.Open,
-            CreatedAt = DateTime.UtcNow
-        };
-
+        var entity = ticket.ToEntity();
         _context.Tickets.Add(entity);
         await _context.SaveChangesAsync();
-
-        return new TicketResponseDto
-        {
-            Id = entity.Id,
-            Title = entity.Title,
-            Description = entity.Description,
-            CreatedAt = entity.CreatedAt,
-            UpdatedAt = entity.UpdatedAt,
-            TicketStatus = entity.TicketStatus,
-            TicketPriority = entity.TicketPriority
-        };
+        return entity.ToResponseDto();
     }
 
     public async Task<TicketResponseDto?> UpdateTicket(int id, UpdateTicketDto ticket)
@@ -109,24 +81,9 @@ public class TicketService(AppDbContext dbContext) : ITicketService
         var existingTicket = await _context.Tickets.FindAsync(id);
         if (existingTicket is null) return null;
 
-        existingTicket.Title = ticket.Title;
-        existingTicket.Description = ticket.Description;
-        existingTicket.TicketStatus = ticket.TicketStatus;
-        existingTicket.TicketPriority = ticket.TicketPriority;
-        existingTicket.UpdatedAt = DateTime.UtcNow;
-
+        ticket.ApplyTo(existingTicket);
         await _context.SaveChangesAsync();
-
-        return new TicketResponseDto
-        {
-            Id = existingTicket.Id,
-            Title = existingTicket.Title,
-            Description = existingTicket.Description,
-            CreatedAt = existingTicket.CreatedAt,
-            UpdatedAt = existingTicket.UpdatedAt,
-            TicketStatus = existingTicket.TicketStatus,
-            TicketPriority = existingTicket.TicketPriority
-        };
+        return existingTicket.ToResponseDto();
     }
 
     public async Task<bool> DeleteTicket(int id)
