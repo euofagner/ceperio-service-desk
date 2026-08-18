@@ -1,4 +1,5 @@
 ﻿using CeperioServiceDesk.API.Data;
+using CeperioServiceDesk.API.DTOs.Tickets;
 using CeperioServiceDesk.API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,10 +9,10 @@ public class TicketService(AppDbContext dbContext) : ITicketService
 {
     private readonly AppDbContext _context = dbContext;
 
-    public async Task<Pagination<Ticket>> GetTickets(string? search = null, TicketStatus? status = null, int page = 1, int pageSize = 5)
+    public async Task<Pagination<TicketResponseDto>> GetTickets(string? search = null, TicketStatus? status = null, int page = 1, int pageSize = 5)
     {
-        page = Pagination<Ticket>.ValidatePage(page);
-        pageSize = Pagination<Ticket>.ValidatePageSize(pageSize);
+        page = Pagination<TicketResponseDto>.ValidatePage(page);
+        pageSize = Pagination<TicketResponseDto>.ValidatePageSize(pageSize);
 
         var query = _context.Tickets.AsQueryable();
 
@@ -27,9 +28,19 @@ public class TicketService(AppDbContext dbContext) : ITicketService
             .OrderByDescending(t => t.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
+            .Select(t => new TicketResponseDto
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Description = t.Description,
+                CreatedAt = t.CreatedAt,
+                UpdatedAt = t.UpdatedAt,
+                TicketStatus = t.TicketStatus,
+                TicketPriority = t.TicketPriority
+            })
             .ToListAsync();
 
-        return new Pagination<Ticket>
+        return new Pagination<TicketResponseDto>
         {
             Items = items,
             TotalCount = totalCount,
@@ -38,9 +49,21 @@ public class TicketService(AppDbContext dbContext) : ITicketService
         };
     }
 
-    public async Task<Ticket?> GetTicket(int id)
+    public async Task<TicketResponseDto?> GetTicket(int id)
     {
-        return await _context.Tickets.FindAsync(id);
+        return await _context.Tickets
+            .Where(t => t.Id == id)
+            .Select(t => new TicketResponseDto
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Description = t.Description,
+                CreatedAt = t.CreatedAt,
+                UpdatedAt = t.UpdatedAt,
+                TicketStatus = t.TicketStatus,
+                TicketPriority = t.TicketPriority
+            })
+            .FirstOrDefaultAsync();
     }
 
     public async Task<object> GetSummary()
@@ -55,17 +78,35 @@ public class TicketService(AppDbContext dbContext) : ITicketService
         };
     }
 
-    public async Task<Ticket> CreateTicket(Ticket ticket)
+    public async Task<TicketResponseDto> CreateTicket(CreateTicketDto ticket)
     {
-        _context.Tickets.Add(ticket);
+        var entity = new Ticket
+        {
+            Title = ticket.Title,
+            Description = ticket.Description,
+            TicketPriority = ticket.TicketPriority,
+            TicketStatus = TicketStatus.Open,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.Tickets.Add(entity);
         await _context.SaveChangesAsync();
-        return ticket;
+
+        return new TicketResponseDto
+        {
+            Id = entity.Id,
+            Title = entity.Title,
+            Description = entity.Description,
+            CreatedAt = entity.CreatedAt,
+            UpdatedAt = entity.UpdatedAt,
+            TicketStatus = entity.TicketStatus,
+            TicketPriority = entity.TicketPriority
+        };
     }
 
-    public async Task<Ticket?> UpdateTicket(int id, Ticket ticket)
+    public async Task<TicketResponseDto?> UpdateTicket(int id, UpdateTicketDto ticket)
     {
         var existingTicket = await _context.Tickets.FindAsync(id);
-
         if (existingTicket is null) return null;
 
         existingTicket.Title = ticket.Title;
@@ -75,13 +116,22 @@ public class TicketService(AppDbContext dbContext) : ITicketService
         existingTicket.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
-        return existingTicket; 
+
+        return new TicketResponseDto
+        {
+            Id = existingTicket.Id,
+            Title = existingTicket.Title,
+            Description = existingTicket.Description,
+            CreatedAt = existingTicket.CreatedAt,
+            UpdatedAt = existingTicket.UpdatedAt,
+            TicketStatus = existingTicket.TicketStatus,
+            TicketPriority = existingTicket.TicketPriority
+        };
     }
 
     public async Task<bool> DeleteTicket(int id)
     {
         var existingTicket = await _context.Tickets.FindAsync(id);
-
         if (existingTicket is null) return false;
 
         _context.Tickets.Remove(existingTicket);

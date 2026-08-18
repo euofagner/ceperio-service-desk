@@ -1,4 +1,5 @@
-﻿using CeperioServiceDesk.API.Models;
+﻿using CeperioServiceDesk.API.DTOs.Tickets;
+using CeperioServiceDesk.API.Models;
 using CeperioServiceDesk.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +12,7 @@ public class TicketsController(ITicketService service) : ControllerBase
     private readonly ITicketService _service = service;
 
     [HttpGet]
-    public async Task<ActionResult<Pagination<Ticket>>> GetTickets(
+    public async Task<ActionResult<Pagination<TicketResponseDto>>> GetTickets(
         [FromQuery] string? search,
         [FromQuery] TicketStatus? status,
         [FromQuery] int page = 1,
@@ -22,20 +23,18 @@ public class TicketsController(ITicketService service) : ControllerBase
     }
 
     [HttpGet("{id:int}", Name = "ObterTicket")]
-    public async Task<ActionResult<Ticket>> GetTicket(int id)
+    public async Task<ActionResult<TicketResponseDto>> GetTicket(int id)
     {
         var ticket = await _service.GetTicket(id);
-
         if (ticket is null)
         {
-            return NotFound(new ProblemDetails 
+            return NotFound(new ProblemDetails
             {
                 Title = "Ticket não encontrado",
                 Detail = $"O ticket de id {id} não foi encontrado.",
                 Status = StatusCodes.Status404NotFound
             });
         }
-
         return Ok(ticket);
     }
 
@@ -47,37 +46,16 @@ public class TicketsController(ITicketService service) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> PostTicket(Ticket ticket)
+    public async Task<ActionResult<TicketResponseDto>> PostTicket(CreateTicketDto ticket)
     {
-        if (ticket is null)
-        {
-            return BadRequest(new ProblemDetails
-            {
-                Title = "Requisição inválida",
-                Detail = "Os dados do ticket são obrigatórios.",
-                Status = StatusCodes.Status400BadRequest
-            });
-        }
-
         var created = await _service.CreateTicket(ticket);
-        return new CreatedAtRouteResult("ObterTicket", new { id = created.Id }, created);
+        return CreatedAtRoute("ObterTicket", new { id = created.Id }, created);
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult> PutTicket(int id, Ticket ticket)
+    public async Task<ActionResult<TicketResponseDto>> PutTicket(int id, UpdateTicketDto ticket)
     {
-        if (id != ticket.Id)
-        {
-            return BadRequest(new ProblemDetails
-            {
-                Title = "ID inválido",
-                Detail = "O ID informado na rota não corresponde ao ID do ticket.",
-                Status = StatusCodes.Status400BadRequest
-            });
-        }
-
         var updatedTicket = await _service.UpdateTicket(id, ticket);
-
         if (updatedTicket is null)
         {
             return NotFound(new ProblemDetails
@@ -87,7 +65,6 @@ public class TicketsController(ITicketService service) : ControllerBase
                 Status = StatusCodes.Status404NotFound
             });
         }
-
         return Ok(updatedTicket);
     }
 
@@ -95,7 +72,6 @@ public class TicketsController(ITicketService service) : ControllerBase
     public async Task<ActionResult> DeleteTicket(int id)
     {
         var deletedTicket = await _service.DeleteTicket(id);
-
         if (!deletedTicket)
         {
             return NotFound(new ProblemDetails
@@ -105,7 +81,6 @@ public class TicketsController(ITicketService service) : ControllerBase
                 Status = StatusCodes.Status404NotFound
             });
         }
-
         return NoContent();
     }
 }
