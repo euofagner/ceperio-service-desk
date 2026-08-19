@@ -17,7 +17,7 @@ import { useToast } from "../hooks/useToast";
 
 import { createTicket, deleteTicket, updateTicket } from "../services/ticketService";
 
-import { getHttpErrorMessage } from "../utils/httpError";
+import { getHttpErrorMessage, getValidationErrors } from "../utils/httpError";
 
 function TicketsPage() {
     const [filter, setFilter] = useState("all");
@@ -42,7 +42,6 @@ function TicketsPage() {
     async function handleSubmit(ticketId, formData) {
         try {
             if (ticketId) {
-                const ticket = tickets.find(t => t.id === ticketId);
                 await updateTicket(ticketId, formData);
                 showToast("Ticket atualizado com sucesso!");
             } else {
@@ -51,6 +50,9 @@ function TicketsPage() {
             }
             await refresh();
         } catch (error) {
+            if (error.errorType === "validation") {
+                throw error; 
+            }
             showToast(
                 getHttpErrorMessage(error, ticketId ? "Erro ao salvar ticket." : "Erro ao criar ticket."),
                 "error"

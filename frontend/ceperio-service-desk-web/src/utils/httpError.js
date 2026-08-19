@@ -12,3 +12,8 @@ export function getHttpErrorMessage(error, fallback = "Ocorreu um erro.") {
 
     return data?.detail || data?.title || fallback;
 }
+
+export function getValidationErrors(error) {
+    if (!error?.response?.data?.errors) return {};
+    return error.response.data.errors;
+}
