@@ -1,12 +1,33 @@
 using CeperioServiceDesk.API.Data;
 using CeperioServiceDesk.API.Middleware;
 using CeperioServiceDesk.API.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().
+    ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var problemDetails = new ValidationProblemDetails(context.ModelState)
+            {
+                Type = "https://httpstatuses.com/400",
+                Title = "Erro de validação",
+                Status = StatusCodes.Status400BadRequest,
+                Detail = "Um ou mais campos possuem valores inválidos.",
+                Instance = context.HttpContext.Request.Path
+            };
+
+            return new BadRequestObjectResult(problemDetails)
+            {
+                ContentTypes = { "application/problem+json" }
+            };
+        };
+    });
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddProblemDetails(options =>
