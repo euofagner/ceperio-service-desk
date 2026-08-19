@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Text.Json;
 
 namespace CeperioServiceDesk.API.Middleware;
@@ -25,17 +26,17 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
 
     private static async Task HandleExceptionAsync(HttpContext context)
     {
-        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-        context.Response.ContentType = "application/problem+json";
-
-        var problemDetails = new
+        var problemDetails = new ProblemDetails
         {
-            type = "https://httpstatuses.com/500",
-            title = "Erro interno do servidor",
-            status = 500,
-            detail = "Ocorreu um erro inesperado ao processar a requisição."
+            Type = "https://httpstatuses.com/500",
+            Title = "Erro interno do servidor",
+            Status = StatusCodes.Status500InternalServerError,
+            Detail = "Ocorreu um erro inesperado ao processar a requisição."
         };
 
-        await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails));
+        context.Response.StatusCode = problemDetails.Status.Value;
+        context.Response.ContentType = "application/problem+json";
+
+        await context.Response.WriteAsJsonAsync(problemDetails);
     }
 }

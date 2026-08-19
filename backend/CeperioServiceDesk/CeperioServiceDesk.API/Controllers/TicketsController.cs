@@ -30,6 +30,7 @@ public class TicketsController(ITicketService service) : ControllerBase
         {
             return NotFound(new ProblemDetails
             {
+                Type = "https://httpstatuses.com/404",
                 Title = "Ticket não encontrado",
                 Detail = $"O ticket de id {id} não foi encontrado.",
                 Status = StatusCodes.Status404NotFound
@@ -60,6 +61,7 @@ public class TicketsController(ITicketService service) : ControllerBase
         {
             return NotFound(new ProblemDetails
             {
+                Type = "https://httpstatuses.com/404",
                 Title = "Ticket não encontrado",
                 Detail = $"O ticket de id {id} não foi encontrado.",
                 Status = StatusCodes.Status404NotFound
@@ -76,6 +78,7 @@ public class TicketsController(ITicketService service) : ControllerBase
         {
             return NotFound(new ProblemDetails
             {
+                Type = "https://httpstatuses.com/404",
                 Title = "Ticket não encontrado",
                 Detail = $"O ticket de id {id} não foi encontrado.",
                 Status = StatusCodes.Status404NotFound
