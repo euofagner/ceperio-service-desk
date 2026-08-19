@@ -1,4 +1,5 @@
 using CeperioServiceDesk.API.Data;
+using CeperioServiceDesk.API.Middleware;
 using CeperioServiceDesk.API.Services;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -16,6 +17,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<ITicketService, TicketService>();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseExceptionHandler();
 
