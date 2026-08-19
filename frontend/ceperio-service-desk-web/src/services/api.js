@@ -18,7 +18,11 @@ api.interceptors.response.use(
 
         switch (status) {
             case 400:
-                error.userMessage = data?.title || data || "Requisição inválida.";
+                if (data?.errors) {
+                    error.errorType = "validation";
+                    break;
+                }
+                error.userMessage = data?.detail || data?.title || "Requisição inválida.";
                 error.errorType = "bad_request";
                 break;
             case 401:
