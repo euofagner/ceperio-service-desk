@@ -1,10 +1,12 @@
 import { Outlet } from "react-router-dom";
 import Header from "../components/layout/Header";
 import Sidebar from "../components/layout/Sidebar";
+import { TicketModalProvider } from "../contexts/TicketModalContext";
 
 function MainLayout() {
     return (
-        <div className="min-h-screen bg-neutral-950 text-neutral-200">
+        <TicketModalProvider>
+            <div className="min-h-screen bg-neutral-950 text-neutral-200">
                 <Sidebar />
 
                 <div className="ml-64 flex min-h-screen flex-col">
@@ -15,6 +17,7 @@ function MainLayout() {
                     </main>
                 </div>
             </div>
+        </TicketModalProvider>
     );
 }
 
