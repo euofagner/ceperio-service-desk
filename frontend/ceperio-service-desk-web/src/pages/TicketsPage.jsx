@@ -5,7 +5,6 @@ import cepelogo from "../assets/cepelogo.png";
 import Skeleton from "../components/Skeleton";
 import Toast from "../components/Toast";
 import TicketModal from "../components/TicketModal";
-import TicketHeader from "../components/tickets/TicketHeader";
 import TicketList from "../components/tickets/TicketList";
 import TicketPagination from "../components/tickets/TicketPagination";
 import TicketSummary from "../components/tickets/TicketSummary";
@@ -79,7 +78,6 @@ function TicketsPage() {
     return (
         <div>
             <div className="max-w-5xl mx-auto">
-                <TicketHeader userName="Fagner" onCreateTicket={openCreateModal} />
                 <TicketSummary summary={summary} />
                 <TicketToolbar search={search} filter={filter} onSearchChange={setSearch} onFilterChange={setFilter} />
                 <div className="relative">

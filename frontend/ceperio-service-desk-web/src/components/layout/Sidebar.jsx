@@ -54,7 +54,7 @@ function Sidebar() {
         <div className="group flex items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-white/4">
           <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-indigo-600 text-[11px] font-bold text-white">
             FS
-            <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-[#09090b] bg-emerald-500" />
+            <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-neutral-950 bg-emerald-500" />
           </div>
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-white">Fagner da Silva</p>
