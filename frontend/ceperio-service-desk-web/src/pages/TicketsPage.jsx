@@ -14,29 +14,25 @@ import { useDebounce } from "../hooks/useDebounce";
 import { useTickets } from "../hooks/useTickets";
 import { useToast } from "../hooks/useToast";
 
-import { createTicket, deleteTicket, updateTicket } from "../services/ticketService";
+import { useTicketModal } from "../contexts/TicketModalContext";
 
-import { getHttpErrorMessage, getValidationErrors } from "../utils/httpError";
+import { createTicket, deleteTicket, updateTicket } from "../services/ticketService";
+import { getHttpErrorMessage } from "../utils/httpError";
 
 function TicketsPage() {
     const [filter, setFilter] = useState("all");
     const [search, setSearch] = useState("");
     const debouncedSearch = useDebounce(search, 300);
 
-    const [showModal, setShowModal] = useState(false);
-    const [editingTicket, setEditingTicket] = useState(null);
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [deleting, setDeleting] = useState(false);
 
     const { toast, setToast, showToast, pauseToast, resumeToast } = useToast();
+    const { showModal, editingTicket, openCreateModal, openEditModal, closeModal } = useTicketModal();
 
     const statusParam = filter === "all" ? null : parseInt(filter);
 
     const { tickets, summary, loading, refresh, page, setPage, totalCount, pageSize, totalPages, hasNextPage, hasPreviousPage } = useTickets(debouncedSearch, statusParam);
-
-    function openCreateModal() { setEditingTicket(null); setShowModal(true); }
-    function openEditModal(ticket) { setEditingTicket(ticket); setShowModal(true); }
-    function closeModal() { setShowModal(false); setEditingTicket(null); }
 
     async function handleSubmit(ticketId, formData) {
         try {
@@ -47,15 +43,14 @@ function TicketsPage() {
                 await createTicket(formData);
                 showToast("Ticket criado com sucesso!");
             }
+
+            closeModal();
             await refresh();
         } catch (error) {
             if (error.errorType === "validation") {
-                throw error; 
+                throw error;
             }
-            showToast(
-                getHttpErrorMessage(error, ticketId ? "Erro ao salvar ticket." : "Erro ao criar ticket."),
-                "error"
-            );
+            showToast(getHttpErrorMessage(error, ticketId ? "Erro ao salvar ticket." : "Erro ao criar ticket."), "error");
         }
     }
 
@@ -73,17 +68,20 @@ function TicketsPage() {
         }
     }
 
-    if (loading && tickets.length === 0) return <Skeleton logo={cepelogo} />;
+    if (loading && tickets.length === 0) {
+        return <Skeleton logo={cepelogo} />;
+    }
 
     return (
         <div>
-            <div className="max-w-5xl mx-auto">
+            <div className="mx-auto max-w-5xl">
                 <TicketSummary summary={summary} />
                 <TicketToolbar search={search} filter={filter} onSearchChange={setSearch} onFilterChange={setFilter} />
+
                 <div className="relative">
                     {loading && tickets.length > 0 && (
-                        <div className="absolute right-0 -top-8 flex items-center gap-2 text-xs text-neutral-500">
-                            <span className="w-3 h-3 border-2 border-neutral-700 border-t-white rounded-full animate-spin" />
+                        <div className="absolute -top-8 right-0 flex items-center gap-2 text-xs text-neutral-500">
+                            <span className="h-3 w-3 animate-spin rounded-full border-2 border-neutral-700 border-t-white" />
                             Carregando...
                         </div>
                     )}
@@ -102,6 +100,7 @@ function TicketsPage() {
                         deleting={deleting}
                     />
                 </div>
+
                 <TicketPagination
                     ticketsCount={tickets.length}
                     totalCount={totalCount}
@@ -113,7 +112,11 @@ function TicketsPage() {
                     onPageChange={setPage}
                 />
             </div>
-            {showModal && <TicketModal ticket={editingTicket} onSubmit={handleSubmit} onClose={closeModal} />}
+
+            {showModal && (
+                <TicketModal ticket={editingTicket} onSubmit={handleSubmit} onClose={closeModal} />
+            )}
+
             <Toast toast={toast} onClose={() => setToast(null)} onMouseEnter={pauseToast} onMouseLeave={resumeToast} />
         </div>
     );

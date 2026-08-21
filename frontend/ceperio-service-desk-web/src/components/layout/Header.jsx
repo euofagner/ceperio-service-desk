@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useTicketModal } from "../../contexts/TicketModalContext";
 
-function Header({ onCreateTicket }) {
+function Header() {
     const location = useLocation();
     const { openCreateModal } = useTicketModal();
 
