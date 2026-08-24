@@ -27,6 +27,7 @@ function Sidebar() {
       <nav className="flex-1 px-3 py-5">
         <div className="space-y-1">
           {navigation.map(({ name, path, icon }) => (
+
             <NavLink
               key={path}
               to={path}
@@ -59,14 +60,14 @@ function Sidebar() {
         <button
           type="button"
           onClick={() => setUserMenuOpen((open) => !open)}
-          className="group flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-white/4"
-        >
+          className="group flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-white/4">
+
           <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-indigo-600 text-[11px] font-bold text-white">
             FS
             <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-neutral-950 bg-emerald-500" />
           </div>
 
-          <div className="min-w-0 flex-1">
+          <div className="cursor-pointer min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-white">Fagner da Silva</p>
             <p className="text-xs text-neutral-500">Administrador</p>
           </div>
@@ -82,7 +83,23 @@ function Sidebar() {
         </button>
 
         {userMenuOpen && (
-          <div className="absolute bottom-full left-3 right-3 mb-2 overflow-hidden rounded-xl border border-white/10 bg-neutral-900 shadow-2xl shadow-black/30">
+          <div
+            className="
+              absolute
+              bottom-full
+              left-3
+              right-3
+              z-50
+              mb-2
+              overflow-hidden'
+              rounded-2xl
+              border border-white/9
+              bg-neutral-950/95
+              shadow-2xl
+              shadow-black/50
+              ring-1 ring-black/30
+              backdrop-blur-xl
+              animate-user-menu">
             <div className="border-b border-white/6 px-4 py-3">
               <p className="text-sm font-medium text-white">Fagner da Silva</p>
               <p className="mt-0.5 text-xs text-neutral-500">Administrador</p>
