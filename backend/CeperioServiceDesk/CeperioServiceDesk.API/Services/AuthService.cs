@@ -12,7 +12,7 @@ using System.Text;
 
 namespace CeperioServiceDesk.API.Services
 {
-    public class AuthService(AppDbContext dbContext, IOptions<JwtSettings> jwtSettings) : IAuthService
+    public class AuthService(AppDbContext dbContext, IOptions<JwtSettings> jwtSettings, IConfiguration config) : IAuthService
     {
         private readonly AppDbContext _context = dbContext;
         private readonly JwtSettings _jwtSettings = jwtSettings.Value;
@@ -78,7 +78,7 @@ namespace CeperioServiceDesk.API.Services
                 issuer: _jwtSettings.Issuer,
                 audience: _jwtSettings.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(8),
+                expires: DateTime.UtcNow.AddHours(_jwtSettings.TokenValidityInHours),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
