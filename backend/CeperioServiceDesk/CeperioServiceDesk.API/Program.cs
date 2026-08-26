@@ -1,3 +1,4 @@
+using CeperioServiceDesk.API.Configuration;
 using CeperioServiceDesk.API.Data;
 using CeperioServiceDesk.API.Middleware;
 using CeperioServiceDesk.API.Services;
@@ -37,6 +38,9 @@ builder.Services.AddProblemDetails(options =>
         context.ProblemDetails.Instance = context.HttpContext.Request.Path;
     };
 });
+
+builder.Services.Configure<JwtSettings>(
+    builder.Configuration.GetSection("Jwt"));
 
 string sqlServerConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => 
