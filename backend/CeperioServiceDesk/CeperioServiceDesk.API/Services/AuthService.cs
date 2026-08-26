@@ -1,5 +1,4 @@
-﻿using BCrypt.Net;
-using CeperioServiceDesk.API.Configuration;
+﻿using CeperioServiceDesk.API.Configuration;
 using CeperioServiceDesk.API.Data;
 using CeperioServiceDesk.API.DTOs.Auth;
 using CeperioServiceDesk.API.Models;
