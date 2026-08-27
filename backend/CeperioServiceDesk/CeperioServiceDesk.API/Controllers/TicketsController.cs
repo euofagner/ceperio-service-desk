@@ -1,15 +1,27 @@
 ﻿using CeperioServiceDesk.API.DTOs.Tickets;
 using CeperioServiceDesk.API.Models;
 using CeperioServiceDesk.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CeperioServiceDesk.API.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class TicketsController(ITicketService service) : ControllerBase
 {
     private readonly ITicketService _service = service;
+
+    [Authorize(Roles = "admin")]
+    [HttpGet("admin-test")]
+    public IActionResult AdminTest()
+    {
+        return Ok(new
+        {
+            message = "Você é administrador."
+        });
+    }
 
     [HttpGet]
     public async Task<ActionResult<Pagination<TicketResponseDto>>> GetTickets(
