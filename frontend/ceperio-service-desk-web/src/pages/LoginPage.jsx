@@ -1,8 +1,12 @@
 import { useState } from "react";
+
+import { useNavigate } from "react-router-dom";
+
 import { useAuth } from "../contexts/AuthContext";
 
 function LoginPage() {
     const { login } = useAuth();
+    const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -19,7 +23,7 @@ function LoginPage() {
 
         try {
             const data = await login({ email, password });
-            setMessage(`Login OK: ${data.name} (${data.role})`);
+            navigate("/tickets", { replace: true });
         } catch (error) {
             setMessage("Erro ao entrar. Verifique suas credenciais.");
         } finally {

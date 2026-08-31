@@ -6,6 +6,7 @@ import UsersPage from "../pages/UsersPage";
 import SettingsPage from "../pages/SettingsPage";
 import LoginPage from "../pages/LoginPage";
 import ProtectedRoute from "./ProtectedRoute";
+import PublicRoute from "./PublicRoute";
 
 export const router = createBrowserRouter([
     {
@@ -21,11 +22,16 @@ export const router = createBrowserRouter([
                     { path: "users", element: <UsersPage /> },
                     { path: "settings", element: <SettingsPage /> }
                 ],
-            }
-        ]
+            },
+        ],
     },
     {
-        path: "/login",
-        element: <LoginPage />,
+        element: <PublicRoute />,
+        children: [
+            {
+                path: "/login",
+                element: <LoginPage />,
+            },
+        ],
     },
 ]);
