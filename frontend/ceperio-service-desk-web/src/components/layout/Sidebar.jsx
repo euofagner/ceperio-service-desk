@@ -9,7 +9,7 @@ import cepelogo from "../../assets/cepelogo.png";
 const navigation = [
   { name: "Dashboard", path: "/dashboard", icon: "📊" },
   { name: "Tickets", path: "/tickets", icon: "🎫" },
-  { name: "Usuários", path: "/users", icon: "👥" },
+  { name: "Usuários", path: "/users", icon: "👥", allowedRoles: ["Admin"] },
   { name: "Configurações", path: "/settings", icon: "⚙️" },
 ];
 
@@ -30,33 +30,36 @@ function Sidebar() {
 
       <nav className="flex-1 px-3 py-5">
         <div className="space-y-1">
-          {navigation.map(({ name, path, icon }) => (
+          {navigation
+            .filter(({ allowedRoles }) =>
+              !allowedRoles || allowedRoles.includes(user?.role)
+            )
+            .map(({ name, path, icon }) => (
+              <NavLink
+                key={path}
+                to={path}
+                className={({ isActive }) =>
+                  [
+                    "group relative flex items-center gap-3 rounded-lg px-3 py-2.5",
+                    "text-sm transition-all duration-200",
+                    isActive
+                      ? "bg-blue-500/15 text-blue-400"
+                      : "text-neutral-400 hover:bg-neutral-800/70 hover:text-white"
+                  ].join(" ")
+                }>
+                {({ isActive }) => (
+                  <>
+                    <span
+                      className={`absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-blue-500 transition-all duration-200 ${isActive ? "opacity-100" : "opacity-0"
+                        }`}
+                    />
 
-            <NavLink
-              key={path}
-              to={path}
-              className={({ isActive }) =>
-                [
-                  "group relative flex items-center gap-3 rounded-lg px-3 py-2.5",
-                  "text-sm transition-all duration-200",
-                  isActive
-                    ? "bg-blue-500/15 text-blue-400"
-                    : "text-neutral-400 hover:bg-neutral-800/70 hover:text-white"
-                ].join(" ")
-              }>
-
-              {({ isActive }) => (
-                <>
-                  <span
-                    className={`absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-blue-500 transition-all duration-200 ${isActive ? "opacity-100" : "opacity-0"}`} />
-
-                  <span>{icon}</span>
-                  <span className="font-medium">{name}</span>
-                </>
-              )}
-
-            </NavLink>
-          ))}
+                    <span>{icon}</span>
+                    <span className="font-medium">{name}</span>
+                  </>
+                )}
+              </NavLink>
+            ))}
         </div>
       </nav>
 
