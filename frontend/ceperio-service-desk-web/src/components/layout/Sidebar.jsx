@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import { NavLink } from "react-router-dom";
 
+import { useAuth } from "../../contexts/AuthContext";
+
 import cepelogo from "../../assets/cepelogo.png";
 
 const navigation = [
@@ -13,6 +15,8 @@ const navigation = [
 
 function Sidebar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  const { user, logout } = useAuth();
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-neutral-800 bg-neutral-950">
@@ -128,6 +132,12 @@ function Sidebar() {
                 </svg>
                 <span>Configurações</span>
               </NavLink>
+
+              <button
+                onClick={logout}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-neutral-400 transition-colors hover:bg-white/5 hover:text-white cursor-pointer">
+                Sair
+              </button>
             </div>
           </div>
         )}
