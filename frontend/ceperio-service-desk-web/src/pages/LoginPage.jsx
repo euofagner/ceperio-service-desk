@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { login } from "../services/authService";
+import { useAuth } from "../contexts/AuthContext";
 
 function LoginPage() {
+    const { login } = useAuth();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -17,11 +19,7 @@ function LoginPage() {
 
         try {
             const data = await login({ email, password });
-
-            localStorage.setItem("token", data.token);
-
             setMessage(`Login OK: ${data.name} (${data.role})`);
-            console.log("JWT:", data.token);
         } catch (error) {
             setMessage("Erro ao entrar. Verifique suas credenciais.");
         } finally {

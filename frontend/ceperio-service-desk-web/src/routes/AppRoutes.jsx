@@ -5,18 +5,24 @@ import TicketsPage from "../pages/TicketsPage";
 import UsersPage from "../pages/UsersPage";
 import SettingsPage from "../pages/SettingsPage";
 import LoginPage from "../pages/LoginPage";
+import ProtectedRoute from "./ProtectedRoute";
 
 export const router = createBrowserRouter([
     {
-        path: "/",
-        element: <MainLayout />,
-        children : [
-            { index: true, element: <TicketsPage /> },
-            { path: "dashboard", element: <DashboardPage /> },
-            { path: "tickets", element: <TicketsPage /> },
-            { path: "users", element: <UsersPage /> },
-            { path: "settings", element: <SettingsPage /> }
-        ],
+        element: <ProtectedRoute />,
+        children: [
+            {
+                path: "/",
+                element: <MainLayout />,
+                children: [
+                    { index: true, element: <TicketsPage /> },
+                    { path: "dashboard", element: <DashboardPage /> },
+                    { path: "tickets", element: <TicketsPage /> },
+                    { path: "users", element: <UsersPage /> },
+                    { path: "settings", element: <SettingsPage /> }
+                ],
+            }
+        ]
     },
     {
         path: "/login",
