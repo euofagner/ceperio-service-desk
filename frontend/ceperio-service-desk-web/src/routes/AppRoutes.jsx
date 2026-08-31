@@ -7,6 +7,7 @@ import SettingsPage from "../pages/SettingsPage";
 import LoginPage from "../pages/LoginPage";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
+import RoleRoute from "./RoleRoute";
 
 export const router = createBrowserRouter([
     {
@@ -19,8 +20,16 @@ export const router = createBrowserRouter([
                     { index: true, element: <TicketsPage /> },
                     { path: "dashboard", element: <DashboardPage /> },
                     { path: "tickets", element: <TicketsPage /> },
-                    { path: "users", element: <UsersPage /> },
-                    { path: "settings", element: <SettingsPage /> }
+                    { path: "settings", element: <SettingsPage /> },
+                    {
+                        element: <RoleRoute allowedRoles={["Admin"]} />,
+                        children: [
+                            {
+                                path: "users",
+                                element: <UsersPage />,
+                            },
+                        ],
+                    },
                 ],
             },
         ],
