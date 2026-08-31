@@ -70,13 +70,13 @@ function Sidebar() {
           className="group flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-white/4">
 
           <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-indigo-600 text-[11px] font-bold text-white">
-            FS
+            {user?.name?.split(" ").map(name => name[0]).slice(0, 2).join("").toUpperCase()}
             <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-neutral-950 bg-emerald-500" />
           </div>
 
           <div className="cursor-pointer min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-white">Fagner da Silva</p>
-            <p className="text-xs text-neutral-500">Administrador</p>
+            <p className="truncate text-sm font-medium text-white">{user?.name}</p>
+            <p className="text-xs text-neutral-500">{user?.role}</p>
           </div>
 
           <svg
@@ -108,8 +108,8 @@ function Sidebar() {
               backdrop-blur-xl
               animate-user-menu">
             <div className="border-b border-white/6 px-4 py-3">
-              <p className="text-sm font-medium text-white">Fagner da Silva</p>
-              <p className="mt-0.5 text-xs text-neutral-500">Administrador</p>
+              <p className="text-sm font-medium text-white">{user?.name}</p>
+              <p className="mt-0.5 text-xs text-neutral-500">{user?.role}</p>
             </div>
 
             <div className="p-1.5">
