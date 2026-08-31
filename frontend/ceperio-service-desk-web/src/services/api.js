@@ -34,8 +34,14 @@ api.interceptors.response.use(
                 error.errorType = "bad_request";
                 break;
             case 401:
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+
                 error.userMessage = "Sua sessão expirou ou você não está autenticado.";
                 error.errorType = "unauthorized";
+
+                if (window.location.pathname !== "/login") 
+                    window.location.href = "/login"; 
                 break;
             case 403:
                 error.userMessage = "Você não tem permissão para realizar esta ação.";
