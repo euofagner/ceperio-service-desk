@@ -5,5 +5,5 @@ namespace CeperioServiceDesk.API.DTOs.Users;
 public class UpdateUserRoleDto
 {
     [Required]
-    public string Role { get; private set; } = string.Empty;
+    public string Role { get; set; } = string.Empty;
 }

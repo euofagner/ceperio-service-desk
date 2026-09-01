@@ -24,14 +24,11 @@ namespace CeperioServiceDesk.API.Services
             if (emailExists) return null;
 
             var user = new User
-            {
-                Name = registerDto.Name,
-                Email = registerDto.Email,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password),
-                Role = "User",
-                CreatedAt = DateTime.UtcNow,
-                IsActive = true
-            };
+            (
+                registerDto.Name,
+                registerDto.Email,
+                BCrypt.Net.BCrypt.HashPassword(registerDto.Password)
+            );
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
