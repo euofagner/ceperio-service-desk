@@ -40,6 +40,7 @@ public class UserService(AppDbContext dbContext) : IUserService
     public async Task<UserResponseDto?> UpdateRole(int id, UpdateUserRoleDto dto)
     {
         var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
+
         if (user is null) return null;
 
         user.ChangeRole(dto.Role);
