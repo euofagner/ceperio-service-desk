@@ -19,15 +19,15 @@ public class User(string name, string email, string passwordHash)
 
     [Required]
     [StringLength(30)]
-    public string Role { get; private set; } = "User";
+    public string Role { get; private set; } = UserRoles.User;
 
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
     public bool IsActive { get; private set; } = true;
 
     public void ChangeRole(string role)
     {
-        if (string.IsNullOrWhiteSpace(role))
-            throw new ArgumentException("O perfil é obrigatório.");
+        if (role != UserRoles.User && role != UserRoles.Admin)
+            throw new ArgumentException("Perfil inválido. Somente User/Admin");
 
         Role = role;
     }
