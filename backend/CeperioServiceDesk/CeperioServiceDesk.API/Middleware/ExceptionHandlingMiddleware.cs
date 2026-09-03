@@ -17,6 +17,22 @@ public class ExceptionHandlingMiddleware(
         {
             await _next(context);
         }
+        catch (ArgumentException ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            await _problemDetailsService.WriteAsync(new ProblemDetailsContext
+            {
+                HttpContext = context,
+                ProblemDetails = new ProblemDetails
+                {
+                    Type = "https://httpstatuses.com/400",
+                    Title = "Requisição inválida",
+                    Status = StatusCodes.Status400BadRequest,
+                    Detail = ex.Message
+                }
+            });
+        }
         catch (Exception ex)
         {
             _logger.LogError(
