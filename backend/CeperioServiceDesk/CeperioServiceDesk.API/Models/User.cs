@@ -23,6 +23,7 @@ public class User(string name, string email, string passwordHash)
 
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
     public bool IsActive { get; private set; } = true;
+    public int TokenVersion { get; private set; } = 0;
 
     public void ChangeRole(string role)
     {
@@ -30,5 +31,6 @@ public class User(string name, string email, string passwordHash)
             throw new ArgumentException("Perfil inválido. Somente User/Admin");
 
         Role = role;
+        TokenVersion++;
     }
 }
