@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getUsers } from "../services/userService";
+import { getUsers, updateUserRole } from "../services/userService";
 
 import cepelogo from "../assets/cepelogo.png";
 
@@ -7,6 +7,7 @@ function UsersPage() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [updatingUserId, setUpdatingUserId] = useState(null);
 
     useEffect(() => {
         async function loadUsers() {
@@ -22,6 +23,26 @@ function UsersPage() {
 
         loadUsers();
     }, []);
+
+    async function handleRoleChange(user) {
+        const newRole = user.role === "Admin" ? "User" : "Admin";
+
+        try {
+            setUpdatingUserId(user.id);
+
+            const updatedUser = await updateUserRole(user.id, newRole);
+
+            setUsers((currentUsers) =>
+                currentUsers.map((currentUser) =>
+                    currentUser.id === updatedUser.id ? updatedUser : currentUser
+                )
+            );
+        } catch (error) {
+            setError(error.userMessage || "Não foi possível alterar o perfil do usuário.");
+        } finally {
+            setUpdatingUserId(null);
+        }
+    }
 
     if (loading) {
         return (
@@ -86,6 +107,18 @@ function UsersPage() {
                                     <span className="text-sm text-neutral-300">
                                         {user.isActive ? "Ativo" : "Inativo"}
                                     </span>
+                                </td>
+                                <td className="px-6 py-4">
+                                    <button
+                                        onClick={() => handleRoleChange(user)}
+                                        disabled={updatingUserId === user.id}
+                                        className="text-sm text-blue-400 hover:text-blue-300 disabled:opacity-50 cursor-pointer">
+                                        {updatingUserId === user.id
+                                            ? "Atualizando..."
+                                            : user.role === "Admin"
+                                                ? "Remover Admin"
+                                                : "Tornar Admin"}
+                                    </button>
                                 </td>
                             </tr>
                         ))}
