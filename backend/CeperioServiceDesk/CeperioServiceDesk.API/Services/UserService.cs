@@ -1,5 +1,6 @@
 ﻿using CeperioServiceDesk.API.Data;
 using CeperioServiceDesk.API.DTOs.Users;
+using CeperioServiceDesk.API.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CeperioServiceDesk.API.Services;
@@ -42,6 +43,15 @@ public class UserService(AppDbContext dbContext) : IUserService
         var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
 
         if (user is null) return null;
+
+        if (user.Role == UserRoles.Admin && dto.Role == UserRoles.User)
+        {
+            var adminCount = await _context.Users
+                .CountAsync(user => user.Role == UserRoles.Admin);
+
+            if (adminCount <= 1)
+                throw new InvalidOperationException("Não é possível remover o último administrador do sistema.");
+        }
 
         user.ChangeRole(dto.Role);
         await _context.SaveChangesAsync();
