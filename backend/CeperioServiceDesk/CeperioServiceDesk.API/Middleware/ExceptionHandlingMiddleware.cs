@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Net.NetworkInformation;
 
 namespace CeperioServiceDesk.API.Middleware;
 
@@ -28,6 +29,21 @@ public class ExceptionHandlingMiddleware(
                 {
                     Type = "https://httpstatuses.com/400",
                     Title = "Requisição inválida",
+                    Status = StatusCodes.Status400BadRequest,
+                    Detail = ex.Message
+                }
+            });
+        }
+        catch(InvalidOperationException ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            await _problemDetailsService.WriteAsync(new ProblemDetailsContext
+            {
+                HttpContext = context,
+                ProblemDetails = new ProblemDetails {
+                    Type = "https://httpstatuses.com/400",
+                    Title = "Operação inválida",
                     Status = StatusCodes.Status400BadRequest,
                     Detail = ex.Message
                 }
