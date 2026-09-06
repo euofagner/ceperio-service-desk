@@ -16,6 +16,29 @@ public class Ticket
     public DateTime? UpdatedAt { get; set; }
     public TicketStatus TicketStatus { get; set; } = TicketStatus.Open;
     public TicketPriority TicketPriority { get; set; } = TicketPriority.Medium;
+
+    public void ChangeStatus(TicketStatus newStatus)
+    {
+        if (TicketStatus == newStatus) return;
+
+        var validTransition = (TicketStatus, newStatus) switch
+        {
+            (TicketStatus.Open, TicketStatus.InProgress) => true,
+            (TicketStatus.InProgress, TicketStatus.Resolved) => true,
+            (TicketStatus.Resolved, TicketStatus.Closed) => true,
+            (TicketStatus.Resolved, TicketStatus.InProgress) => true,
+            _ => false
+        };
+
+        if (!validTransition)
+        {
+            throw new InvalidOperationException(
+                $"Não é possível alterar o status de {TicketStatus} para {newStatus}.");
+        }
+
+        TicketStatus = newStatus;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }
  
 public enum TicketStatus
