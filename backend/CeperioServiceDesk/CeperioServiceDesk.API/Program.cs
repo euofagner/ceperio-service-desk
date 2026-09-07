@@ -9,11 +9,12 @@ using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers().
-    ConfigureApiBehaviorOptions(options =>
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
     {
         options.InvalidModelStateResponseFactory = context =>
         {
@@ -31,6 +32,10 @@ builder.Services.AddControllers().
                 ContentTypes = { "application/problem+json" }
             };
         };
+    })
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
 builder.Services.AddOpenApi();
