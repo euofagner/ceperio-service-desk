@@ -35,8 +35,7 @@ public static class TicketMapper
     {
         ticket.Title = dto.Title;
         ticket.Description = dto.Description;
-        ticket.TicketStatus = dto.TicketStatus;
+        ticket.ChangeStatus(dto.TicketStatus);
         ticket.TicketPriority = dto.TicketPriority;
-        ticket.UpdatedAt = DateTime.UtcNow;
     }
 }
