@@ -12,6 +12,13 @@ export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget
     const priority = priorityConfig[ticket.ticketPriority] || priorityConfig[1];
     const isDeleteOpen = deleteTarget === ticket.id;
 
+    console.log({
+        id: ticket.id,
+        createdAt: ticket.createdAt,
+        status: ticket.ticketStatus,
+        isNew: isNew(ticket.createdAt),
+    });
+
     return (
         <Card className="group border-neutral-800/50 hover:border-neutral-600 hover:shadow-lg transition-colors">
             <div
@@ -26,7 +33,7 @@ export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget
 
                             <h3 className="text-[15px] font-medium text-white truncate">{ticket.title}</h3>
 
-                            {ticket.ticketStatus === 0 && isNew(ticket.createdAt) && (
+                            {ticket.ticketStatus === "Open" && isNew(ticket.createdAt) && (
                                 <Badge className="bg-blue-500/20 border-blue-500/20 text-blue-400 text-[12px] rounded-sm font-medium shrink-0">
                                     Novo
                                 </Badge>
