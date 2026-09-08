@@ -8,16 +8,9 @@ import { Badge, Button, Card, IconButton } from "./ui";
 
 
 export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget, onCancelDelete, onConfirmDelete, deleting }) {
-    const status = statusConfig[ticket.ticketStatus] || statusConfig[0];
-    const priority = priorityConfig[ticket.ticketPriority] || priorityConfig[1];
+    const status = statusConfig[ticket.ticketStatus] || statusConfig.Open;
+    const priority = priorityConfig[ticket.ticketPriority] || priorityConfig.Medium;
     const isDeleteOpen = deleteTarget === ticket.id;
-
-    console.log({
-        id: ticket.id,
-        createdAt: ticket.createdAt,
-        status: ticket.ticketStatus,
-        isNew: isNew(ticket.createdAt),
-    });
 
     return (
         <Card className="group border-neutral-800/50 hover:border-neutral-600 hover:shadow-lg transition-colors">

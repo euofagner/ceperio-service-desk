@@ -79,12 +79,11 @@ function TicketModal({ ticket, onSubmit, onClose }) {
                     <FormField label="Status">
                         <Select
                             value={formData.ticketStatus}
-                            onChange={(e) => setFormData({ ...formData, ticketStatus: parseInt(e.target.value) })}
-                        >
-                            <option value={0}>Aberto</option>
-                            <option value={1}>Em andamento</option>
-                            <option value={2}>Resolvido</option>
-                            <option value={3}>Fechado</option>
+                            onChange={(e) => setFormData({ ...formData, ticketStatus: parseInt(e.target.value) })}>
+                            <option value="Open">Aberto</option>
+                            <option value="InProgress">Em andamento</option>
+                            <option value="Resolved">Resolvido</option>
+                            <option value="Closed">Fechado</option>
                         </Select>
                     </FormField>
                 )}
@@ -92,12 +91,11 @@ function TicketModal({ ticket, onSubmit, onClose }) {
                 <FormField label="Prioridade">
                     <Select
                         value={formData.ticketPriority}
-                        onChange={(e) => setFormData({ ...formData, ticketPriority: parseInt(e.target.value) })}
-                    >
-                        <option value={0}>Baixa</option>
-                        <option value={1}>Média</option>
-                        <option value={2}>Alta</option>
-                        <option value={3}>Crítica</option>
+                        onChange={(e) => setFormData({ ...formData, ticketPriority: parseInt(e.target.value) })}>
+                        <option value="Low">Baixa</option>
+                        <option value="Medium">Média</option>
+                        <option value="High">Alta</option>
+                        <option value="Critical">Crítica</option>
                     </Select>
                 </FormField>
 

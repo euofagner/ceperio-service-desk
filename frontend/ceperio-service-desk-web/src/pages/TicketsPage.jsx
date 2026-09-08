@@ -20,7 +20,7 @@ import { createTicket, deleteTicket, updateTicket } from "../services/ticketServ
 import { getHttpErrorMessage } from "../utils/httpError";
 
 function TicketsPage() {
-    const [filter, setFilter] = useState("all");
+    const [filter, setFilter] = useState("All");
     const [search, setSearch] = useState("");
     const debouncedSearch = useDebounce(search, 300);
 
@@ -30,7 +30,7 @@ function TicketsPage() {
     const { toast, setToast, showToast, pauseToast, resumeToast } = useToast();
     const { showModal, editingTicket, openCreateModal, openEditModal, closeModal } = useTicketModal();
 
-    const statusParam = filter === "all" ? null : parseInt(filter);
+    const statusParam = filter === "All" ? null : filter;
 
     const { tickets, summary, loading, refresh, page, setPage, totalCount, pageSize, totalPages, hasNextPage, hasPreviousPage } = useTickets(debouncedSearch, statusParam);
 

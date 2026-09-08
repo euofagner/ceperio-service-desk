@@ -35,11 +35,11 @@ function TicketToolbar({ search, filter, onSearchChange, onFilterChange }) {
                     onChange={(e) => onFilterChange(e.target.value)}
                     fullWidth={false}
                     className="ml-auto bg-neutral-900 border-neutral-800 text-neutral-300">
-                    <option value="all">Todos os status</option>
-                    <option value="0">Aberto</option>
-                    <option value="1">Em andamento</option>
-                    <option value="2">Resolvido</option>
-                    <option value="3">Fechado</option>
+                    <option value="All">Todos os status</option>
+                    <option value="Open">Aberto</option>
+                    <option value="InProgress">Em andamento</option>
+                    <option value="Resolved">Resolvido</option>
+                    <option value="Closed">Fechado</option>
                 </Select>
             </div>
         </>
