@@ -82,6 +82,7 @@ public class TicketsController(ITicketService service) : ControllerBase
         return Ok(updatedTicket);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteTicket(int id)
     {
