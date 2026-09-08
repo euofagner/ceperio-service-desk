@@ -27,8 +27,10 @@ public class User(string name, string email, string passwordHash)
 
     public void ChangeRole(string role)
     {
-        if (role != UserRoles.User && role != UserRoles.Admin)
-            throw new ArgumentException("Perfil inválido. Somente User/Admin");
+        if (role != UserRoles.User && 
+            role != UserRoles.Admin &&
+            role != UserRoles.Agent)
+            throw new ArgumentException("Perfil inválido. Somente User/Agent/Admin");
 
         Role = role;
         TokenVersion++;
