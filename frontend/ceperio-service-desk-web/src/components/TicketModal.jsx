@@ -10,9 +10,10 @@ function TicketModal({ ticket, onSubmit, onClose }) {
     const [formData, setFormData] = useState({
         title: ticket?.title || "",
         description: ticket?.description || "",
-        ticketPriority: ticket?.ticketPriority ?? 1,
-        ticketStatus: ticket?.ticketStatus ?? 0
+        ticketPriority: ticket?.ticketPriority ?? "Medium",
+        ticketStatus: ticket?.ticketStatus ?? "Open"
     });
+
     const [submitting, setSubmitting] = useState(false);
     const [validationErrors, setValidationErrors] = useState({});
 
@@ -79,7 +80,7 @@ function TicketModal({ ticket, onSubmit, onClose }) {
                     <FormField label="Status">
                         <Select
                             value={formData.ticketStatus}
-                            onChange={(e) => setFormData({ ...formData, ticketStatus: parseInt(e.target.value) })}>
+                            onChange={(e) => setFormData({ ...formData, ticketPriority: e.target.value })}>
                             <option value="Open">Aberto</option>
                             <option value="InProgress">Em andamento</option>
                             <option value="Resolved">Resolvido</option>
@@ -91,7 +92,7 @@ function TicketModal({ ticket, onSubmit, onClose }) {
                 <FormField label="Prioridade">
                     <Select
                         value={formData.ticketPriority}
-                        onChange={(e) => setFormData({ ...formData, ticketPriority: parseInt(e.target.value) })}>
+                        onChange={(e) => setFormData({ ...formData, ticketPriority: e.target.value })}>
                         <option value="Low">Baixa</option>
                         <option value="Medium">Média</option>
                         <option value="High">Alta</option>
