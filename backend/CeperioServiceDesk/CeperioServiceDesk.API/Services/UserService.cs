@@ -44,7 +44,7 @@ public class UserService(AppDbContext dbContext) : IUserService
 
         if (user is null) return null;
 
-        if (user.Role == UserRoles.Admin && dto.Role == UserRoles.User)
+        if (user.Role == UserRoles.Admin && dto.Role != UserRoles.Admin)
         {
             var adminCount = await _context.Users
                 .CountAsync(user => user.Role == UserRoles.Admin);
