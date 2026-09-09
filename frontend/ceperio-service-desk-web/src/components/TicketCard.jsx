@@ -6,11 +6,14 @@ import DeleteConfirm from "./DeleteConfirm";
 
 import { Badge, Button, Card, IconButton } from "./ui";
 
+import { useAuth } from "../contexts/AuthContext";
+
 
 export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget, onCancelDelete, onConfirmDelete, deleting }) {
     const status = statusConfig[ticket.ticketStatus] || statusConfig.Open;
     const priority = priorityConfig[ticket.ticketPriority] || priorityConfig.Medium;
     const isDeleteOpen = deleteTarget === ticket.id;
+    const { user } = useAuth();
 
     return (
         <Card className="group border-neutral-800/50 hover:border-neutral-600 hover:shadow-lg transition-colors">
@@ -61,18 +64,20 @@ export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget
                     </span>
                 </TicketDate>
 
-                <IconButton
-                    variant="ghost"
-                    label="Excluir ticket"
-                    className="opacity-0 group-hover:opacity-100 shrink-0"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onDeleteClick(ticket.id);
-                    }}>
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                    </svg>
-                </IconButton>
+                {user?.role === "Admin" && (
+                    <IconButton
+                        variant="ghost"
+                        label="Excluir ticket"
+                        className="opacity-0 group-hover:opacity-100 shrink-0"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDeleteClick(ticket.id);
+                        }}>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                        </svg>
+                    </IconButton>
+                )}
             </div>
 
             {isDeleteOpen && (
