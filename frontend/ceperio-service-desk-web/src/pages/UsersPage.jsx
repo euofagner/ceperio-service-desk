@@ -24,8 +24,8 @@ function UsersPage() {
         loadUsers();
     }, []);
 
-    async function handleRoleChange(user) {
-        const newRole = user.role === "Admin" ? "User" : "Admin";
+    async function handleRoleChange(user, newRole) {
+        if (user.role === newRole) return;
 
         try {
             setUpdatingUserId(user.id);
@@ -93,6 +93,7 @@ function UsersPage() {
                             <th className="px-6 py-4">Email</th>
                             <th className="px-6 py-4">Perfil</th>
                             <th className="px-6 py-4">Status</th>
+                            <th className="px-6 py-4">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -109,16 +110,41 @@ function UsersPage() {
                                     </span>
                                 </td>
                                 <td className="px-6 py-4">
-                                    <button
-                                        onClick={() => handleRoleChange(user)}
-                                        disabled={updatingUserId === user.id}
-                                        className="text-sm text-blue-400 hover:text-blue-300 disabled:opacity-50 cursor-pointer">
-                                        {updatingUserId === user.id
-                                            ? "Atualizando..."
-                                            : user.role === "Admin"
-                                                ? "Remover Admin"
-                                                : "Tornar Admin"}
-                                    </button>
+                                    <div className="relative inline-flex">
+                                        <select
+                                            value={user.role}
+                                            onChange={(e) => handleRoleChange(user, e.target.value)}
+                                            disabled={updatingUserId === user.id}
+                                            className="
+                                                appearance-none
+                                                rounded-md
+                                                border border-neutral-800
+                                                bg-neutral-900
+                                                px-3 py-2 pr-9
+                                                text-sm font-medium
+                                                text-neutral-200
+                                                outline-none
+                                                transition-colors duration-150
+                                                hover:border-neutral-700
+                                                hover:bg-neutral-800
+                                                focus:border-neutral-600
+                                                disabled:cursor-not-allowed
+                                                disabled:opacity-50">
+                                            <option value="User">User</option>
+                                            <option value="Agent">Agent</option>
+                                            <option value="Admin">Admin</option>
+                                        </select>
+
+                                        <svg
+                                            className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-300"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                                clipRule="evenodd" />
+                                        </svg>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

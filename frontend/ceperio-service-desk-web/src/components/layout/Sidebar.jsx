@@ -98,7 +98,7 @@ function Sidebar() {
               right-3
               z-50
               mb-2
-              overflow-hidden'
+              overflow-hidden
               rounded-2xl
               border border-white/9
               bg-neutral-950/95
