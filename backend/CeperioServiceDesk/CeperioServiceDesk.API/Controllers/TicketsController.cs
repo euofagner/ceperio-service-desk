@@ -81,6 +81,7 @@ public class TicketsController(ITicketService service) : ControllerBase
         return CreatedAtRoute("ObterTicket", new { id = created.Id }, created);
     }
 
+    [Authorize(Roles = "Agent,Admin")]
     [HttpPut("{id:int}")]
     public async Task<ActionResult<TicketResponseDto>> PutTicket(int id, UpdateTicketDto ticket)
     {
