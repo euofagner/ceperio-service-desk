@@ -6,6 +6,9 @@ public class Ticket
 {
     public int Id { get; set; }
 
+    public int? AssignedAgentId { get; set; }
+    public User? AssignedAgent { get; set; }
+
     [Required]
     [StringLength(80)]
     public string Title { get; set; } = string.Empty;
