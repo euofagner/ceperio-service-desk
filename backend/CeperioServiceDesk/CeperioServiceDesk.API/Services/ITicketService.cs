@@ -11,4 +11,5 @@ public interface ITicketService
     Task<TicketResponseDto> CreateTicket(CreateTicketDto ticket);
     Task<TicketResponseDto?> UpdateTicket(int id, UpdateTicketDto ticket);
     Task<bool> DeleteTicket(int id);
+    Task<TicketResponseDto?> AssignTicketToAgent(int ticketId, int agentId);
 }

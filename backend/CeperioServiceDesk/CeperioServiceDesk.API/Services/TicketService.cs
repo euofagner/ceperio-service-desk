@@ -95,4 +95,20 @@ public class TicketService(AppDbContext dbContext) : ITicketService
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<TicketResponseDto?> AssignTicketToAgent(int ticketId, int agentId)
+    {
+        var ticket = await _context.Tickets.FindAsync(ticketId);
+        if (ticket is null) return null;
+
+        var agent = await _context.Users.FindAsync(agentId);
+        if (agent is null || agent.Role != UserRoles.Agent)
+            throw new InvalidOperationException("Somente usuários com perfil Agent podem assumir tickets.");
+
+        ticket.AssignedAgentId = agentId;
+        ticket.ChangeStatus(TicketStatus.InProgress);
+
+        await _context.SaveChangesAsync();
+        return ticket.ToResponseDto();
+    }
 }

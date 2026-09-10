@@ -3,6 +3,7 @@ using CeperioServiceDesk.API.Models;
 using CeperioServiceDesk.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CeperioServiceDesk.API.Controllers;
 
@@ -13,14 +14,29 @@ public class TicketsController(ITicketService service) : ControllerBase
 {
     private readonly ITicketService _service = service;
 
-    [Authorize(Roles = "admin")]
-    [HttpGet("admin-test")]
-    public IActionResult AdminTest()
+    [Authorize(Roles = "Agent")]
+    [HttpPost("{id:int}/assign")]
+    public async Task<ActionResult<TicketResponseDto>> AssignTicket(int id)
     {
-        return Ok(new
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!int.TryParse(userIdClaim, out var agentId))
+            return Unauthorized();
+
+        var ticket = await _service.AssignTicketToAgent(id, agentId);
+
+        if (ticket is null)
         {
-            message = "Você é administrador."
-        });
+            return NotFound(new ProblemDetails
+            {
+                Type = "https://httpstatuses.com/404",
+                Title = "Ticket não encontrado",
+                Detail = $"O ticket de id {id} não foi encontrado.",
+                Status = StatusCodes.Status404NotFound
+            });
+        }
+
+        return Ok(ticket);
     }
 
     [HttpGet]
