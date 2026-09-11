@@ -80,11 +80,11 @@ function TicketModal({ ticket, onSubmit, onClose }) {
                     )}
                 </FormField>
 
-                {editing && (
+                {editing && (user?.role === "Agent" || user?.role === "Admin") && (
                     <FormField label="Status">
                         <Select
                             value={formData.ticketStatus}
-                            onChange={(e) => setFormData({ ...formData, ticketPriority: e.target.value })}>
+                            onChange={(e) => setFormData({ ...formData, ticketStatus: e.target.value })}>
                             <option value="Open">Aberto</option>
                             <option value="InProgress">Em andamento</option>
                             <option value="Resolved">Resolvido</option>
