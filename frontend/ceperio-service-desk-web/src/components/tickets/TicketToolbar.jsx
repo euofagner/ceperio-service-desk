@@ -38,6 +38,7 @@ function TicketToolbar({ search, filter, onSearchChange, onFilterChange }) {
                     <option value="all">Todos os status</option>
                     <option value="Open">Aberto</option>
                     <option value="InProgress">Em andamento</option>
+                    <option value="WaitingUser">Aguardando usuário</option>
                     <option value="Resolved">Resolvido</option>
                     <option value="Closed">Fechado</option>
                 </Select>

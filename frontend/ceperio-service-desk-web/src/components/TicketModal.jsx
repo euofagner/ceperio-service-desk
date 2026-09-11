@@ -87,6 +87,7 @@ function TicketModal({ ticket, onSubmit, onClose }) {
                             onChange={(e) => setFormData({ ...formData, ticketStatus: e.target.value })}>
                             <option value="Open">Aberto</option>
                             <option value="InProgress">Em andamento</option>
+                            <option value="WaitingUser">Aguardando usuário</option>
                             <option value="Resolved">Resolvido</option>
                             <option value="Closed">Fechado</option>
                         </Select>
