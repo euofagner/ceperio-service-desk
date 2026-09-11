@@ -4,6 +4,8 @@ import { Button, FormField, Input, Modal, Select, Spinner, Textarea } from "./ui
 
 import { getValidationErrors } from "../utils/httpError";
 
+import { useAuth } from "../contexts/AuthContext";
+
 function TicketModal({ ticket, onSubmit, onClose }) {
     const editing = ticket !== null;
 
@@ -16,6 +18,8 @@ function TicketModal({ ticket, onSubmit, onClose }) {
 
     const [submitting, setSubmitting] = useState(false);
     const [validationErrors, setValidationErrors] = useState({});
+
+    const { user } = useAuth();
 
     useEffect(() => {
         function handleKeyDown(e) {
@@ -89,16 +93,18 @@ function TicketModal({ ticket, onSubmit, onClose }) {
                     </FormField>
                 )}
 
-                <FormField label="Prioridade">
-                    <Select
-                        value={formData.ticketPriority}
-                        onChange={(e) => setFormData({ ...formData, ticketPriority: e.target.value })}>
-                        <option value="Low">Baixa</option>
-                        <option value="Medium">Média</option>
-                        <option value="High">Alta</option>
-                        <option value="Critical">Crítica</option>
-                    </Select>
-                </FormField>
+                {(user?.role === "Agent" || user?.role === "Admin") && (
+                    <FormField label="Prioridade">
+                        <Select
+                            value={formData.ticketPriority}
+                            onChange={(e) => setFormData({ ...formData, ticketPriority: e.target.value })}>
+                            <option value="Low">Baixa</option>
+                            <option value="Medium">Média</option>
+                            <option value="High">Alta</option>
+                            <option value="Critical">Crítica</option>
+                        </Select>
+                    </FormField>
+                )}
 
                 <div className="flex gap-3 pt-2">
                     <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>
