@@ -9,6 +9,8 @@ public class Ticket
     public int? AssignedAgentId { get; set; }
     public User? AssignedAgent { get; set; }
 
+    public ICollection<Comment> Comments { get; set; } = [];
+
     [Required]
     [StringLength(80)]
     public string Title { get; set; } = string.Empty;
