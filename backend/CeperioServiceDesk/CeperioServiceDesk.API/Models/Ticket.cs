@@ -27,9 +27,14 @@ public class Ticket
         var validTransition = (TicketStatus, newStatus) switch
         {
             (TicketStatus.Open, TicketStatus.InProgress) => true,
+
+            (TicketStatus.InProgress, TicketStatus.WaitingUser) => true,
+            (TicketStatus.WaitingUser, TicketStatus.InProgress) => true,
+
             (TicketStatus.InProgress, TicketStatus.Resolved) => true,
             (TicketStatus.Resolved, TicketStatus.Closed) => true,
             (TicketStatus.Resolved, TicketStatus.InProgress) => true,
+
             _ => false
         };
 
@@ -46,10 +51,11 @@ public class Ticket
  
 public enum TicketStatus
 {
-    Open,
-    InProgress,
-    Resolved,
-    Closed
+    Open = 0,
+    InProgress = 1,
+    Resolved = 2,
+    Closed = 3,
+    WaitingUser = 4
 }
 
 public enum TicketPriority
