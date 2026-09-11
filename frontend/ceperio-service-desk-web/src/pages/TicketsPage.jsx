@@ -37,6 +37,17 @@ function TicketsPage() {
     async function handleSubmit(ticketId, formData) {
         try {
             if (ticketId) {
+                const hasChanges =
+                    formData.title !== editingTicket.title ||
+                    formData.description !== editingTicket.description ||
+                    formData.ticketStatus !== editingTicket.ticketStatus ||
+                    formData.ticketPriority !== editingTicket.ticketPriority;
+
+                if (!hasChanges) {
+                    closeModal();
+                    return;
+                }
+
                 await updateTicket(ticketId, formData);
                 showToast("Ticket atualizado com sucesso!");
             } else {
@@ -50,7 +61,10 @@ function TicketsPage() {
             if (error.errorType === "validation") {
                 throw error;
             }
-            showToast(getHttpErrorMessage(error, ticketId ? "Erro ao salvar ticket." : "Erro ao criar ticket."), "error");
+            showToast(
+                getHttpErrorMessage(error, ticketId ? "Erro ao salvar ticket." : "Erro ao criar ticket."),
+                "error"
+            );
         }
     }
 
