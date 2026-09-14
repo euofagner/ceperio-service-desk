@@ -9,6 +9,9 @@ public class Ticket
     public int? AssignedAgentId { get; set; }
     public User? AssignedAgent { get; set; }
 
+    public int? CreatedByUserId { get; set; }
+    public User? CreatedByUser { get; set; }
+
     public ICollection<Comment> Comments { get; set; } = [];
 
     [Required]
