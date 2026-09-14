@@ -77,7 +77,13 @@ public class TicketsController(ITicketService service) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<TicketResponseDto>> PostTicket(CreateTicketDto ticket)
     {
-        var created = await _service.CreateTicket(ticket);
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!int.TryParse(userIdClaim, out var userId))
+            return Unauthorized();
+
+        var created = await _service.CreateTicket(ticket, userId);
+
         return CreatedAtRoute("ObterTicket", new { id = created.Id }, created);
     }
 

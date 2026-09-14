@@ -68,11 +68,19 @@ public class TicketService(AppDbContext dbContext) : ITicketService
         };
     }
 
-    public async Task<TicketResponseDto> CreateTicket(CreateTicketDto ticket)
+    public async Task<TicketResponseDto> CreateTicket(CreateTicketDto ticket, int userId)
     {
+        var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+
+        if (!userExists) 
+            throw new KeyNotFoundException("Usuário não encontrado.");
+
         var entity = ticket.ToEntity();
+        entity.CreatedByUserId = userId;
+
         _context.Tickets.Add(entity);
         await _context.SaveChangesAsync();
+
         return entity.ToResponseDto();
     }
 
