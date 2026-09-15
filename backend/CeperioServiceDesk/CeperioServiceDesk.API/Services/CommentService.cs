@@ -96,4 +96,47 @@ public class CommentService(AppDbContext dbContext) : ICommentService
             })
             .ToListAsync();
     }
+
+    public async Task<CommentResponseDto> RequestInformationAsync(int ticketId, CreateCommentDto dto, int agentId)
+    {
+        var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId)
+            ?? throw new KeyNotFoundException("Ticket não encontrado.");
+
+        var agent = await _context.Users.FirstOrDefaultAsync(u => u.Id == agentId)
+            ?? throw new KeyNotFoundException("Usuário não encontrado.");
+
+        if (agent.Role != UserRoles.Agent)
+            throw new UnauthorizedAccessException("Somente usuários com perfil Agent podem solicitar informações.");
+
+        if (ticket.AssignedAgentId != agentId)
+            throw new UnauthorizedAccessException("Você não está atribuído a este ticket.");
+
+        if (ticket.TicketStatus != TicketStatus.InProgress)
+            throw new InvalidOperationException("Só é possível solicitar informações de um ticket em atendimento.");
+
+        var comment = new Comment
+        {
+            TicketId = ticketId,
+            UserId = agentId,
+            Content = dto.Content,
+            IsInternal = false,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.Comments.Add(comment);
+        ticket.ChangeStatus(TicketStatus.WaitingUser);
+
+        await _context.SaveChangesAsync();
+
+        return new CommentResponseDto
+        {
+            Id = comment.Id,
+            TicketId = comment.TicketId,
+            UserId = comment.UserId,
+            UserName = agent.Name ?? string.Empty,
+            Content = comment.Content,
+            IsInternal = comment.IsInternal,
+            CreatedAt = comment.CreatedAt
+        };
+    }
 }
