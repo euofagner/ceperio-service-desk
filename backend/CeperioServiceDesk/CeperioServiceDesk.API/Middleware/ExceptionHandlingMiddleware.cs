@@ -17,6 +17,38 @@ public class ExceptionHandlingMiddleware(
         {
             await _next(context);
         }
+        catch (KeyNotFoundException ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+
+            await _problemDetailsService.WriteAsync(new ProblemDetailsContext
+            {
+                HttpContext = context,
+                ProblemDetails = new ProblemDetails
+                {
+                    Type = "https://httpstatuses.com/404",
+                    Title = "Recurso não encontrado",
+                    Status = StatusCodes.Status404NotFound,
+                    Detail = ex.Message
+                }
+            });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+
+            await _problemDetailsService.WriteAsync(new ProblemDetailsContext
+            {
+                HttpContext = context,
+                ProblemDetails = new ProblemDetails
+                {
+                    Type = "https://httpstatuses.com/403",
+                    Title = "Acesso negado",
+                    Status = StatusCodes.Status403Forbidden,
+                    Detail = ex.Message
+                }
+            });
+        }
         catch (ArgumentException ex)
         {
             context.Response.StatusCode = StatusCodes.Status400BadRequest;

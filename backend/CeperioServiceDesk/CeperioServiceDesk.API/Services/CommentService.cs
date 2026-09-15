@@ -11,8 +11,26 @@ public class CommentService(AppDbContext dbContext) : ICommentService
 
     public async Task<CommentResponseDto> CreateCommentAsync(int ticketId, CreateCommentDto createCommentDto, int userId)
     {
-        var ticket = await _context.Tickets.FindAsync(ticketId) ?? throw new KeyNotFoundException("Ticket não encontrado.");
-        var user = await _context.Users.FindAsync(userId) ?? throw new KeyNotFoundException("Usuário não encontrado.");
+        var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId) ?? 
+            throw new KeyNotFoundException("Ticket não encontrado.");
+
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId) ?? 
+            throw new KeyNotFoundException("Usuário não encontrado.");
+
+        if (user.Role == UserRoles.User)
+        {
+            if (ticket.CreatedByUserId != userId)
+                throw new UnauthorizedAccessException("Você não tem permissão para comentar neste ticket.");
+        }
+        else if (user.Role == UserRoles.Agent)
+        {
+            if (ticket.AssignedAgentId != userId)
+                throw new UnauthorizedAccessException("Você não está atribuído a este ticket.");
+        }
+        else if (user.Role != UserRoles.Admin)
+        {
+            throw new UnauthorizedAccessException("Perfil sem permissão para comentar.");
+        }
 
         var comment = new Comment
         {
@@ -40,8 +58,24 @@ public class CommentService(AppDbContext dbContext) : ICommentService
 
     public async Task<IEnumerable<CommentResponseDto>> GetCommentsAsync(int ticketId, int userId, string userRole)
     {
-        var ticketExists = await _context.Tickets.AnyAsync(t => t.Id == ticketId);
-        if (!ticketExists) throw new KeyNotFoundException("Ticket não encontrado.");
+        
+        var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId) ?? 
+            throw new KeyNotFoundException("Ticket não encontrado.");
+
+        if (userRole == UserRoles.User)
+        {
+            if (ticket.CreatedByUserId != userId)
+                throw new UnauthorizedAccessException("Você não tem permissão para visualizar os comentários deste ticket.");
+        }
+        else if (userRole == UserRoles.Agent)
+        {
+            if (ticket.AssignedAgentId != userId)
+                throw new UnauthorizedAccessException("Você não está atribuído a este ticket.");
+        }
+        else if (userRole != UserRoles.Admin)
+        {
+            throw new UnauthorizedAccessException("Perfil sem permissão para visualizar comentários.");
+        }
 
         var query = _context.Comments.Where(c => c.TicketId == ticketId);
 
