@@ -139,4 +139,49 @@ public class CommentService(AppDbContext dbContext) : ICommentService
             CreatedAt = comment.CreatedAt
         };
     }
+
+    public async Task<CommentResponseDto> RespondToRequestAsync(int ticketId, CreateCommentDto dto, int userId)
+    {
+        var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId)
+            ?? throw new KeyNotFoundException("Ticket não encontrado.");
+
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId)
+            ?? throw new KeyNotFoundException("Usuário não encontrado.");
+
+        if (user.Role != UserRoles.User)
+            throw new UnauthorizedAccessException(
+                "Somente usuários com perfil User podem responder a uma solicitação de informações.");
+
+        if (ticket.CreatedByUserId != userId)
+            throw new UnauthorizedAccessException("Você não tem permissão para responder neste ticket.");
+
+        if (ticket.TicketStatus != TicketStatus.WaitingUser)
+            throw new InvalidOperationException(
+                "Só é possível responder a uma solicitação de informações quando o ticket está aguardando o usuário.");
+
+        var comment = new Comment
+        {
+            TicketId = ticketId,
+            UserId = userId,
+            Content = dto.Content,
+            IsInternal = false,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.Comments.Add(comment);
+        ticket.ChangeStatus(TicketStatus.InProgress);
+
+        await _context.SaveChangesAsync();
+
+        return new CommentResponseDto
+        {
+            Id = comment.Id,
+            TicketId = comment.TicketId,
+            UserId = comment.UserId,
+            UserName = user.Name ?? string.Empty,
+            Content = comment.Content,
+            IsInternal = comment.IsInternal,
+            CreatedAt = comment.CreatedAt
+        };
+    }
 }

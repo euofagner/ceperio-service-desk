@@ -114,6 +114,17 @@ public class TicketsController(ITicketService service, ICommentService commentSe
         return Ok(comment);
     }
 
+    [Authorize(Roles = "User")]
+    [HttpPost("{id:int}/respond-to-request")]
+    public async Task<ActionResult<CommentResponseDto>> RespondToRequest(int id, CreateCommentDto dto)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!int.TryParse(userIdClaim, out var userId)) return Unauthorized();
+
+        var comment = await _commentService.RespondToRequestAsync(id, dto, userId);
+        return Ok(comment);
+    }
+
     [Authorize(Roles = "Agent,Admin")]
     [HttpPut("{id:int}")]
     public async Task<ActionResult<TicketResponseDto>> PutTicket(int id, UpdateTicketDto ticket)
