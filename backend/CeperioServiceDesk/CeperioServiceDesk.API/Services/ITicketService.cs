@@ -5,8 +5,14 @@ namespace CeperioServiceDesk.API.Services;
 
 public interface ITicketService
 {
-    Task<Pagination<TicketResponseDto>> GetTickets(string? search = null, TicketStatus? status = null, int page = 1, int pageSize = 5);
-    Task<TicketResponseDto?> GetTicket(int id);
+    Task<Pagination<TicketResponseDto>> GetTickets(
+        int userId, 
+        string userRole, 
+        string? search = null, 
+        TicketStatus? status = null, 
+        int page = 1, 
+        int pageSize = 5);
+    Task<TicketResponseDto?> GetTicket(int id, int userId, string userRole);
     Task<object> GetSummary();
     Task<TicketResponseDto> CreateTicket(CreateTicketDto ticket, int userId);
     Task<TicketResponseDto?> UpdateTicket(int id, UpdateTicketDto ticket);

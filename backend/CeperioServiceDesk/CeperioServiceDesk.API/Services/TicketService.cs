@@ -10,12 +10,21 @@ public class TicketService(AppDbContext dbContext) : ITicketService
 {
     private readonly AppDbContext _context = dbContext;
 
-    public async Task<Pagination<TicketResponseDto>> GetTickets(string? search = null, TicketStatus? status = null, int page = 1, int pageSize = 5)
+    public async Task<Pagination<TicketResponseDto>> GetTickets(
+        int userId, 
+        string userRole, 
+        string? search = null, 
+        TicketStatus? status = null, 
+        int page = 1, 
+        int pageSize = 5)
     {
         page = Pagination<TicketResponseDto>.ValidatePage(page);
         pageSize = Pagination<TicketResponseDto>.ValidatePageSize(pageSize);
 
         var query = _context.Tickets.AsQueryable();
+
+        if (userRole == UserRoles.User)
+            query = query.Where(t => t.CreatedByUserId == userId);
 
         if (!string.IsNullOrWhiteSpace(search))
             query = query.Where(t => t.Title.Contains(search) || t.Description.Contains(search));
@@ -50,9 +59,14 @@ public class TicketService(AppDbContext dbContext) : ITicketService
         };
     }
 
-    public async Task<TicketResponseDto?> GetTicket(int id)
+    public async Task<TicketResponseDto?> GetTicket(int id, int userId, string userRole)
     {
-        var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == id);
+        var query = _context.Tickets.Where(t => t.Id == id);
+
+        if (userRole == UserRoles.User)
+            query = query.Where(t => t.CreatedByUserId == userId);
+
+        var ticket = await query.FirstOrDefaultAsync();
         return ticket?.ToResponseDto();
     }
 

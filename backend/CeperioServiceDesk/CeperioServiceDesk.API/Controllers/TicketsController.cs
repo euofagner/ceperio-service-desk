@@ -41,19 +41,32 @@ public class TicketsController(ITicketService service) : ControllerBase
 
     [HttpGet]
     public async Task<ActionResult<Pagination<TicketResponseDto>>> GetTickets(
-        [FromQuery] string? search,
-        [FromQuery] TicketStatus? status,
-        [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 5)
+    [FromQuery] string? search,
+    [FromQuery] TicketStatus? status,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 5)
     {
-        var tickets = await _service.GetTickets(search, status, page, pageSize);
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!int.TryParse(userIdClaim, out var userId)) return Unauthorized();
+
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+        if (string.IsNullOrWhiteSpace(userRole)) return Unauthorized();
+
+        var tickets = await _service.GetTickets(userId, userRole, search, status, page, pageSize);
         return Ok(tickets);
     }
 
     [HttpGet("{id:int}", Name = "ObterTicket")]
     public async Task<ActionResult<TicketResponseDto>> GetTicket(int id)
     {
-        var ticket = await _service.GetTicket(id);
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!int.TryParse(userIdClaim, out var userId)) return Unauthorized();
+
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+        if (string.IsNullOrWhiteSpace(userRole)) return Unauthorized();
+
+        var ticket = await _service.GetTicket(id, userId, userRole);
+
         if (ticket is null)
         {
             return NotFound(new ProblemDetails
@@ -64,6 +77,7 @@ public class TicketsController(ITicketService service) : ControllerBase
                 Status = StatusCodes.Status404NotFound
             });
         }
+
         return Ok(ticket);
     }
 
