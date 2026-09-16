@@ -47,8 +47,12 @@ public class TicketService(AppDbContext dbContext) : ITicketService
                 UpdatedAt = t.UpdatedAt,
                 TicketStatus = t.TicketStatus,
                 TicketPriority = t.TicketPriority,
+
                 CreatedByUserId = t.CreatedByUserId,
-                AssignedAgentId = t.AssignedAgentId
+                CreatedByUserName = t.CreatedByUser != null ? t.CreatedByUser.Name : null,
+
+                AssignedAgentId = t.AssignedAgentId,
+                AssignedAgentName = t.AssignedAgent != null ? t.AssignedAgent.Name : null
             })
             .ToListAsync();
 
@@ -63,7 +67,10 @@ public class TicketService(AppDbContext dbContext) : ITicketService
 
     public async Task<TicketResponseDto?> GetTicket(int id, int userId, string userRole)
     {
-        var query = _context.Tickets.Where(t => t.Id == id);
+        var query = _context.Tickets
+            .Include(t => t.CreatedByUser)
+            .Include(t => t.AssignedAgent)
+            .Where(t => t.Id == id);
 
         if (userRole == UserRoles.User)
             query = query.Where(t => t.CreatedByUserId == userId);

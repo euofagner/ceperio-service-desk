@@ -13,5 +13,8 @@ public class TicketResponseDto
     public TicketPriority TicketPriority { get; set; }
 
     public int? CreatedByUserId { get; set; }
+    public string? CreatedByUserName { get; set; }
+
     public int? AssignedAgentId { get; set; }
+    public string? AssignedAgentName { get; set; }
 }
