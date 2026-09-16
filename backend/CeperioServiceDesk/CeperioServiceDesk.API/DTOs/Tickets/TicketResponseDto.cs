@@ -11,4 +11,7 @@ public class TicketResponseDto
     public DateTime? UpdatedAt { get; set; }
     public TicketStatus TicketStatus { get; set; }
     public TicketPriority TicketPriority { get; set; }
+
+    public int? CreatedByUserId { get; set; }
+    public int? AssignedAgentId { get; set; }
 }

@@ -15,7 +15,9 @@ public static class TicketMapper
             CreatedAt = ticket.CreatedAt,
             UpdatedAt = ticket.UpdatedAt,
             TicketStatus = ticket.TicketStatus,
-            TicketPriority = ticket.TicketPriority
+            TicketPriority = ticket.TicketPriority,
+            CreatedByUserId = ticket.CreatedByUserId,
+            AssignedAgentId = ticket.AssignedAgentId
         };
     }
 

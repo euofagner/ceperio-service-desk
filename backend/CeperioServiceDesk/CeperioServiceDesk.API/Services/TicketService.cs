@@ -46,7 +46,9 @@ public class TicketService(AppDbContext dbContext) : ITicketService
                 CreatedAt = t.CreatedAt,
                 UpdatedAt = t.UpdatedAt,
                 TicketStatus = t.TicketStatus,
-                TicketPriority = t.TicketPriority
+                TicketPriority = t.TicketPriority,
+                CreatedByUserId = t.CreatedByUserId,
+                AssignedAgentId = t.AssignedAgentId
             })
             .ToListAsync();
 
