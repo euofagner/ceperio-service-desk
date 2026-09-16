@@ -184,4 +184,42 @@ public class CommentService(AppDbContext dbContext) : ICommentService
             CreatedAt = comment.CreatedAt
         };
     }
+
+    public async Task<CommentResponseDto> CreateInternalCommentAsync(int ticketId, CreateCommentDto dto, int userId)
+    {
+        var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId)
+            ?? throw new KeyNotFoundException("Ticket não encontrado.");
+
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId)
+            ?? throw new KeyNotFoundException("Usuário não encontrado.");
+
+        if (user.Role != UserRoles.Agent && user.Role != UserRoles.Admin)
+            throw new UnauthorizedAccessException("Somente agentes e administradores podem criar comentários internos.");
+
+        if (user.Role == UserRoles.Agent && ticket.AssignedAgentId != userId)
+            throw new UnauthorizedAccessException("Você não está atribuído a este ticket.");
+
+        var comment = new Comment
+        {
+            TicketId = ticketId,
+            UserId = userId,
+            Content = dto.Content,
+            IsInternal = true,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.Comments.Add(comment);
+        await _context.SaveChangesAsync();
+
+        return new CommentResponseDto
+        {
+            Id = comment.Id,
+            TicketId = comment.TicketId,
+            UserId = comment.UserId,
+            UserName = user.Name ?? string.Empty,
+            Content = comment.Content,
+            IsInternal = comment.IsInternal,
+            CreatedAt = comment.CreatedAt
+        };
+    }
 }

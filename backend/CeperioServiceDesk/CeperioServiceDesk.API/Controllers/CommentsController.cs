@@ -35,4 +35,15 @@ public class CommentsController(ICommentService service) : ControllerBase
         var comment = await _service.CreateCommentAsync(ticketId, createCommentDto, userId);
         return Ok(comment);
     }
+
+    [HttpPost("internal")]
+    [Authorize(Roles = "Agent,Admin")]
+    public async Task<ActionResult<CommentResponseDto>> CreateInternalComment(int ticketId, CreateCommentDto dto)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!int.TryParse(userIdClaim, out var userId)) return Unauthorized();
+
+        var comment = await _service.CreateInternalCommentAsync(ticketId, dto, userId);
+        return Ok(comment);
+    }
 }
