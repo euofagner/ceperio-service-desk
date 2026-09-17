@@ -27,3 +27,8 @@ export async function updateTicket(id, formData) {
 export async function deleteTicket(id) {
     await api.delete(`/tickets/${id}`);
 }
+
+export async function assignTicket(id) {
+    const response = await api.post(`/tickets/${id}/assign`);
+    return response.data;
+}

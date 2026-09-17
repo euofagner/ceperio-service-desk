@@ -168,6 +168,7 @@ export default function TicketCard({
                     </div>
                 </div>
 
+                {/* requester*/}
                 <div
                     className="
                         flex
@@ -175,27 +176,12 @@ export default function TicketCard({
                         gap-2
                         min-w-0
                         w-full
-
                         lg:w-auto
                         lg:min-w-37.5">
 
                     <div
                         className="
-                            flex
-                            h-8
-                            w-8
-                            sm:h-9
-                            sm:w-9
-                            shrink-0
-                            items-center
-                            justify-center
-                            rounded-full
-                            border
-                            border-violet-400/10
-                            bg-violet-500/15
-                            text-[9px]
-                            font-semibold
-                            text-violet-300">
+                            relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-cyan-400 to-blue-600 text-[11px] font-bold text-white">
 
                         {(ticket.createdByUserName || "?")
                             .split(" ")
@@ -263,40 +249,36 @@ export default function TicketCard({
                     </Badge>
                 </div>
 
+                {/* date */}
                 <div
                     className="
-                        flex
-                        items-center
-                        justify-between
-                        w-full
-                        pt-2
-                        border-t
-                        border-neutral-800/50
-                        sm:pt-0
-                        sm:border-t-0
-                        lg:w-auto
-                        lg:justify-end
-                        lg:pt-0">
+                        hidden sm:flex
+                        flex-col
+                        items-end
+                        justify-center
+                        gap-1
+                        shrink-0
+                        min-w-22">
+                    <span className="text-[11px] uppercase font-semibold tracking-wide text-neutral-500">
+                        Criado
+                    </span>
 
                     <TicketDate
-                        content={new Date(
-                            ticket.createdAt
-                        ).toLocaleString("pt-BR", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit"
-                        })}>
-
-                        <span
-                            className="
-                                text-neutral-500
-                                text-[13px]
-                                sm:text-[16px]
-                                cursor-default
-                                whitespace-nowrap">
-
+                        content={new Date(ticket.createdAt).toLocaleString(
+                            "pt-BR",
+                            {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit"
+                            }
+                        )}>
+                        <span className="truncate
+                                text-[12px]
+                                sm:text-[14px]
+                                font-medium
+                                text-neutral-300">
                             {formatDate(ticket.createdAt)}
                         </span>
                     </TicketDate>

@@ -69,7 +69,7 @@ function Sidebar() {
           onClick={() => setUserMenuOpen((open) => !open)}
           className="group flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-white/4">
 
-          <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-blue-500 to-indigo-600 text-[11px] font-bold text-white">
+          <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-cyan-400 to-blue-600 text-[11px] font-bold text-white">
             {user?.name?.split(" ").map(name => name[0]).slice(0, 2).join("").toUpperCase()}
             <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-neutral-950 bg-emerald-500" />
           </div>
