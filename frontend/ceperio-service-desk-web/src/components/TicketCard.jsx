@@ -16,7 +16,8 @@ export default function TicketCard({
     deleteTarget,
     onCancelDelete,
     onConfirmDelete,
-    deleting
+    deleting,
+    onAssignTicket
 }) {
     const status =
         statusConfig[ticket.ticketStatus] || statusConfig.Open;
@@ -26,7 +27,12 @@ export default function TicketCard({
         priorityConfig.Medium;
 
     const isDeleteOpen = deleteTarget === ticket.id;
+
     const { user } = useAuth();
+
+    const canAssign =
+        user?.role === "Agent" &&
+        !ticket.assignedAgentId;
 
     return (
         <Card
@@ -284,21 +290,35 @@ export default function TicketCard({
                     </TicketDate>
                 </div>
 
-                <div
-                    className="
-                        flex
-                        justify-end
-                        w-full
-                        lg:w-auto">
+                <div className="flex items-center justify-end gap-2 w-full lg:w-auto">
+                    {canAssign && (
+                        <button
+                            type="button"
+                            className="
+                                cursor-pointer
+                                rounded-md
+                                border border-blue-500/20
+                                bg-blue-500/10
+                                px-3 py-2
+                                text-[11px] font-medium
+                                text-blue-400
+                                transition-colors
+                                hover:bg-blue-500/20
+                                hover:text-blue-300"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onAssignTicket(ticket.id);
+                            }}>
+                            Assumir
+                        </button>
+                    )}
 
                     {user?.role === "Admin" && (
                         <IconButton
                             variant="ghost"
                             label="Excluir ticket"
                             className="
-                                h-8
-                                w-8
-                                shrink-0
+                                h-8 w-8 shrink-0
                                 opacity-100
                                 text-neutral-500
                                 transition-all
@@ -307,15 +327,12 @@ export default function TicketCard({
                                 focus:opacity-100
                                 hover:bg-neutral-800
                                 hover:text-neutral-300"
-
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onDeleteClick(ticket.id);
                             }}>
-                            <svg
-                                className="h-4 w-4"
-                                fill="currentColor"
-                                viewBox="0 0 20 20">
+
+                            <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                             </svg>
                         </IconButton>

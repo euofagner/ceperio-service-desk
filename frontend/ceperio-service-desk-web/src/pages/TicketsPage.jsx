@@ -16,7 +16,7 @@ import { useToast } from "../hooks/useToast";
 
 import { useTicketModal } from "../contexts/TicketModalContext";
 
-import { createTicket, deleteTicket, updateTicket } from "../services/ticketService";
+import { createTicket, deleteTicket, updateTicket, assignTicket } from "../services/ticketService";
 import { getHttpErrorMessage } from "../utils/httpError";
 
 function TicketsPage() {
@@ -82,6 +82,19 @@ function TicketsPage() {
         }
     }
 
+    async function handleAssignTicket(id) {
+        try {
+            await assignTicket(id);
+            await refresh();
+            showToast("Ticket assumido com sucesso!");
+        } catch (error) {
+            showToast(
+                getHttpErrorMessage(error, "Erro ao assumir ticket."),
+                "error"
+            );
+        }
+    }
+
     if (loading && tickets.length === 0) {
         return <Skeleton logo={cepelogo} />;
     }
@@ -112,6 +125,7 @@ function TicketsPage() {
                         onCancelDelete={() => setDeleteTarget(null)}
                         onConfirmDelete={handleDeleteTicket}
                         deleting={deleting}
+                        onAssignTicket={handleAssignTicket}
                     />
                 </div>
 

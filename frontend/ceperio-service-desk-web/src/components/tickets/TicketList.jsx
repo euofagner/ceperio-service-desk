@@ -1,7 +1,7 @@
 import { Button, EmptyState } from "../ui";
 import TicketCard from "../TicketCard";
 
-function TicketList({ tickets, search, onClearSearch, onClearFilter, onCreateTicket, onEdit, onDeleteClick, deleteTarget, onCancelDelete, onConfirmDelete, deleting }) {
+function TicketList({ tickets, search, onClearSearch, onClearFilter, onCreateTicket, onEdit, onDeleteClick, deleteTarget, onCancelDelete, onConfirmDelete, deleting, onAssignTicket }) {
     if (tickets.length > 0) {
         return (
             <div className="space-y-3">
@@ -15,6 +15,7 @@ function TicketList({ tickets, search, onClearSearch, onClearFilter, onCreateTic
                         onCancelDelete={onCancelDelete}
                         onConfirmDelete={onConfirmDelete}
                         deleting={deleting}
+                        onAssignTicket={onAssignTicket}
                     />
                 ))}
             </div>
