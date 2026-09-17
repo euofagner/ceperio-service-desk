@@ -32,7 +32,8 @@ export default function TicketCard({
 
     const canAssign =
         user?.role === "Agent" &&
-        !ticket.assignedAgentId;
+        !ticket.assignedAgentId &&
+        ticket.ticketStatus !== "Closed";
 
     return (
         <Card
