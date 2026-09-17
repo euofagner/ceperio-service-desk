@@ -4,80 +4,341 @@ import { statusConfig, priorityConfig } from "../constants/ticketConfig";
 import TicketDate from "./TicketDate";
 import DeleteConfirm from "./DeleteConfirm";
 
-import { Badge, Button, Card, IconButton } from "./ui";
+import { Badge, Card, IconButton } from "./ui";
 
 import { useAuth } from "../contexts/AuthContext";
 
 
-export default function TicketCard({ ticket, onEdit, onDeleteClick, deleteTarget, onCancelDelete, onConfirmDelete, deleting }) {
-    const status = statusConfig[ticket.ticketStatus] || statusConfig.Open;
-    const priority = priorityConfig[ticket.ticketPriority] || priorityConfig.Medium;
+export default function TicketCard({
+    ticket,
+    onEdit,
+    onDeleteClick,
+    deleteTarget,
+    onCancelDelete,
+    onConfirmDelete,
+    deleting
+}) {
+    const status =
+        statusConfig[ticket.ticketStatus] || statusConfig.Open;
+
+    const priority =
+        priorityConfig[ticket.ticketPriority] ||
+        priorityConfig.Medium;
+
     const isDeleteOpen = deleteTarget === ticket.id;
     const { user } = useAuth();
 
     return (
-        <Card className="group border-neutral-800/50 hover:border-neutral-600 hover:shadow-lg transition-colors">
+        <Card
+            className="
+                group
+                w-full
+                min-w-0
+                border-neutral-800/50
+                hover:border-neutral-600
+                hover:shadow-lg
+                transition-colors
+                overflow-hidden">
             <div
                 onClick={() => onEdit(ticket)}
-                className="flex items-center gap-4 px-5 py-4 cursor-pointer">
-                <div className="flex items-start gap-3 flex-1 min-w-0">
-                    <div className={`mt-1.5 w-2.5 h-2.5 rounded-full shrink-0 ${status.dot}`} />
+                className="
+                    flex
+                    flex-col
+                    gap-4
+                    px-4
+                    py-4
+                    cursor-pointer
+                    sm:px-5
+                    sm:py-4
+                    lg:flex-row
+                    lg:items-center
+                    lg:gap-4">
 
-                    <div className="flex-1 min-w-0">
-                        <div className="flex items-start gap-2 mb-1">
-                            <span className="text-[15px] text-neutral-500 font-mono font-semibold shrink-0">#{ticket.id}</span>
+                <div
+                    className="
+                        w-full
+                        h-1
+                        rounded-full
+                        shrink-0
+                        lg:w-1
+                        lg:h-auto
+                        lg:self-stretch
+                        lg:min-h-20.5">
+                    <div
+                        className={`
+                            w-full
+                            h-full
+                            rounded-full
+                            ${status.dot}
+                            opacity-80
+                            lg:w-full`} />
+                </div>
 
-                            <h3 className="text-[15px] font-medium text-white truncate">{ticket.title}</h3>
+                <div
+                    className="
+                        flex-1
+                        min-w-0
+                        w-full">
+                    <div className="flex items-start gap-2 min-w-0 mb-1">
 
-                            {ticket.ticketStatus === "Open" && isNew(ticket.createdAt) && (
-                                <Badge className="bg-blue-500/20 border-blue-500/20 text-blue-400 text-[12px] rounded-sm font-medium shrink-0">
+                        <span
+                            className="
+                                text-[13px]
+                                sm:text-[15px]
+                                text-neutral-500
+                                font-mono
+                                font-semibold
+                                shrink-0">
+
+                            #{ticket.id}
+                        </span>
+
+                        <h3
+                            className="
+                                min-w-0
+                                flex-1
+                                text-[14px]
+                                sm:text-[15px]
+                                font-medium
+                                text-white
+                                truncate">
+
+                            {ticket.title}
+                        </h3>
+
+                        {ticket.ticketStatus === "Open" &&
+                            isNew(ticket.createdAt) && (
+                                <Badge
+                                    className="
+                                        bg-blue-500/20
+                                        border-blue-500/20
+                                        text-blue-400
+                                        text-[10px]
+                                        sm:text-[12px]
+                                        rounded-sm
+                                        font-medium
+                                        shrink-0">
+
                                     Novo
                                 </Badge>
                             )}
-                        </div>
+                    </div>
 
-                        <p className="text-sm text-neutral-400 mb-2 line-clamp-1">{ticket.description}</p>
+                    <p
+                        className="
+                            text-[12px]
+                            sm:text-[13px]
+                            text-neutral-400
+                            mb-3
+                            line-clamp-2
+                            sm:line-clamp-1">
 
-                        <div className="flex items-center gap-3 text-xs">
-                            <Badge icon={status.icon} className={status.badge}>
-                                {status.label}
-                            </Badge>
+                        {ticket.description}
+                    </p>
 
-                            <span className="text-neutral-500">|</span>
+                    <div
+                        className="
+                            flex
+                            items-center
+                            gap-1.5
+                            mt-2
+                            min-w-0
+                            text-[10px]
+                            sm:text-[12px]">
 
-                            <Badge icon={priority.icon} className={priority.color}>
-                                {priority.label}
-                            </Badge>
-                        </div>
+                        <span className="text-neutral-400 shrink-0">
+                            Responsável
+                        </span>
+
+                        <span className="text-neutral-500 shrink-0">
+                            |
+                        </span>
+
+                        <span
+                            className="
+                                truncate
+                                text-[12px]
+                                sm:text-[14px]
+                                font-medium
+                                text-neutral-300">
+
+                            {ticket.assignedAgentName ||
+                                "Não atribuído"}
+                        </span>
                     </div>
                 </div>
 
-                <TicketDate content={new Date(ticket.createdAt).toLocaleString('pt-BR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                })}>
-                    <span className="text-neutral-500 text-[16px] cursor-default">
-                        {formatDate(ticket.createdAt)}
-                    </span>
-                </TicketDate>
+                <div
+                    className="
+                        flex
+                        items-center
+                        gap-2
+                        min-w-0
+                        w-full
 
-                {user?.role === "Admin" && (
-                    <IconButton
-                        variant="ghost"
-                        label="Excluir ticket"
-                        className="opacity-0 group-hover:opacity-100 shrink-0"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onDeleteClick(ticket.id);
-                        }}>
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                        </svg>
-                    </IconButton>
-                )}
+                        lg:w-auto
+                        lg:min-w-37.5">
+
+                    <div
+                        className="
+                            flex
+                            h-8
+                            w-8
+                            sm:h-9
+                            sm:w-9
+                            shrink-0
+                            items-center
+                            justify-center
+                            rounded-full
+                            border
+                            border-violet-400/10
+                            bg-violet-500/15
+                            text-[9px]
+                            font-semibold
+                            text-violet-300">
+
+                        {(ticket.createdByUserName || "?")
+                            .split(" ")
+                            .slice(0, 2)
+                            .map((name) => name[0])
+                            .join("")
+                            .toUpperCase()}
+                    </div>
+
+                    <div className="min-w-0">
+                        <p
+                            className="
+                                truncate
+                                text-[12px]
+                                sm:text-[14px]
+                                font-medium
+                                text-neutral-300">
+
+                            {ticket.createdByUserName ||
+                                "Não identificado"}
+                        </p>
+
+                        <p
+                            className="
+                                mt-0.5
+                                text-[10px]
+                                sm:text-[12px]
+                                text-neutral-400">
+
+                            Solicitante
+                        </p>
+                    </div>
+                </div>
+
+                {/* status and priority*/}
+                <div className="min-w-0">
+                    <Badge
+                        icon={priority.icon}
+                        className={`
+                            ${priority.color}
+                            inline-flex
+                            rounded-md
+                            px-2
+                            py-2
+                            text-[10px]
+                            whitespace-nowrap`}>
+
+                        {priority.label}
+                    </Badge>
+                </div>
+
+                <div className="min-w-0">
+                    <Badge
+                        icon={status.icon}
+                        className={`
+                            ${status.badge}
+                            inline-flex
+                            rounded-md
+                            px-2
+                            py-2
+                            text-[10px]
+                            whitespace-nowrap`}>
+
+                        {status.label}
+                    </Badge>
+                </div>
+
+                <div
+                    className="
+                        flex
+                        items-center
+                        justify-between
+                        w-full
+                        pt-2
+                        border-t
+                        border-neutral-800/50
+                        sm:pt-0
+                        sm:border-t-0
+                        lg:w-auto
+                        lg:justify-end
+                        lg:pt-0">
+
+                    <TicketDate
+                        content={new Date(
+                            ticket.createdAt
+                        ).toLocaleString("pt-BR", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit"
+                        })}>
+
+                        <span
+                            className="
+                                text-neutral-500
+                                text-[13px]
+                                sm:text-[16px]
+                                cursor-default
+                                whitespace-nowrap">
+
+                            {formatDate(ticket.createdAt)}
+                        </span>
+                    </TicketDate>
+                </div>
+
+                <div
+                    className="
+                        flex
+                        justify-end
+                        w-full
+                        lg:w-auto">
+
+                    {user?.role === "Admin" && (
+                        <IconButton
+                            variant="ghost"
+                            label="Excluir ticket"
+                            className="
+                                h-8
+                                w-8
+                                shrink-0
+                                opacity-100
+                                text-neutral-500
+                                transition-all
+                                lg:opacity-0
+                                lg:group-hover:opacity-100
+                                focus:opacity-100
+                                hover:bg-neutral-800
+                                hover:text-neutral-300"
+
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onDeleteClick(ticket.id);
+                            }}>
+                            <svg
+                                className="h-4 w-4"
+                                fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                            </svg>
+                        </IconButton>
+                    )}
+                </div>
             </div>
 
             {isDeleteOpen && (
