@@ -8,7 +8,15 @@ import { useAuth } from "../contexts/AuthContext";
 
 import CommentList from "./CommentList";
 
-function TicketModal({ ticket, onSubmit, onCreateComment, onRequestInformation, onRespondToRequest, onClose }) {
+function TicketModal({
+    ticket,
+    onSubmit,
+    onCreateComment,
+    onCreateInternalComment,
+    onRequestInformation,
+    onRespondToRequest,
+    onClose
+}) {
     const editing = ticket !== null;
 
     const [formData, setFormData] = useState({
@@ -32,6 +40,9 @@ function TicketModal({ ticket, onSubmit, onCreateComment, onRequestInformation, 
 
     const [commenting, setCommenting] = useState(false);
     const [commentContent, setCommentContent] = useState("");
+
+    const [internalCommenting, setInternalCommenting] = useState(false);
+    const [internalCommentContent, setInternalCommentContent] = useState("");
 
     useEffect(() => {
         function handleKeyDown(e) {
@@ -88,6 +99,20 @@ function TicketModal({ ticket, onSubmit, onCreateComment, onRequestInformation, 
             setCommentRefreshKey((current) => current + 1);
         } finally {
             setCommenting(false);
+        }
+    }
+
+    async function handleCreateInternalComment() {
+        const content = internalCommentContent.trim();
+        if (!content) return;
+
+        setInternalCommenting(true);
+        try {
+            await onCreateInternalComment(ticket.id, content);
+            setInternalCommentContent("");
+            setCommentRefreshKey((current) => current + 1);
+        } finally {
+            setInternalCommenting(false);
         }
     }
 
@@ -173,6 +198,30 @@ function TicketModal({ ticket, onSubmit, onCreateComment, onRequestInformation, 
                                     {commenting ? "Enviando..." : "Enviar comentário"}
                                 </Button>
                             </div>
+                        </div>
+                    </div>
+                )}
+
+                {(user?.role === "Agent" || user?.role === "Admin") && (
+                    <div className="mt-4 border-t border-neutral-800 pt-4">
+                        <FormField label="Comentário interno">
+                            <Textarea
+                                value={internalCommentContent}
+                                onChange={(e) => setInternalCommentContent(e.target.value)}
+                                rows={3}
+                                placeholder="Escreva uma anotação visível apenas para o atendimento..." />
+                        </FormField>
+
+                        <div className="mt-3 flex justify-end">
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                disabled={internalCommenting || !internalCommentContent.trim()}
+                                onClick={handleCreateInternalComment}>
+
+                                {internalCommenting && <Spinner size="sm" />}
+                                {internalCommenting ? "Enviando..." : "Adicionar comentário interno"}
+                            </Button>
                         </div>
                     </div>
                 )}

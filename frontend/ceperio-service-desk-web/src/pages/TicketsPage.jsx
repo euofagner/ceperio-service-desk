@@ -19,7 +19,12 @@ import { useTicketModal } from "../contexts/TicketModalContext";
 import { createTicket, deleteTicket, updateTicket, assignTicket } from "../services/ticketService";
 import { getHttpErrorMessage } from "../utils/httpError";
 
-import { createComment, requestInformation, respondToRequest } from "../services/commentService";
+import {
+    createComment,
+    createInternalComment,
+    requestInformation,
+    respondToRequest
+} from "../services/commentService";
 
 function TicketsPage() {
     const [filter, setFilter] = useState("all");
@@ -129,6 +134,16 @@ function TicketsPage() {
         }
     }
 
+    async function handleCreateInternalComment(ticketId, content) {
+        try {
+            await createInternalComment(ticketId, content);
+            showToast("Comentário interno adicionado!");
+        } catch (error) {
+            showToast(getHttpErrorMessage(error, "Erro ao adicionar comentário interno."), "error");
+            throw error;
+        }
+    }
+
     if (loading && tickets.length === 0) {
         return <Skeleton logo={cepelogo} />;
     }
@@ -180,6 +195,7 @@ function TicketsPage() {
                     ticket={editingTicket}
                     onSubmit={handleSubmit}
                     onCreateComment={handleCreateComment}
+                    onCreateInternalComment={handleCreateInternalComment}
                     onRequestInformation={handleRequestInformation}
                     onRespondToRequest={handleRespondToRequest}
                     onClose={closeModal}

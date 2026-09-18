@@ -10,6 +10,11 @@ export async function createComment(ticketId, content) {
     return response.data;
 }
 
+export async function createInternalComment(ticketId, content) {
+    const response = await api.post(`/tickets/${ticketId}/comments/internal`, { content });
+    return response.data;
+}
+
 export async function requestInformation(ticketId, content) {
     const response = await api.post(`/tickets/${ticketId}/request-information`, { content });
     return response.data;
