@@ -6,6 +6,8 @@ import { getValidationErrors } from "../utils/httpError";
 
 import { useAuth } from "../contexts/AuthContext";
 
+import CommentList from "./CommentList";
+
 function TicketModal({ ticket, onSubmit, onClose }) {
     const editing = ticket !== null;
 
@@ -105,6 +107,13 @@ function TicketModal({ ticket, onSubmit, onClose }) {
                             <option value="Critical">Crítica</option>
                         </Select>
                     </FormField>
+                )}
+
+                {editing && (
+                    <div className="border-t border-neutral-800 pt-4">
+                        <h3 className="mb-3 text-sm font-semibold text-white">Comentários</h3>
+                        <CommentList ticketId={ticket.id} />
+                    </div>
                 )}
 
                 <div className="flex gap-3 pt-2">
