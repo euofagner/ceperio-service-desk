@@ -31,6 +31,11 @@ function TicketModal({
 
     const { user } = useAuth();
 
+    const canComment =
+        user?.role === "Admin" ||
+        (user?.role === "User" && ticket?.createdByUserId === user.userId) ||
+        (user?.role === "Agent" && ticket?.assignedAgentId === user.userId);
+
     const [requestingInformation, setRequestingInformation] = useState(false);
     const [requestContent, setRequestContent] = useState("");
     const [commentRefreshKey, setCommentRefreshKey] = useState(0);
@@ -174,7 +179,7 @@ function TicketModal({
                     </FormField>
                 )}
 
-                {editing && (
+                {editing && canComment && (
                     <div className="border-t border-neutral-800 pt-4">
                         <h3 className="mb-3 text-sm font-semibold text-white">Comentários</h3>
                         <CommentList ticketId={ticket.id} refreshKey={commentRefreshKey} />
@@ -202,7 +207,7 @@ function TicketModal({
                     </div>
                 )}
 
-                {(user?.role === "Agent" || user?.role === "Admin") && (
+                {canComment && (user?.role === "Agent" || user?.role === "Admin") && (
                     <div className="mt-4 border-t border-neutral-800 pt-4">
                         <FormField label="Comentário interno">
                             <Textarea
@@ -226,7 +231,7 @@ function TicketModal({
                     </div>
                 )}
 
-                {user?.role === "Agent" && formData.ticketStatus === "InProgress" && (
+                {user?.role === "Agent" && canComment && formData.ticketStatus === "InProgress" && (
                     <div className="mt-4 border-t border-neutral-800 pt-4">
                         <FormField label="Solicitar informações">
                             <Textarea
