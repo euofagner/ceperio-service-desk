@@ -8,7 +8,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 import CommentList from "./CommentList";
 
-function TicketModal({ ticket, onSubmit, onClose }) {
+function TicketModal({ ticket, onSubmit, onRequestInformation, onClose }) {
     const editing = ticket !== null;
 
     const [formData, setFormData] = useState({
@@ -22,6 +22,10 @@ function TicketModal({ ticket, onSubmit, onClose }) {
     const [validationErrors, setValidationErrors] = useState({});
 
     const { user } = useAuth();
+
+    const [requestingInformation, setRequestingInformation] = useState(false);
+    const [requestContent, setRequestContent] = useState("");
+    const [commentRefreshKey, setCommentRefreshKey] = useState(0);
 
     useEffect(() => {
         function handleKeyDown(e) {
@@ -48,6 +52,22 @@ function TicketModal({ ticket, onSubmit, onClose }) {
             }
         } finally {
             setSubmitting(false);
+        }
+    }
+
+    async function handleRequestInformation() {
+        const content = requestContent.trim();
+        if (!content) return;
+
+        setRequestingInformation(true);
+        try {
+            await onRequestInformation(ticket.id, content);
+            setRequestContent("");
+            setFormData((current) => ({ ...current, ticketStatus: "WaitingUser" }));
+            setCommentRefreshKey((current) => current + 1);
+        }
+        finally {
+            setRequestingInformation(false);
         }
     }
 
@@ -89,7 +109,6 @@ function TicketModal({ ticket, onSubmit, onClose }) {
                             onChange={(e) => setFormData({ ...formData, ticketStatus: e.target.value })}>
                             <option value="Open">Aberto</option>
                             <option value="InProgress">Em andamento</option>
-                            <option value="WaitingUser">Aguardando usuário</option>
                             <option value="Resolved">Resolvido</option>
                             <option value="Closed">Fechado</option>
                         </Select>
@@ -112,7 +131,32 @@ function TicketModal({ ticket, onSubmit, onClose }) {
                 {editing && (
                     <div className="border-t border-neutral-800 pt-4">
                         <h3 className="mb-3 text-sm font-semibold text-white">Comentários</h3>
-                        <CommentList ticketId={ticket.id} />
+                        <CommentList ticketId={ticket.id} refreshKey={commentRefreshKey} />
+                    </div>
+                )}
+
+                {user?.role === "Agent" && formData.ticketStatus === "InProgress" && (
+                    <div className="mt-4 border-t border-neutral-800 pt-4">
+                        <FormField label="Solicitar informações">
+                            <Textarea
+                                value={requestContent}
+                                onChange={(e) => setRequestContent(e.target.value)}
+                                rows={3}
+                                placeholder="Descreva quais informações são necessárias para continuar..."
+                            />
+                        </FormField>
+
+                        <div className="mt-3 flex justify-end">
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                disabled={requestingInformation || !requestContent.trim()}
+                                onClick={handleRequestInformation}
+                            >
+                                {requestingInformation && <Spinner size="sm" />}
+                                {requestingInformation ? "Enviando..." : "Solicitar informações"}
+                            </Button>
+                        </div>
                     </div>
                 )}
 

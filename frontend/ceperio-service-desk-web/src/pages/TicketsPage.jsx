@@ -19,6 +19,8 @@ import { useTicketModal } from "../contexts/TicketModalContext";
 import { createTicket, deleteTicket, updateTicket, assignTicket } from "../services/ticketService";
 import { getHttpErrorMessage } from "../utils/httpError";
 
+import { requestInformation } from "../services/commentService";
+
 function TicketsPage() {
     const [filter, setFilter] = useState("all");
     const [search, setSearch] = useState("");
@@ -95,6 +97,17 @@ function TicketsPage() {
         }
     }
 
+    async function handleRequestInformation(ticketId, content) {
+        try {
+            await requestInformation(ticketId, content);
+            await refresh();
+            showToast("Solicitação de informações enviada!");
+        } catch (error) {
+            showToast(getHttpErrorMessage(error, "Erro ao solicitar informações."), "error");
+            throw error;
+        }
+    }
+
     if (loading && tickets.length === 0) {
         return <Skeleton logo={cepelogo} />;
     }
@@ -142,7 +155,12 @@ function TicketsPage() {
             </div>
 
             {showModal && (
-                <TicketModal ticket={editingTicket} onSubmit={handleSubmit} onClose={closeModal} />
+                <TicketModal
+                    ticket={editingTicket}
+                    onSubmit={handleSubmit}
+                    onRequestInformation={handleRequestInformation}
+                    onClose={closeModal}
+                />
             )}
 
             <Toast toast={toast} onClose={() => setToast(null)} onMouseEnter={pauseToast} onMouseLeave={resumeToast} />

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { MessageCircle } from "lucide-react";
 import { getComments } from "../services/commentService";
 
-function CommentList({ ticketId }) {
+function CommentList({ ticketId, refreshKey = 0}) {
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -34,7 +34,7 @@ function CommentList({ ticketId }) {
         return () => {
             cancelled = true;
         };
-    }, [ticketId]);
+    }, [ticketId, refreshKey]);
 
     function formatName(name) {
         if (!name) return "";
