@@ -8,7 +8,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 import CommentList from "./CommentList";
 
-function TicketModal({ ticket, onSubmit, onRequestInformation, onClose }) {
+function TicketModal({ ticket, onSubmit, onCreateComment, onRequestInformation, onRespondToRequest, onClose }) {
     const editing = ticket !== null;
 
     const [formData, setFormData] = useState({
@@ -26,6 +26,12 @@ function TicketModal({ ticket, onSubmit, onRequestInformation, onClose }) {
     const [requestingInformation, setRequestingInformation] = useState(false);
     const [requestContent, setRequestContent] = useState("");
     const [commentRefreshKey, setCommentRefreshKey] = useState(0);
+
+    const [respondingToRequest, setRespondingToRequest] = useState(false);
+    const [responseContent, setResponseContent] = useState("");
+
+    const [commenting, setCommenting] = useState(false);
+    const [commentContent, setCommentContent] = useState("");
 
     useEffect(() => {
         function handleKeyDown(e) {
@@ -71,6 +77,20 @@ function TicketModal({ ticket, onSubmit, onRequestInformation, onClose }) {
         }
     }
 
+    async function handleCreateComment() {
+        const content = commentContent.trim();
+        if (!content) return;
+
+        setCommenting(true);
+        try {
+            await onCreateComment(ticket.id, content);
+            setCommentContent("");
+            setCommentRefreshKey((current) => current + 1);
+        } finally {
+            setCommenting(false);
+        }
+    }
+
     return (
         <Modal onClose={onClose}>
             <h2 className="text-lg font-semibold text-white mb-4">
@@ -109,6 +129,7 @@ function TicketModal({ ticket, onSubmit, onRequestInformation, onClose }) {
                             onChange={(e) => setFormData({ ...formData, ticketStatus: e.target.value })}>
                             <option value="Open">Aberto</option>
                             <option value="InProgress">Em andamento</option>
+                            <option value="WaitingUser">Aguardando usuário</option>
                             <option value="Resolved">Resolvido</option>
                             <option value="Closed">Fechado</option>
                         </Select>
@@ -132,6 +153,27 @@ function TicketModal({ ticket, onSubmit, onRequestInformation, onClose }) {
                     <div className="border-t border-neutral-800 pt-4">
                         <h3 className="mb-3 text-sm font-semibold text-white">Comentários</h3>
                         <CommentList ticketId={ticket.id} refreshKey={commentRefreshKey} />
+
+                        <div className="mt-4">
+                            <FormField label="Adicionar comentário">
+                                <Textarea
+                                    value={commentContent}
+                                    onChange={(e) => setCommentContent(e.target.value)}
+                                    rows={3}
+                                    placeholder="Escreva uma mensagem..." />
+                            </FormField>
+
+                            <div className="mt-3 flex justify-end">
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    disabled={commenting || !commentContent.trim()}
+                                    onClick={handleCreateComment}>
+                                    {commenting && <Spinner size="sm" />}
+                                    {commenting ? "Enviando..." : "Enviar comentário"}
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                 )}
 
@@ -142,8 +184,7 @@ function TicketModal({ ticket, onSubmit, onRequestInformation, onClose }) {
                                 value={requestContent}
                                 onChange={(e) => setRequestContent(e.target.value)}
                                 rows={3}
-                                placeholder="Descreva quais informações são necessárias para continuar..."
-                            />
+                                placeholder="Descreva quais informações são necessárias para continuar..." />
                         </FormField>
 
                         <div className="mt-3 flex justify-end">
@@ -151,10 +192,47 @@ function TicketModal({ ticket, onSubmit, onRequestInformation, onClose }) {
                                 type="button"
                                 variant="secondary"
                                 disabled={requestingInformation || !requestContent.trim()}
-                                onClick={handleRequestInformation}
-                            >
+                                onClick={handleRequestInformation}>
+
                                 {requestingInformation && <Spinner size="sm" />}
                                 {requestingInformation ? "Enviando..." : "Solicitar informações"}
+                            </Button>
+                        </div>
+                    </div>
+                )}
+
+                {user?.role === "User" && formData.ticketStatus === "WaitingUser" && (
+                    <div className="mt-4 border-t border-neutral-800 pt-4">
+                        <FormField label="Responder à solicitação">
+                            <Textarea
+                                value={responseContent}
+                                onChange={(e) => setResponseContent(e.target.value)}
+                                rows={3}
+                                placeholder="Informe os dados solicitados pelo atendimento..." />
+                        </FormField>
+
+                        <div className="mt-3 flex justify-end">
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                disabled={respondingToRequest || !responseContent.trim()}
+                                onClick={async () => {
+                                    const content = responseContent.trim();
+                                    if (!content) return;
+
+                                    setRespondingToRequest(true);
+                                    try {
+                                        await onRespondToRequest(ticket.id, content);
+                                        setResponseContent("");
+                                        setFormData((current) => ({ ...current, ticketStatus: "InProgress" }));
+                                        setCommentRefreshKey((current) => current + 1);
+                                    } finally {
+                                        setRespondingToRequest(false);
+                                    }
+                                }}>
+
+                                {respondingToRequest && <Spinner size="sm" />}
+                                {respondingToRequest ? "Enviando..." : "Enviar resposta"}
                             </Button>
                         </div>
                     </div>

@@ -19,7 +19,7 @@ import { useTicketModal } from "../contexts/TicketModalContext";
 import { createTicket, deleteTicket, updateTicket, assignTicket } from "../services/ticketService";
 import { getHttpErrorMessage } from "../utils/httpError";
 
-import { requestInformation } from "../services/commentService";
+import { createComment, requestInformation, respondToRequest } from "../services/commentService";
 
 function TicketsPage() {
     const [filter, setFilter] = useState("all");
@@ -108,6 +108,27 @@ function TicketsPage() {
         }
     }
 
+    async function handleRespondToRequest(ticketId, content) {
+        try {
+            await respondToRequest(ticketId, content);
+            await refresh();
+            showToast("Resposta enviada com sucesso!");
+        } catch (error) {
+            showToast(getHttpErrorMessage(error, "Erro ao responder à solicitação."), "error");
+            throw error;
+        }
+    }
+
+    async function handleCreateComment(ticketId, content) {
+        try {
+            await createComment(ticketId, content);
+            showToast("Comentário enviado com sucesso!");
+        } catch (error) {
+            showToast(getHttpErrorMessage(error, "Erro ao enviar comentário."), "error");
+            throw error;
+        }
+    }
+
     if (loading && tickets.length === 0) {
         return <Skeleton logo={cepelogo} />;
     }
@@ -158,7 +179,9 @@ function TicketsPage() {
                 <TicketModal
                     ticket={editingTicket}
                     onSubmit={handleSubmit}
+                    onCreateComment={handleCreateComment}
                     onRequestInformation={handleRequestInformation}
+                    onRespondToRequest={handleRespondToRequest}
                     onClose={closeModal}
                 />
             )}
