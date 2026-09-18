@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { MessageCircle } from "lucide-react";
 import { getComments } from "../services/commentService";
 
-function CommentList({ ticketId, refreshKey = 0}) {
+function CommentList({ ticketId, refreshKey = 0 }) {
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -115,12 +115,29 @@ function CommentList({ ticketId, refreshKey = 0}) {
 
                         {/* content */}
                         <div className="min-w-0 flex-1">
-                            <div className="rounded-xl border border-neutral-800/80 bg-neutral-900/60 px-4 py-3 transition-colors duration-200 group-hover:border-neutral-700 group-hover:bg-neutral-900">
+                            <div className={`
+                                rounded-xl
+                                border
+                                px-4
+                                py-3
+                                transition-colors
+                                duration-200
+                                    ${comment.isInternal
+                                    ? "border-amber-500/20 bg-amber-500/5 group-hover:border-amber-500/30 group-hover:bg-amber-500/10"
+                                    : "border-neutral-800/80 bg-neutral-900/60 group-hover:border-neutral-700 group-hover:bg-neutral-900"
+                                }`}>
+
                                 <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-sm font-semibold text-neutral-200">
+                                    <div className="flex items-center gap-2 min-w-0">
+                                        <span className="text-sm font-semibold text-neutral-200 truncate">
                                             {formattedName}
                                         </span>
+
+                                        {comment.isInternal && (
+                                            <span className="shrink-0 rounded-md border border-amber-500/20 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-400">
+                                                Interno
+                                            </span>
+                                        )}
                                     </div>
 
                                     {/* date */}
