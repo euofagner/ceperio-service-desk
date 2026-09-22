@@ -6,6 +6,8 @@ import { getUsers, updateUserRole } from "../services/userService";
 import Toast from "../components/Toast";
 import { useToast } from "../hooks/useToast";
 
+import { useAuth } from "../contexts/AuthContext";
+
 import cepelogo from "../assets/cepelogo.png";
 
 const ROLES = {
@@ -352,6 +354,8 @@ function UsersPage() {
         resumeToast,
     } = useToast();
 
+    const { user: authenticatedUser, logout } = useAuth();
+
     useEffect(() => {
         let mounted = true;
 
@@ -409,6 +413,11 @@ function UsersPage() {
                         : currentUser
                 )
             );
+
+            if (updatedUser.id === authenticatedUser?.userId) {
+                logout();
+                return;
+            }
 
             showToast(
                 "Perfil do usuário atualizado com sucesso!"
