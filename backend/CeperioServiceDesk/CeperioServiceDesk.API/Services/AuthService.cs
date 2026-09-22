@@ -12,7 +12,7 @@ using System.Text;
 
 namespace CeperioServiceDesk.API.Services
 {
-    public class AuthService(AppDbContext dbContext, IOptions<JwtSettings> jwtSettings, IConfiguration config) : IAuthService
+    public class AuthService(AppDbContext dbContext, IOptions<JwtSettings> jwtSettings) : IAuthService
     {
         private readonly AppDbContext _context = dbContext;
         private readonly JwtSettings _jwtSettings = jwtSettings.Value;
