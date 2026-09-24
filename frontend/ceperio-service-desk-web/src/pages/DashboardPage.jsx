@@ -50,11 +50,11 @@ const statusDotMap = {
 };
 
 const statusBadgeMap = {
-    Open: "border-red-500/20 bg-red-500/10 text-red-400",
-    InProgress: "border-amber-500/20 bg-amber-500/10 text-amber-400",
-    WaitingUser: "border-orange-500/20 bg-orange-500/10 text-orange-400",
-    Resolved: "border-emerald-500/20 bg-emerald-500/10 text-emerald-400",
-    Closed: "border-violet-500/20 bg-violet-500/10 text-violet-400",
+    Open: "border-red-500/30 bg-red-500/10 text-red-300",
+    InProgress: "border-amber-500/30 bg-amber-500/10 text-amber-300",
+    WaitingUser: "border-orange-500/30 bg-orange-500/10 text-orange-300",
+    Resolved: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
+    Closed: "border-violet-500/30 bg-violet-500/10 text-violet-300",
 };
 
 const donutColors = {
@@ -97,7 +97,7 @@ function DashboardPage() {
     if (loading && !dashboard) {
         return (
             <div className="flex min-h-100 items-center justify-center">
-                <div className="flex items-center gap-3 text-sm text-neutral-500">
+                <div className="flex items-center gap-3 text-sm font-medium text-neutral-300">
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-neutral-700 border-t-blue-500" />
                     Carregando dashboard...
                 </div>
@@ -108,10 +108,10 @@ function DashboardPage() {
     if (error && !dashboard) {
         return (
             <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6">
-                <h2 className="text-sm font-semibold text-red-400">
+                <h2 className="text-sm font-semibold text-red-300">
                     Não foi possível carregar o dashboard
                 </h2>
-                <p className="mt-1 text-sm text-neutral-500">
+                <p className="mt-1 text-sm text-neutral-300">
                     Ocorreu um erro ao buscar os dados do Service Desk.
                 </p>
                 <button
@@ -207,7 +207,7 @@ function DashboardPage() {
                         {greeting}, {user?.name?.split(" ")[0] || "usuário"}! 👋
                     </h1>
 
-                    <p className="mt-1 text-sm text-neutral-500">
+                    <p className="mt-1 text-sm text-neutral-300">
                         Aqui está um resumo do seu Service Desk.
                     </p>
                 </div>
@@ -215,7 +215,7 @@ function DashboardPage() {
                 <div className="flex flex-col gap-3 sm:flex-row">
                     <div className="relative">
                         <Search
-                            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500"
+                            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400"
                             strokeWidth={1.8}
                             aria-hidden="true"
                         />
@@ -223,14 +223,14 @@ function DashboardPage() {
                         <input
                             type="text"
                             placeholder="Buscar tickets..."
-                            className="h-10 w-full rounded-lg border border-neutral-800 bg-neutral-900/80 pl-10 pr-4 text-sm text-white outline-none transition placeholder:text-neutral-600 focus:border-blue-500/50 sm:w-64"
+                            className="h-10 w-full rounded-lg border border-neutral-800 bg-neutral-900/80 pl-10 pr-4 text-sm text-white outline-none transition placeholder:text-neutral-500 focus:border-blue-500/50 sm:w-64"
                         />
                     </div>
 
                     <select
                         value={days}
                         onChange={(e) => setDays(Number(e.target.value))}
-                        className="h-10 rounded-lg border border-neutral-800 bg-neutral-900/80 px-3 text-sm text-neutral-300 outline-none transition hover:border-neutral-700 focus:border-blue-500/50"
+                        className="h-10 rounded-lg border border-neutral-800 bg-neutral-900/80 px-3 text-sm text-neutral-200 outline-none transition hover:border-neutral-700 focus:border-blue-500/50"
                     >
                         <option value={7}>Últimos 7 dias</option>
                         <option value={30}>Últimos 30 dias</option>
@@ -262,7 +262,7 @@ function DashboardPage() {
                                     </div>
                                 </div>
 
-                                <p className="mt-4 text-xs text-neutral-500">
+                                <p className="mt-4 text-xs font-medium text-neutral-300">
                                     {stat.label}
                                 </p>
 
@@ -283,7 +283,7 @@ function DashboardPage() {
                                 Tickets por período
                             </h2>
 
-                            <p className="mt-1 text-xs text-neutral-500">
+                            <p className="mt-1 text-xs text-neutral-300">
                                 Visão dos chamados ao longo do tempo
                             </p>
                         </div>
@@ -298,9 +298,9 @@ function DashboardPage() {
                                     key={period.value}
                                     type="button"
                                     onClick={() => setDays(period.value)}
-                                    className={`rounded-md px-2.5 py-1.5 text-[11px] transition ${days === period.value
+                                    className={`rounded-md px-3 py-1.5 text-xs font-medium transition ${days === period.value
                                         ? "bg-blue-600 text-white"
-                                        : "text-neutral-500 hover:text-neutral-300"
+                                        : "text-neutral-400 hover:text-neutral-200"
                                         }`}
                                 >
                                     {period.label}
@@ -345,7 +345,7 @@ function DashboardPage() {
                             })}
                         </div>
 
-                        <div className="mt-2 flex justify-between px-3 text-[10px] text-neutral-600">
+                        <div className="mt-2 flex justify-between px-3 text-xs text-neutral-400">
                             {ticketsByPeriod.map((day, index) => {
                                 const shouldShowLabel =
                                     days === 7 ||
@@ -369,7 +369,7 @@ function DashboardPage() {
                         </div>
                     </div>
 
-                    <div className="mt-4 flex flex-wrap gap-4 text-[11px] text-neutral-500">
+                    <div className="mt-4 flex flex-wrap gap-4 text-xs text-neutral-300">
                         <span className="flex items-center gap-2">
                             <span className="h-2 w-2 rounded-full bg-red-500" />
                             Abertos
@@ -399,7 +399,7 @@ function DashboardPage() {
                             Tickets por status
                         </h2>
 
-                        <p className="mt-1 text-xs text-neutral-500">
+                        <p className="mt-1 text-xs text-neutral-300">
                             Distribuição atual
                         </p>
                     </div>
@@ -418,7 +418,7 @@ function DashboardPage() {
                                     {donutTotal}
                                 </span>
 
-                                <span className="text-xs text-neutral-500">
+                                <span className="text-xs font-medium text-neutral-300">
                                     Total
                                 </span>
                             </div>
@@ -431,12 +431,12 @@ function DashboardPage() {
                                 key={item.status}
                                 className="flex items-center justify-between text-xs"
                             >
-                                <span className="flex items-center gap-2 text-neutral-400">
+                                <span className="flex items-center gap-2 text-neutral-200">
                                     <span className={`h-2 w-2 rounded-full ${item.dot}`} />
                                     {item.label}
                                 </span>
 
-                                <span className="font-medium text-neutral-300">
+                                <span className="font-semibold text-neutral-100">
                                     {item.count}
                                 </span>
                             </div>
@@ -452,7 +452,7 @@ function DashboardPage() {
                             Chamados recentes
                         </h2>
 
-                        <p className="mt-1 text-xs text-neutral-500">
+                        <p className="mt-1 text-xs text-neutral-300">
                             Últimos tickets movimentados
                         </p>
                     </div>
@@ -461,18 +461,18 @@ function DashboardPage() {
                 <div className="overflow-x-auto">
                     <table className="w-full min-w-175 text-left">
                         <thead>
-                            <tr className="border-b border-neutral-800 text-[10px] uppercase tracking-wide text-neutral-600">
-                                <th className="px-5 py-3 font-medium">Ticket</th>
-                                <th className="px-5 py-3 font-medium">Solicitante</th>
-                                <th className="px-5 py-3 font-medium">Prioridade</th>
-                                <th className="px-5 py-3 font-medium">Status</th>
+                            <tr className="border-b border-neutral-800 text-xs uppercase tracking-wide text-neutral-400">
+                                <th className="px-5 py-3 font-semibold">Ticket</th>
+                                <th className="px-5 py-3 font-semibold">Solicitante</th>
+                                <th className="px-5 py-3 font-semibold">Prioridade</th>
+                                <th className="px-5 py-3 font-semibold">Status</th>
                             </tr>
                         </thead>
 
                         <tbody>
                             {recentTickets.length === 0 ? (
                                 <tr>
-                                    <td colSpan={4} className="px-5 py-8 text-center text-xs text-neutral-500">
+                                    <td colSpan={4} className="px-5 py-8 text-center text-xs text-neutral-400">
                                         Nenhum ticket recente.
                                     </td>
                                 </tr>
@@ -487,30 +487,30 @@ function DashboardPage() {
                                                 <span className={`h-2 w-2 rounded-full ${statusDotMap[ticket.ticketStatus]}`} />
 
                                                 <div>
-                                                    <p className="text-xs font-medium text-neutral-200">
+                                                    <p className="text-xs font-semibold text-white">
                                                         #{ticket.id}
                                                     </p>
 
-                                                    <p className="mt-0.5 text-xs text-neutral-500">
+                                                    <p className="mt-0.5 text-xs text-neutral-300">
                                                         {ticket.title}
                                                     </p>
                                                 </div>
                                             </div>
                                         </td>
 
-                                        <td className="px-5 py-4 text-xs text-neutral-400">
+                                        <td className="px-5 py-4 text-xs text-neutral-200">
                                             {ticket.createdByUserName || "Não identificado"}
                                         </td>
 
                                         <td className="px-5 py-4">
-                                            <span className="rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-1 text-[10px] text-neutral-300">
+                                            <span className="rounded-md border border-neutral-700 bg-neutral-800/60 px-2 py-1 text-xs font-medium text-neutral-200">
                                                 {priorityLabels[ticket.ticketPriority] || ticket.ticketPriority}
                                             </span>
                                         </td>
 
                                         <td className="px-5 py-4">
                                             <span
-                                                className={`rounded-md border px-2 py-1 text-[10px] ${statusBadgeMap[ticket.ticketStatus]}`}
+                                                className={`rounded-md border px-2 py-1 text-xs font-medium ${statusBadgeMap[ticket.ticketStatus]}`}
                                             >
                                                 {statusLabels[ticket.ticketStatus] || ticket.ticketStatus}
                                             </span>
@@ -530,7 +530,7 @@ function DashboardPage() {
                             Resumo do período
                         </h2>
 
-                        <p className="mt-1 text-xs text-neutral-500">
+                        <p className="mt-1 text-xs text-neutral-300">
                             Distribuição dos tickets criados no período selecionado
                         </p>
                     </div>
@@ -544,12 +544,12 @@ function DashboardPage() {
                             return (
                                 <div key={status}>
                                     <div className="mb-1.5 flex items-center justify-between text-xs">
-                                        <span className="flex items-center gap-2 text-neutral-400">
+                                        <span className="flex items-center gap-2 text-neutral-200">
                                             <span className={`h-2 w-2 rounded-full ${statusDotMap[status]}`} />
                                             {statusLabels[status]}
                                         </span>
 
-                                        <span className="text-neutral-500">{value}</span>
+                                        <span className="font-semibold text-neutral-100">{value}</span>
                                     </div>
 
                                     <div className="h-1.5 overflow-hidden rounded-full bg-neutral-800">
@@ -565,7 +565,7 @@ function DashboardPage() {
 
                     <div className="mt-5 border-t border-neutral-800 pt-4">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs text-neutral-500">Total no período</span>
+                            <span className="text-xs font-medium text-neutral-300">Total no período</span>
                             <span className="text-sm font-semibold text-white">{periodTotal}</span>
                         </div>
                     </div>
@@ -577,30 +577,30 @@ function DashboardPage() {
                             Tickets por agente
                         </h2>
 
-                        <p className="mt-1 text-xs text-neutral-500">
+                        <p className="mt-1 text-xs text-neutral-300">
                             Distribuição dos tickets atribuídos
                         </p>
                     </div>
 
                     <div className="space-y-4">
                         {agentsView.length === 0 ? (
-                            <p className="text-xs text-neutral-500">
+                            <p className="text-xs text-neutral-400">
                                 Nenhum ticket atribuído.
                             </p>
                         ) : (
                             agentsView.map((agent) => (
                                 <div key={agent.name} className="flex items-center gap-3">
-                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/15 text-[10px] font-semibold text-blue-400">
+                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/15 text-xs font-semibold text-blue-300">
                                         {agent.initials}
                                     </div>
 
                                     <div className="min-w-0 flex-1">
                                         <div className="mb-1.5 flex items-center justify-between">
-                                            <span className="truncate text-xs text-neutral-300">
+                                            <span className="truncate text-xs font-medium text-neutral-200">
                                                 {agent.name}
                                             </span>
 
-                                            <span className="ml-3 text-[10px] text-neutral-500">
+                                            <span className="ml-3 text-xs font-semibold text-neutral-100">
                                                 {agent.tickets}
                                             </span>
                                         </div>
@@ -632,10 +632,10 @@ function DashboardPage() {
                     </span>
 
                     <span>
-                        <span className="block text-xs font-medium text-neutral-200">
+                        <span className="block text-xs font-semibold text-white">
                             Novo ticket
                         </span>
-                        <span className="mt-0.5 block text-xs text-neutral-500">
+                        <span className="mt-0.5 block text-xs text-neutral-300">
                             Abra um novo chamado
                         </span>
                     </span>
@@ -646,15 +646,15 @@ function DashboardPage() {
                     onClick={() => navigate("/tickets")}
                     className="flex items-center gap-3 border-t border-neutral-800 p-4 text-left transition hover:bg-white/3 sm:border-t-0 sm:border-l"
                 >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-neutral-300">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-neutral-200">
                         <Inbox className="h-4 w-4" strokeWidth={2} />
                     </span>
 
                     <span>
-                        <span className="block text-xs font-medium text-neutral-200">
+                        <span className="block text-xs font-semibold text-white">
                             Meus chamados
                         </span>
-                        <span className="mt-0.5 block text-xs text-neutral-500">
+                        <span className="mt-0.5 block text-xs text-neutral-300">
                             Acompanhe seus tickets
                         </span>
                     </span>
@@ -665,15 +665,15 @@ function DashboardPage() {
                     onClick={() => navigate("/settings")}
                     className="flex items-center gap-3 border-t border-neutral-800 p-4 text-left transition hover:bg-white/3 sm:border-t-0 sm:border-l"
                 >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-neutral-300">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-neutral-200">
                         <Settings className="h-4 w-4" strokeWidth={2} />
                     </span>
 
                     <span>
-                        <span className="block text-xs font-medium text-neutral-200">
+                        <span className="block text-xs font-semibold text-white">
                             Configurações
                         </span>
-                        <span className="mt-0.5 block text-xs text-neutral-500">
+                        <span className="mt-0.5 block text-xs text-neutral-300">
                             Personalize o sistema
                         </span>
                     </span>
@@ -682,16 +682,16 @@ function DashboardPage() {
                 <button
                     type="button"
                     disabled
-                    className="flex items-center gap-3 border-t border-neutral-800 p-4 text-left opacity-50 sm:border-t-0 sm:border-l cursor-not-allowed">
+                    className="flex items-center gap-3 border-t border-neutral-800 p-4 text-left opacity-60 sm:border-t-0 sm:border-l cursor-not-allowed">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-neutral-300">
                         <CircleHelp className="h-4 w-4" strokeWidth={2} />
                     </span>
 
                     <span>
-                        <span className="block text-xs font-medium text-neutral-200">
+                        <span className="block text-xs font-semibold text-neutral-200">
                             Central de ajuda
                         </span>
-                        <span className="mt-0.5 block text-xs text-neutral-500">
+                        <span className="mt-0.5 block text-xs text-neutral-400">
                             Consulte a base de conhecimento
                         </span>
                     </span>
