@@ -281,27 +281,60 @@ function DashboardPage() {
                     <div className="mt-6 h-64">
                         <div className="flex h-full items-end gap-2 border-b border-l border-neutral-800 px-3 pb-0">
                             {ticketsByPeriod.map((day, index) => {
-                                const height = (periodTotals[index] / maxPeriodValue) * 100;
+                                const total = periodTotals[index];
+                                const height = (total / maxPeriodValue) * 100;
+
+                                const segments = [
+                                    { value: day.open, color: "bg-red-500" },
+                                    { value: day.inProgress, color: "bg-amber-500" },
+                                    { value: day.waitingUser, color: "bg-orange-500" },
+                                    { value: day.resolved, color: "bg-emerald-500" },
+                                    { value: day.closed, color: "bg-violet-500" },
+                                ];
+
                                 return (
                                     <div key={day.date} className="flex h-full flex-1 items-end">
                                         <div
-                                            className="w-full rounded-t bg-linear-to-t from-blue-600/10 to-blue-500/60 transition-all hover:from-blue-600/20 hover:to-blue-400"
-                                            style={{ height: `${Math.max(height, 2)}%` }}
-                                        />
+                                            className="flex w-full flex-col-reverse overflow-hidden rounded-t"
+                                            style={{ height: `${Math.max(height, total > 0 ? 2 : 0)}%` }}
+                                        >
+                                            {segments.map((segment, segmentIndex) => {
+                                                if (segment.value === 0) return null;
+                                                return (
+                                                    <div
+                                                        key={segmentIndex}
+                                                        className={`w-full ${segment.color} transition-all`}
+                                                        style={{ height: `${(segment.value / total) * 100}%` }}
+                                                    />
+                                                );
+                                            })}
+                                        </div>
                                     </div>
                                 );
                             })}
                         </div>
 
                         <div className="mt-2 flex justify-between px-3 text-[10px] text-neutral-600">
-                            {ticketsByPeriod.map((day) => (
-                                <span key={day.date}>
-                                    {new Date(day.date).toLocaleDateString("pt-BR", {
-                                        day: "2-digit",
-                                        month: "2-digit",
-                                    })}
-                                </span>
-                            ))}
+                            {ticketsByPeriod.map((day, index) => {
+                                const shouldShowLabel =
+                                    days === 7 ||
+                                    index === 0 ||
+                                    index === ticketsByPeriod.length - 1 ||
+                                    index % (days === 30 ? 5 : 15) === 0;
+
+                                if (!shouldShowLabel) {
+                                    return <span key={day.date} />;
+                                }
+
+                                return (
+                                    <span key={day.date}>
+                                        {new Date(day.date).toLocaleDateString("pt-BR", {
+                                            day: "2-digit",
+                                            month: "2-digit",
+                                        })}
+                                    </span>
+                                );
+                            })}
                         </div>
                     </div>
 
