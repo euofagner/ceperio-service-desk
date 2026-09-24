@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+import { useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
+
 import cepelogo from "../assets/cepelogo.png";
 
 import Skeleton from "../components/Skeleton";
@@ -36,6 +39,16 @@ function TicketsPage() {
 
     const { toast, setToast, showToast, pauseToast, resumeToast } = useToast();
     const { showModal, editingTicket, openCreateModal, openEditModal, closeModal } = useTicketModal();
+
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    useEffect(() => {
+        if (searchParams.get("new") === "true") {
+            openCreateModal();
+            searchParams.delete("new");
+            setSearchParams(searchParams, { replace: true });
+        }
+    }, [searchParams, setSearchParams, openCreateModal]);
 
     const statusParam = filter === "all" ? null : filter;
 

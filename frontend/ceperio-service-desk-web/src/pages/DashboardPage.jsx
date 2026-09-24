@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { useAuth } from "../contexts/AuthContext";
 import { useDashboard } from "../hooks/useDashboard";
 
@@ -65,6 +67,8 @@ function DashboardPage() {
     const [days, setDays] = useState(7);
 
     const { dashboard, loading, error, refresh } = useDashboard(days);
+
+    const navigate = useNavigate();
 
     const summary = dashboard?.summary;
     const recentTickets = dashboard?.recentTickets ?? [];
@@ -612,32 +616,81 @@ function DashboardPage() {
             </section>
 
             <section className="grid grid-cols-1 overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/70 sm:grid-cols-2 lg:grid-cols-4">
-                {[
-                    { icon: "＋", title: "Novo ticket", description: "Abra um novo chamado" },
-                    { icon: "◉", title: "Meus chamados", description: "Acompanhe seus tickets" },
-                    { icon: "⚙", title: "Configurações", description: "Personalize o sistema" },
-                    { icon: "?", title: "Central de ajuda", description: "Consulte a base de conhecimento" },
-                ].map((item, index) => (
-                    <button
-                        key={item.title}
-                        type="button"
-                        className={`flex items-center gap-3 p-4 text-left transition hover:bg-white/3 ${index !== 0 ? "border-t border-neutral-800 sm:border-t-0 sm:border-l" : ""}`}
-                    >
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-sm text-blue-400">
-                            {item.icon}
-                        </span>
+                <button
+                    type="button"
+                    onClick={() => navigate("/tickets?new=true")}
+                    className="flex items-center gap-3 p-4 text-left transition hover:bg-white/3"
+                >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-lg text-blue-400">
+                        ＋
+                    </span>
 
-                        <span className="min-w-0">
-                            <span className="block text-xs font-medium text-neutral-200">
-                                {item.title}
-                            </span>
-
-                            <span className="mt-0.5 block truncate text-[10px] text-neutral-500">
-                                {item.description}
-                            </span>
+                    <span>
+                        <span className="block text-xs font-medium text-neutral-200">
+                            Novo ticket
                         </span>
-                    </button>
-                ))}
+                        <span className="mt-0.5 block text-xs text-neutral-500">
+                            Abra um novo chamado
+                        </span>
+                    </span>
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => navigate("/tickets")}
+                    className="flex items-center gap-3 border-t border-neutral-800 p-4 text-left transition hover:bg-white/3 sm:border-t-0 sm:border-l"
+                >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-lg text-neutral-300">
+                        ◉
+                    </span>
+
+                    <span>
+                        <span className="block text-xs font-medium text-neutral-200">
+                            Meus chamados
+                        </span>
+                        <span className="mt-0.5 block text-xs text-neutral-500">
+                            Acompanhe seus tickets
+                        </span>
+                    </span>
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => navigate("/settings")}
+                    className="flex items-center gap-3 border-t border-neutral-800 p-4 text-left transition hover:bg-white/3 sm:border-t-0 sm:border-l"
+                >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-lg text-neutral-300">
+                        ⚙
+                    </span>
+
+                    <span>
+                        <span className="block text-xs font-medium text-neutral-200">
+                            Configurações
+                        </span>
+                        <span className="mt-0.5 block text-xs text-neutral-500">
+                            Personalize o sistema
+                        </span>
+                    </span>
+                </button>
+
+                <button
+                    type="button"
+                    disabled
+                    className="flex items-center gap-3 border-t border-neutral-800 p-4 text-left opacity-50 sm:border-t-0 sm:border-l cursor-not-allowed"
+                >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-lg text-neutral-300">
+                        ?
+                    </span>
+
+                    <span>
+                        <span className="block text-xs font-medium text-neutral-200">
+                            Central de ajuda
+                        </span>
+                        <span className="mt-0.5 block text-xs text-neutral-500">
+                            Consulte a base de conhecimento
+                        </span>
+                    </span>
+                </button>
             </section>
         </div>
     );
