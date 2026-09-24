@@ -1,5 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+    Ticket,
+    Circle,
+    Clock,
+    UserCheck,
+    CircleCheckBig,
+    Lock,
+    Search,
+    Plus,
+    Inbox,
+    Settings,
+    CircleHelp,
+} from "lucide-react";
 
 import { useAuth } from "../contexts/AuthContext";
 import { useDashboard } from "../hooks/useDashboard";
@@ -114,12 +127,12 @@ function DashboardPage() {
 
     const stats = summary
         ? [
-            { label: "Total de Tickets", value: summary.total, color: "blue", icon: "▣" },
-            { label: "Abertos", value: summary.open, color: "red", icon: "□" },
-            { label: "Em andamento", value: summary.inProgress, color: "amber", icon: "◷" },
-            { label: "Aguardando usuário", value: summary.waitingUser, color: "orange", icon: "◉" },
-            { label: "Resolvidos", value: summary.resolved, color: "emerald", icon: "✓" },
-            { label: "Fechados", value: summary.closed, color: "violet", icon: "□" },
+            { label: "Total de Tickets", value: summary.total, color: "blue", Icon: Ticket },
+            { label: "Abertos", value: summary.open, color: "red", Icon: Circle },
+            { label: "Em andamento", value: summary.inProgress, color: "amber", Icon: Clock },
+            { label: "Aguardando usuário", value: summary.waitingUser, color: "orange", Icon: UserCheck },
+            { label: "Resolvidos", value: summary.resolved, color: "emerald", Icon: CircleCheckBig },
+            { label: "Fechados", value: summary.closed, color: "violet", Icon: Lock },
         ]
         : [];
 
@@ -201,19 +214,11 @@ function DashboardPage() {
 
                 <div className="flex flex-col gap-3 sm:flex-row">
                     <div className="relative">
-                        <svg
+                        <Search
                             className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="1.8"
-                                d="m21 21-4.35-4.35m1.35-5.4a6.75 6.75 0 1 1-13.5 0 6.75 6.75 0 0 1 13.5 0Z"
-                            />
-                        </svg>
+                            strokeWidth={1.8}
+                            aria-hidden="true"
+                        />
 
                         <input
                             type="text"
@@ -237,6 +242,7 @@ function DashboardPage() {
             <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
                 {stats.map((stat) => {
                     const colors = colorClasses[stat.color];
+                    const StatIcon = stat.Icon;
 
                     return (
                         <div
@@ -250,9 +256,9 @@ function DashboardPage() {
                             <div className="relative">
                                 <div className="flex items-start justify-between">
                                     <div
-                                        className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-semibold ${colors.icon}`}
+                                        className={`flex h-9 w-9 items-center justify-center rounded-lg ${colors.icon}`}
                                     >
-                                        {stat.icon}
+                                        <StatIcon className="h-4 w-4" strokeWidth={2} />
                                     </div>
                                 </div>
 
@@ -621,8 +627,8 @@ function DashboardPage() {
                     onClick={() => navigate("/tickets?new=true")}
                     className="flex items-center gap-3 p-4 text-left transition hover:bg-white/3"
                 >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-lg text-blue-400">
-                        ＋
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400">
+                        <Plus className="h-4 w-4" strokeWidth={2} />
                     </span>
 
                     <span>
@@ -640,8 +646,8 @@ function DashboardPage() {
                     onClick={() => navigate("/tickets")}
                     className="flex items-center gap-3 border-t border-neutral-800 p-4 text-left transition hover:bg-white/3 sm:border-t-0 sm:border-l"
                 >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-lg text-neutral-300">
-                        ◉
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-neutral-300">
+                        <Inbox className="h-4 w-4" strokeWidth={2} />
                     </span>
 
                     <span>
@@ -659,8 +665,8 @@ function DashboardPage() {
                     onClick={() => navigate("/settings")}
                     className="flex items-center gap-3 border-t border-neutral-800 p-4 text-left transition hover:bg-white/3 sm:border-t-0 sm:border-l"
                 >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-lg text-neutral-300">
-                        ⚙
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-neutral-300">
+                        <Settings className="h-4 w-4" strokeWidth={2} />
                     </span>
 
                     <span>
@@ -676,10 +682,9 @@ function DashboardPage() {
                 <button
                     type="button"
                     disabled
-                    className="flex items-center gap-3 border-t border-neutral-800 p-4 text-left opacity-50 sm:border-t-0 sm:border-l cursor-not-allowed"
-                >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-lg text-neutral-300">
-                        ?
+                    className="flex items-center gap-3 border-t border-neutral-800 p-4 text-left opacity-50 sm:border-t-0 sm:border-l cursor-not-allowed">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-neutral-300">
+                        <CircleHelp className="h-4 w-4" strokeWidth={2} />
                     </span>
 
                     <span>
