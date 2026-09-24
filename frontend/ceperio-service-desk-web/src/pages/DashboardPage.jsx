@@ -2,15 +2,6 @@ import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useDashboard } from "../hooks/useDashboard";
 
-const categories = [
-    { name: "Informática", value: 74 },
-    { name: "Recursos Humanos", value: 48 },
-    { name: "Financeiro", value: 40 },
-    { name: "Comercial", value: 32 },
-    { name: "Marketing", value: 26 },
-    { name: "Outros", value: 45 },
-];
-
 const colorClasses = {
     blue: { icon: "bg-blue-500/15 text-blue-400", border: "border-blue-500/20", glow: "bg-blue-500/5" },
     red: { icon: "bg-red-500/15 text-red-400", border: "border-red-500/20", glow: "bg-red-500/5" },
@@ -60,6 +51,14 @@ const donutColors = {
 };
 
 const STATUS_ORDER = ["Open", "InProgress", "WaitingUser", "Resolved", "Closed"];
+
+const statusToSummaryKey = {
+    Open: "open",
+    InProgress: "inProgress",
+    WaitingUser: "waitingUser",
+    Resolved: "resolved",
+    Closed: "closed",
+};
 
 function DashboardPage() {
     const { user } = useAuth();
@@ -160,6 +159,28 @@ function DashboardPage() {
         tickets: agent.ticketCount,
     }));
     const maxAgentTickets = Math.max(...agentsView.map((a) => a.tickets), 1);
+
+    const periodSummary = ticketsByPeriod.reduce(
+        (acc, day) => ({
+            open: acc.open + day.open,
+            inProgress: acc.inProgress + day.inProgress,
+            waitingUser: acc.waitingUser + day.waitingUser,
+            resolved: acc.resolved + day.resolved,
+            closed: acc.closed + day.closed,
+        }),
+        {
+            open: 0,
+            inProgress: 0,
+            waitingUser: 0,
+            resolved: 0,
+            closed: 0,
+        }
+    );
+
+    const periodTotal = Object.values(periodSummary).reduce(
+        (total, value) => total + value,
+        0
+    );
 
     return (
         <div className="mx-auto max-w-375 space-y-6">
@@ -496,39 +517,47 @@ function DashboardPage() {
                 <div className="rounded-xl border border-neutral-800 bg-neutral-900/70 p-5">
                     <div className="mb-5">
                         <h2 className="text-sm font-semibold text-white">
-                            Tickets por categoria
+                            Resumo do período
                         </h2>
 
                         <p className="mt-1 text-xs text-neutral-500">
-                            Distribuição dos chamados
+                            Distribuição dos tickets criados no período selecionado
                         </p>
                     </div>
 
                     <div className="space-y-4">
-                        {categories.map((category) => {
-                            const percentage = Math.round((category.value / 86) * 100);
+                        {STATUS_ORDER.map((status) => {
+                            const value = periodSummary[statusToSummaryKey[status]];
+                            const percentage =
+                                periodTotal > 0 ? Math.round((value / periodTotal) * 100) : 0;
 
                             return (
-                                <div key={category.name}>
+                                <div key={status}>
                                     <div className="mb-1.5 flex items-center justify-between text-xs">
-                                        <span className="text-neutral-400">
-                                            {category.name}
+                                        <span className="flex items-center gap-2 text-neutral-400">
+                                            <span className={`h-2 w-2 rounded-full ${statusDotMap[status]}`} />
+                                            {statusLabels[status]}
                                         </span>
 
-                                        <span className="text-neutral-500">
-                                            {category.value}
-                                        </span>
+                                        <span className="text-neutral-500">{value}</span>
                                     </div>
 
                                     <div className="h-1.5 overflow-hidden rounded-full bg-neutral-800">
                                         <div
-                                            className="h-full rounded-full bg-blue-500 transition-all"
-                                            style={{ width: `${Math.min(percentage, 100)}%` }}
+                                            className={`h-full rounded-full ${statusDotMap[status]} transition-all`}
+                                            style={{ width: `${percentage}%` }}
                                         />
                                     </div>
                                 </div>
                             );
                         })}
+                    </div>
+
+                    <div className="mt-5 border-t border-neutral-800 pt-4">
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs text-neutral-500">Total no período</span>
+                            <span className="text-sm font-semibold text-white">{periodTotal}</span>
+                        </div>
                     </div>
                 </div>
 
