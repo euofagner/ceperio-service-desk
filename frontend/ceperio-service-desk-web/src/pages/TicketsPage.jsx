@@ -17,7 +17,13 @@ import { useToast } from "../hooks/useToast";
 
 import { useTicketModal } from "../contexts/TicketModalContext";
 
-import { createTicket, deleteTicket, updateTicket, assignTicket } from "../services/ticketService";
+import {
+    createTicket,
+    deleteTicket,
+    updateTicket,
+    assignTicket,
+    getTicketById,
+} from "../services/ticketService";
 import { getHttpErrorMessage } from "../utils/httpError";
 
 import {
@@ -60,6 +66,48 @@ function TicketsPage() {
             state: {},
         });
     }, [location, navigate, openCreateModal]);
+
+    useEffect(() => {
+        const ticketId = location.state?.openTicketId;
+
+        if (!ticketId) {
+            return;
+        }
+
+        let cancelled = false;
+
+        async function loadTicket() {
+            try {
+                const ticket = await getTicketById(ticketId);
+
+                if (cancelled) {
+                    return;
+                }
+
+                openEditModal(ticket);
+            } catch (error) {
+                if (!cancelled) {
+                    showToast(
+                        getHttpErrorMessage(error, "Erro ao carregar ticket."),
+                        "error"
+                    );
+                }
+            } finally {
+                if (!cancelled) {
+                    navigate(location.pathname, {
+                        replace: true,
+                        state: {},
+                    });
+                }
+            }
+        }
+
+        loadTicket();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [location, navigate, openEditModal, showToast]);
 
     const statusParam = filter === "all" ? null : filter;
 

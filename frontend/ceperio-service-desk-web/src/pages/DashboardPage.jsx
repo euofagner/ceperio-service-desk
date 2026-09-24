@@ -480,8 +480,13 @@ function DashboardPage() {
                                 recentTickets.map((ticket) => (
                                     <tr
                                         key={ticket.id}
-                                        className="border-b border-neutral-800/70 last:border-0 transition hover:bg-white/2"
-                                    >
+                                        onClick={() =>
+                                            navigate("/tickets", {
+                                                state: { openTicketId: ticket.id },
+                                            })
+                                        }
+                                        className="border-b border-neutral-800/70 last:border-0 transition hover:bg-white/2  cursor-pointer">
+
                                         <td className="px-5 py-4">
                                             <div className="flex items-center gap-3">
                                                 <span className={`h-2 w-2 rounded-full ${statusDotMap[ticket.ticketStatus]}`} />
