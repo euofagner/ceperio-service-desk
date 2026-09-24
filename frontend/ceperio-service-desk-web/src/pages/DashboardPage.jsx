@@ -624,9 +624,13 @@ function DashboardPage() {
             <section className="grid grid-cols-1 overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/70 sm:grid-cols-2 lg:grid-cols-4">
                 <button
                     type="button"
-                    onClick={() => navigate("/tickets?new=true")}
-                    className="flex items-center gap-3 p-4 text-left transition hover:bg-white/3"
-                >
+                    onClick={() =>
+                        navigate("/tickets", {
+                            state: { openCreateModal: true },
+                        })
+                    }
+                    className="flex items-center gap-3 p-4 text-left transition hover:bg-white/3">
+
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400">
                         <Plus className="h-4 w-4" strokeWidth={2} />
                     </span>

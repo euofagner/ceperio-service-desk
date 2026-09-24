@@ -1,7 +1,5 @@
-import { useState } from "react";
-
-import { useSearchParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import cepelogo from "../assets/cepelogo.png";
 
@@ -38,17 +36,30 @@ function TicketsPage() {
     const [deleting, setDeleting] = useState(false);
 
     const { toast, setToast, showToast, pauseToast, resumeToast } = useToast();
-    const { showModal, editingTicket, openCreateModal, openEditModal, closeModal } = useTicketModal();
 
-    const [searchParams, setSearchParams] = useSearchParams();
+    const {
+        showModal,
+        editingTicket,
+        openCreateModal,
+        openEditModal,
+        closeModal,
+    } = useTicketModal();
+
+    const location = useLocation();
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (searchParams.get("new") === "true") {
-            openCreateModal();
-            searchParams.delete("new");
-            setSearchParams(searchParams, { replace: true });
+        if (!location.state?.openCreateModal) {
+            return;
         }
-    }, [searchParams, setSearchParams, openCreateModal]);
+
+        openCreateModal();
+
+        navigate(location.pathname, {
+            replace: true,
+            state: {},
+        });
+    }, [location, navigate, openCreateModal]);
 
     const statusParam = filter === "all" ? null : filter;
 

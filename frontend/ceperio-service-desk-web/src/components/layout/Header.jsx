@@ -1,9 +1,8 @@
-import { useLocation } from "react-router-dom";
-import { useTicketModal } from "../../contexts/TicketModalContext";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function Header() {
     const location = useLocation();
-    const { openCreateModal } = useTicketModal();
+    const navigate = useNavigate();
 
     const titles = {
         "/dashboard": "Dashboard",
@@ -43,9 +42,13 @@ function Header() {
 
                 <button
                     type="button"
-                    onClick={openCreateModal}
+                    onClick={() =>
+                        navigate("/tickets", {
+                            state: { openCreateModal: true },
+                        })
+                    }
                     className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-600/10 transition-colors hover:bg-blue-500">
-                        
+
                     <span className="text-lg leading-none">+</span>
                     <span>Novo ticket</span>
                 </button>
