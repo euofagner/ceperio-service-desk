@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import cepelogo from "../assets/cepelogo.png";
 
@@ -34,8 +34,10 @@ import {
 } from "../services/commentService";
 
 function TicketsPage() {
+    const [searchParams, setSearchParams] = useSearchParams();
+
     const [filter, setFilter] = useState("all");
-    const [search, setSearch] = useState("");
+    const [search, setSearch] = useState(() => searchParams.get("search") || "");
     const debouncedSearch = useDebounce(search, 300);
 
     const [deleteTarget, setDeleteTarget] = useState(null);
@@ -53,6 +55,24 @@ function TicketsPage() {
 
     const location = useLocation();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const currentSearch = searchParams.get("search") || "";
+
+        if (debouncedSearch === currentSearch) {
+            return;
+        }
+
+        const nextParams = new URLSearchParams(searchParams);
+
+        if (debouncedSearch.trim()) {
+            nextParams.set("search", debouncedSearch.trim());
+        } else {
+            nextParams.delete("search");
+        }
+
+        setSearchParams(nextParams, { replace: true });
+    }, [debouncedSearch, searchParams, setSearchParams]);
 
     useEffect(() => {
         if (!location.state?.openCreateModal) {

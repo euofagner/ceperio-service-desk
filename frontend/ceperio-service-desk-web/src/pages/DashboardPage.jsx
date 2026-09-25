@@ -78,10 +78,22 @@ const statusToSummaryKey = {
 function DashboardPage() {
     const { user } = useAuth();
     const [days, setDays] = useState(7);
+    const [search, setSearch] = useState("");
 
     const { dashboard, loading, error, refresh } = useDashboard(days);
 
     const navigate = useNavigate();
+
+    function handleSearch() {
+        const value = search.trim();
+
+        if (!value) {
+            navigate("/tickets");
+            return;
+        }
+
+        navigate(`/tickets?search=${encodeURIComponent(value)}`);
+    }
 
     const summary = dashboard?.summary;
     const recentTickets = dashboard?.recentTickets ?? [];
@@ -214,14 +226,24 @@ function DashboardPage() {
 
                 <div className="flex flex-col gap-3 sm:flex-row">
                     <div className="relative">
-                        <Search
-                            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400"
-                            strokeWidth={1.8}
-                            aria-hidden="true"
-                        />
+                        <button
+                            type="button"
+                            onClick={handleSearch}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 transition hover:text-white"
+                            aria-label="Buscar tickets"
+                        >
+                            <Search className="h-4 w-4" strokeWidth={1.8} />
+                        </button>
 
                         <input
                             type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    handleSearch();
+                                }
+                            }}
                             placeholder="Buscar tickets..."
                             className="h-10 w-full rounded-lg border border-neutral-800 bg-neutral-900/80 pl-10 pr-4 text-sm text-white outline-none transition placeholder:text-neutral-500 focus:border-blue-500/50 sm:w-64"
                         />
@@ -485,7 +507,7 @@ function DashboardPage() {
                                                 state: { openTicketId: ticket.id },
                                             })
                                         }
-                                        className="border-b border-neutral-800/70 last:border-0 transition hover:bg-white/2  cursor-pointer">
+                                        className="border-b border-neutral-800/70 last:border-0 transition hover:bg-white/2 cursor-pointer">
 
                                         <td className="px-5 py-4">
                                             <div className="flex items-center gap-3">
