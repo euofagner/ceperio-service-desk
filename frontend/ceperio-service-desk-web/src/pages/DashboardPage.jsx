@@ -75,6 +75,401 @@ const statusToSummaryKey = {
     Closed: "closed",
 };
 
+const chartLine = (a, b) => ({
+    length: Math.hypot(b.x - a.x, b.y - a.y),
+    angle: Math.atan2(b.y - a.y, b.x - a.x),
+});
+
+const chartControlPoint = (current, previous, next, reverse) => {
+    const p = previous || current;
+    const n = next || current;
+    const smoothing = 0.18;
+    const o = chartLine(p, n);
+    const angle = o.angle + (reverse ? Math.PI : 0);
+    const length = o.length * smoothing;
+    return [
+        current.x + Math.cos(angle) * length,
+        current.y + Math.sin(angle) * length,
+    ];
+};
+
+const smoothPath = (points) =>
+    points.reduce((acc, point, i, a) => {
+        if (i === 0) return `M ${point.x},${point.y}`;
+        const [cpsX, cpsY] = chartControlPoint(a[i - 1], a[i - 2], point);
+        const [cpeX, cpeY] = chartControlPoint(point, a[i - 1], a[i + 1], true);
+        return `${acc} C ${cpsX},${cpsY} ${cpeX},${cpeY} ${point.x},${point.y}`;
+    }, "");
+
+function TicketsLineChart({ data, days }) {
+    const [hoverIndex, setHoverIndex] = useState(null);
+
+    const width = 800;
+    const height = 320;
+    const padding = { top: 24, right: 24, bottom: 40, left: 40 };
+    const innerW = width - padding.left - padding.right;
+    const innerH = height - padding.top - padding.bottom;
+
+    const n = data.length;
+
+    if (n === 0) {
+        return (
+            <div className="mt-6 flex h-64 items-center justify-center text-xs text-neutral-400">
+                Nenhum dado no período.
+            </div>
+        );
+    }
+
+    const series = [
+        { key: "open", label: "Abertos", color: donutColors.Open, values: data.map((d) => d.open) },
+        { key: "inProgress", label: "Em andamento", color: donutColors.InProgress, values: data.map((d) => d.inProgress) },
+        { key: "waitingUser", label: "Aguardando usuário", color: donutColors.WaitingUser, values: data.map((d) => d.waitingUser) },
+        { key: "resolved", label: "Resolvidos", color: donutColors.Resolved, values: data.map((d) => d.resolved) },
+        { key: "closed", label: "Fechados", color: donutColors.Closed, values: data.map((d) => d.closed) },
+    ];
+
+    const allValues = series.flatMap((s) => s.values);
+    const rawMax = Math.max(...allValues, 1);
+    const maxVal = Math.max(8, Math.ceil(rawMax / 8) * 8);
+    const gridValues = [0, maxVal * 0.25, maxVal * 0.5, maxVal * 0.75, maxVal];
+
+    const xStep = n > 1 ? innerW / (n - 1) : 0;
+    const xFor = (i) => padding.left + i * xStep;
+    const yFor = (v) => padding.top + innerH - (v / maxVal) * innerH;
+
+    const seriesWithPoints = series.map((s) => ({
+        ...s,
+        points: s.values.map((v, i) => ({ x: xFor(i), y: yFor(v), value: v })),
+    }));
+
+    const tooltipX =
+        hoverIndex !== null
+            ? Math.max(100, Math.min(width - 100, xFor(hoverIndex)))
+            : 0;
+
+    const shouldShowLabel = (i) => {
+        if (n <= 7) return true;
+        if (i === 0 || i === n - 1) return true;
+        const step = days === 30 ? 5 : 15;
+        return i % step === 0;
+    };
+
+    const formatDate = (d) =>
+        new Date(d).toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+        });
+
+    return (
+        <div className="relative mt-6">
+            <svg
+                viewBox={`0 0 ${width} ${height}`}
+                className="h-auto w-full overflow-visible"
+                preserveAspectRatio="xMidYMid meet"
+            >
+                <defs>
+                    {seriesWithPoints.map((s) => (
+                        <linearGradient
+                            key={s.key}
+                            id={`line-grad-${s.key}`}
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="1"
+                        >
+                            <stop offset="0%" stopColor={s.color} stopOpacity="0.22" />
+                            <stop offset="100%" stopColor={s.color} stopOpacity="0" />
+                        </linearGradient>
+                    ))}
+                </defs>
+
+                {gridValues.map((v, i) => (
+                    <g key={i}>
+                        <line
+                            x1={padding.left}
+                            x2={width - padding.right}
+                            y1={yFor(v)}
+                            y2={yFor(v)}
+                            stroke="rgba(255,255,255,0.05)"
+                            strokeDasharray="3 6"
+                        />
+                        <text
+                            x={padding.left - 12}
+                            y={yFor(v) + 3.5}
+                            textAnchor="end"
+                            fontSize="10"
+                            className="fill-neutral-500"
+                        >
+                            {Math.round(v)}
+                        </text>
+                    </g>
+                ))}
+
+                {hoverIndex !== null && (
+                    <line
+                        x1={xFor(hoverIndex)}
+                        x2={xFor(hoverIndex)}
+                        y1={padding.top}
+                        y2={padding.top + innerH}
+                        stroke="rgba(255,255,255,0.18)"
+                        strokeDasharray="3 4"
+                    />
+                )}
+
+                {data.map((d, i) => (
+                    <text
+                        key={d.date}
+                        x={xFor(i)}
+                        y={height - 14}
+                        textAnchor="middle"
+                        fontSize="10"
+                        className={
+                            hoverIndex === i ? "fill-neutral-200" : "fill-neutral-500"
+                        }
+                        opacity={shouldShowLabel(i) ? 1 : 0}
+                    >
+                        {formatDate(d.date)}
+                    </text>
+                ))}
+
+                {seriesWithPoints.map((s) => {
+                    const pathD = smoothPath(s.points);
+                    const areaD = `${pathD} L ${s.points[s.points.length - 1].x},${padding.top + innerH} L ${s.points[0].x},${padding.top + innerH} Z`;
+                    return (
+                        <path
+                            key={`area-${s.key}`}
+                            d={areaD}
+                            fill={`url(#line-grad-${s.key})`}
+                            opacity={hoverIndex === null ? 1 : 0.35}
+                            className="transition-opacity duration-200"
+                        />
+                    );
+                })}
+
+                {seriesWithPoints.map((s) => (
+                    <path
+                        key={`line-${s.key}`}
+                        d={smoothPath(s.points)}
+                        fill="none"
+                        stroke={s.color}
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        opacity={hoverIndex === null ? 1 : 0.55}
+                        className="transition-opacity duration-200"
+                        style={{ filter: "drop-shadow(0 0 6px rgba(0,0,0,0.35))" }}
+                    />
+                ))}
+
+                {hoverIndex !== null &&
+                    seriesWithPoints.map((s) => {
+                        const p = s.points[hoverIndex];
+                        return (
+                            <g key={`dot-${s.key}`}>
+                                <circle cx={p.x} cy={p.y} r="8" fill={s.color} opacity="0.18" />
+                                <circle
+                                    cx={p.x}
+                                    cy={p.y}
+                                    r="3.5"
+                                    fill="#171717"
+                                    stroke={s.color}
+                                    strokeWidth="2"
+                                />
+                            </g>
+                        );
+                    })}
+
+                {data.map((d, i) => {
+                    const halfStep = n > 1 ? xStep / 2 : innerW / 2;
+                    return (
+                        <rect
+                            key={`hit-${d.date}`}
+                            x={xFor(i) - halfStep}
+                            y={padding.top}
+                            width={n > 1 ? xStep : innerW}
+                            height={innerH}
+                            fill="transparent"
+                            onMouseEnter={() => setHoverIndex(i)}
+                            onMouseLeave={() => setHoverIndex(null)}
+                            style={{ cursor: "crosshair" }}
+                        />
+                    );
+                })}
+            </svg>
+
+            {hoverIndex !== null && (
+                <div
+                    className="pointer-events-none absolute top-0 z-20 -translate-x-1/2 transition-all duration-150"
+                    style={{ left: `${(tooltipX / width) * 100}%` }}
+                >
+                    <div className="min-w-45 rounded-xl border border-neutral-800 bg-neutral-950/95 p-3 shadow-2xl shadow-black/60 backdrop-blur-xl">
+                        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-400">
+                            {formatDate(data[hoverIndex].date)}
+                        </p>
+                        <div className="space-y-1.5">
+                            {series.map((s) => (
+                                <div
+                                    key={s.key}
+                                    className="flex items-center justify-between gap-4 text-xs"
+                                >
+                                    <span className="flex items-center gap-2 text-neutral-300">
+                                        <span
+                                            className="h-1.5 w-1.5 rounded-full"
+                                            style={{ backgroundColor: s.color }}
+                                        />
+                                        {s.label}
+                                    </span>
+                                    <span className="font-semibold tabular-nums text-white">
+                                        {s.values[hoverIndex]}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function TicketsDonut({ statusDistribution, donutTotal, donutGradient, donutGlow }) {
+    const [hoverStatus, setHoverStatus] = useState(null);
+
+    const hoveredItem = hoverStatus
+        ? statusDistribution.find((s) => s.status === hoverStatus)
+        : null;
+
+    const activeGlow = hoveredItem
+        ? `${hoveredItem.color}55`
+        : donutGlow
+            ? `conic-gradient(${donutGlow})`
+            : "transparent";
+
+    const activeBackgroundImage = donutGradient
+        ? `conic-gradient(${donutGradient})`
+        : "conic-gradient(#27272a 0% 100%)";
+
+    const size = 192;           
+    const cx = size / 2;
+    const cy = size / 2;
+    const rExt = size / 2;       
+    const rInt = 64;         
+
+    const polar = (radius, angleDeg) => {
+        const rad = ((angleDeg - 90) * Math.PI) / 180;
+        return { x: cx + radius * Math.cos(rad), y: cy + radius * Math.sin(rad) };
+    };
+
+    const slicePath = (startAngle, endAngle) => {
+        const sweep = endAngle - startAngle;
+        if (sweep >= 359.999) {
+            return `
+                M ${cx} ${cy - rExt}
+                A ${rExt} ${rExt} 0 1 1 ${cx - 0.01} ${cy - rExt}
+                Z
+                M ${cx} ${cy - rInt}
+                A ${rInt} ${rInt} 0 1 0 ${cx - 0.01} ${cy - rInt}
+                Z
+            `;
+        }
+
+        const startExt = polar(rExt, startAngle);
+        const endExt = polar(rExt, endAngle);
+        const startInt = polar(rInt, endAngle);
+        const endInt = polar(rInt, startAngle);
+        const largeArc = sweep > 180 ? 1 : 0;
+
+        return `
+            M ${startExt.x} ${startExt.y}
+            A ${rExt} ${rExt} 0 ${largeArc} 1 ${endExt.x} ${endExt.y}
+            L ${startInt.x} ${startInt.y}
+            A ${rInt} ${rInt} 0 ${largeArc} 0 ${endInt.x} ${endInt.y}
+            Z
+        `;
+    };
+
+    const slices = (() => {
+        let acc = 0;
+        return statusDistribution
+            .filter((item) => item.count > 0)
+            .map((item) => {
+                const start = donutTotal > 0 ? (acc / donutTotal) * 360 : 0;
+                acc += item.count;
+                const end = donutTotal > 0 ? (acc / donutTotal) * 360 : 0;
+                return { ...item, start, end };
+            });
+    })();
+
+    return (
+        <div className="relative mt-7 flex items-center justify-center">
+            <div
+                className="pointer-events-none absolute h-48 w-48 rounded-full blur-3xl opacity-70 transition-all duration-300"
+                style={{
+                    background: activeGlow,
+                    maskImage:
+                        "radial-gradient(circle, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 55%, transparent 75%)",
+                    WebkitMaskImage:
+                        "radial-gradient(circle, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 55%, transparent 75%)",
+                }}
+            />
+
+            {/* overlay do hover */}
+            <div className="relative h-48 w-48">
+                <div
+                    className="absolute inset-0 rounded-full p-8 shadow-[0_0_40px_-10px_rgba(0,0,0,0.6)]"
+                    style={{ backgroundImage: activeBackgroundImage }}
+                >
+                    <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-neutral-950/95 ring-1 ring-white/4">
+                        {hoveredItem ? (
+                            <>
+                                <span
+                                    className="text-3xl font-semibold tracking-tight transition-colors duration-200"
+                                    style={{ color: hoveredItem.color }}
+                                >
+                                    {hoveredItem.count}
+                                </span>
+                                <span className="mt-0.5 text-[10px] font-medium uppercase tracking-wider text-neutral-400">
+                                    {hoveredItem.label}
+                                </span>
+                            </>
+                        ) : (
+                            <>
+                                <span className="text-3xl font-semibold tracking-tight text-white">
+                                    {donutTotal}
+                                </span>
+                                <span className="mt-0.5 text-[10px] font-medium uppercase tracking-wider text-neutral-500">
+                                    Total
+                                </span>
+                            </>
+                        )}
+                    </div>
+                </div>
+
+                <svg
+                    viewBox={`0 0 ${size} ${size}`}
+                    className="absolute inset-0 h-full w-full"
+                    style={{ pointerEvents: "none" }}
+                >
+                    {slices.map((s) => (
+                        <path
+                            key={s.status}
+                            d={slicePath(s.start, s.end)}
+                            fill="transparent"
+                            style={{ pointerEvents: "all", cursor: "pointer" }}
+                            onMouseEnter={() => setHoverStatus(s.status)}
+                            onMouseLeave={() => setHoverStatus(null)}
+                            onFocus={() => setHoverStatus(s.status)}
+                            onBlur={() => setHoverStatus(null)}
+                            tabIndex={0}
+                            aria-label={`${s.label}: ${s.count} tickets`}
+                        />
+                    ))}
+                </svg>
+            </div>
+        </div>
+    );
+}
+
 function DashboardPage() {
     const { user } = useAuth();
     const [days, setDays] = useState(7);
@@ -172,10 +567,10 @@ function DashboardPage() {
         })
         .join(", ");
 
-    const periodTotals = ticketsByPeriod.map(
-        (day) => day.open + day.inProgress + day.waitingUser + day.resolved + day.closed
-    );
-    const maxPeriodValue = Math.max(...periodTotals, 1);
+    const donutGlow = statusDistribution
+        .filter((item) => item.count > 0)
+        .map((item) => `${item.color}33`)
+        .join(", ");
 
     const agentsView = ticketsByAgent.map((agent) => ({
         name: agent.agentName,
@@ -269,16 +664,16 @@ function DashboardPage() {
                     return (
                         <div
                             key={stat.label}
-                            className={`relative overflow-hidden rounded-xl border ${colors.border} bg-neutral-900/80 p-4`}
+                            className={`group relative overflow-hidden rounded-xl border ${colors.border} bg-neutral-900/80 p-4 transition-all duration-300 ease-out hover:-translate-y-2 hover:border-white/15 hover:bg-neutral-900 hover:shadow-lg hover:shadow-black/40`}
                         >
                             <div
-                                className={`absolute -right-8 -top-8 h-24 w-24 rounded-full blur-2xl ${colors.glow}`}
+                                className={`absolute -right-8 -top-8 h-24 w-24 rounded-full blur-2xl ${colors.glow} transition-opacity duration-300 group-hover:opacity-100 opacity-70`}
                             />
 
                             <div className="relative">
                                 <div className="flex items-start justify-between">
                                     <div
-                                        className={`flex h-9 w-9 items-center justify-center rounded-lg ${colors.icon}`}
+                                        className={`flex h-9 w-9 items-center justify-center rounded-lg ${colors.icon} transition-transform duration-300 group-hover:scale-105`}
                                     >
                                         <StatIcon className="h-4 w-4" strokeWidth={2} />
                                     </div>
@@ -331,65 +726,7 @@ function DashboardPage() {
                         </div>
                     </div>
 
-                    <div className="mt-6 h-64">
-                        <div className="flex h-full items-end gap-2 border-b border-l border-neutral-800 px-3 pb-0">
-                            {ticketsByPeriod.map((day, index) => {
-                                const total = periodTotals[index];
-                                const height = (total / maxPeriodValue) * 100;
-
-                                const segments = [
-                                    { value: day.open, color: "bg-red-500" },
-                                    { value: day.inProgress, color: "bg-amber-500" },
-                                    { value: day.waitingUser, color: "bg-orange-500" },
-                                    { value: day.resolved, color: "bg-emerald-500" },
-                                    { value: day.closed, color: "bg-violet-500" },
-                                ];
-
-                                return (
-                                    <div key={day.date} className="flex h-full flex-1 items-end">
-                                        <div
-                                            className="flex w-full flex-col-reverse overflow-hidden rounded-t"
-                                            style={{ height: `${Math.max(height, total > 0 ? 2 : 0)}%` }}
-                                        >
-                                            {segments.map((segment, segmentIndex) => {
-                                                if (segment.value === 0) return null;
-                                                return (
-                                                    <div
-                                                        key={segmentIndex}
-                                                        className={`w-full ${segment.color} transition-all`}
-                                                        style={{ height: `${(segment.value / total) * 100}%` }}
-                                                    />
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-
-                        <div className="mt-2 flex justify-between px-3 text-xs text-neutral-400">
-                            {ticketsByPeriod.map((day, index) => {
-                                const shouldShowLabel =
-                                    days === 7 ||
-                                    index === 0 ||
-                                    index === ticketsByPeriod.length - 1 ||
-                                    index % (days === 30 ? 5 : 15) === 0;
-
-                                if (!shouldShowLabel) {
-                                    return <span key={day.date} />;
-                                }
-
-                                return (
-                                    <span key={day.date}>
-                                        {new Date(day.date).toLocaleDateString("pt-BR", {
-                                            day: "2-digit",
-                                            month: "2-digit",
-                                        })}
-                                    </span>
-                                );
-                            })}
-                        </div>
-                    </div>
+                    <TicketsLineChart data={ticketsByPeriod} days={days} />
 
                     <div className="mt-4 flex flex-wrap gap-4 text-xs text-neutral-300">
                         <span className="flex items-center gap-2">
@@ -415,50 +752,37 @@ function DashboardPage() {
                     </div>
                 </div>
 
-                <div className="rounded-xl border border-neutral-800 bg-neutral-900/70 p-5">
+                {/* donut */}
+                <div className="relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/70 p-5">
                     <div>
                         <h2 className="text-sm font-semibold text-white">
                             Tickets por status
                         </h2>
 
                         <p className="mt-1 text-xs text-neutral-300">
-                            Distribuição atual
+                            Passe o mouse para detalhes
                         </p>
                     </div>
 
-                    <div className="mt-7 flex items-center justify-center">
-                        <div
-                            className="relative h-44 w-44 rounded-full p-7"
-                            style={{
-                                backgroundImage: donutGradient
-                                    ? `conic-gradient(${donutGradient})`
-                                    : "conic-gradient(#27272a 0% 100%)",
-                            }}
-                        >
-                            <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-neutral-900">
-                                <span className="text-3xl font-semibold text-white">
-                                    {donutTotal}
-                                </span>
+                    <TicketsDonut
+                        statusDistribution={statusDistribution}
+                        donutTotal={donutTotal}
+                        donutGradient={donutGradient}
+                        donutGlow={donutGlow}
+                    />
 
-                                <span className="text-xs font-medium text-neutral-300">
-                                    Total
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="mt-6 space-y-3">
+                    <div className="mt-7 space-y-3">
                         {statusDistribution.map((item) => (
                             <div
                                 key={item.status}
                                 className="flex items-center justify-between text-xs"
                             >
-                                <span className="flex items-center gap-2 text-neutral-200">
-                                    <span className={`h-2 w-2 rounded-full ${item.dot}`} />
+                                <span className="flex items-center gap-2.5 text-neutral-300">
+                                    <span className={`h-1.5 w-1.5 rounded-full ${item.dot}`} />
                                     {item.label}
                                 </span>
 
-                                <span className="font-semibold text-neutral-100">
+                                <span className="font-medium tabular-nums text-neutral-100">
                                     {item.count}
                                 </span>
                             </div>
