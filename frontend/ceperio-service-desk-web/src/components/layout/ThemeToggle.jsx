@@ -23,14 +23,12 @@ function ThemeToggle() {
                 focus-visible:ring-2
                 focus-visible:ring-blue-500/40
                 focus-visible:ring-offset-2
-                ${
-                    isDark
-                        ? "border-white/10 bg-zinc-900"
-                        : "border-zinc-200 bg-zinc-100"
+                ${isDark
+                    ? "border-white/10 bg-zinc-900"
+                    : "border-zinc-200 bg-zinc-100"
                 }
             `}
         >
-            {/* Indicador deslizante */}
             <span
                 aria-hidden="true"
                 className={`
@@ -39,10 +37,9 @@ function ThemeToggle() {
                     shadow-sm
                     transition-all duration-300
                     ease-in-out
-                    ${
-                        isDark
-                            ? "left-10 bg-zinc-800 text-zinc-100 shadow-black/30"
-                            : "left-1 bg-white text-amber-500 shadow-zinc-300/50"
+                    ${isDark
+                        ? "left-10 bg-zinc-800 text-zinc-100 shadow-black/30"
+                        : "left-1 bg-white text-amber-500 shadow-zinc-300/50"
                     }
                 `}
             >
@@ -66,10 +63,9 @@ function ThemeToggle() {
                 aria-hidden="true"
                 className={`
                     absolute left-2.5 transition-opacity duration-200
-                    ${
-                        isDark
-                            ? "text-zinc-600 opacity-100"
-                            : "text-zinc-400 opacity-0"
+                    ${isDark
+                        ? "text-zinc-600 opacity-100"
+                        : "text-zinc-400 opacity-0"
                     }
                 `}
             >
@@ -80,10 +76,9 @@ function ThemeToggle() {
                 aria-hidden="true"
                 className={`
                     absolute right-2.5 transition-opacity duration-200
-                    ${
-                        isDark
-                            ? "text-zinc-500 opacity-0"
-                            : "text-zinc-400 opacity-100"
+                    ${isDark
+                        ? "text-zinc-500 opacity-0"
+                        : "text-zinc-400 opacity-100"
                     }
                 `}
             >

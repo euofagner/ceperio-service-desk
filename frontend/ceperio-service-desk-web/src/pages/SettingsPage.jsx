@@ -23,10 +23,8 @@ function SettingsPage() {
                     sua conta.
                 </p>
 
-                <div className="mx-auto max-w-4xl">
-                    <div className="mb-6 flex justify-end">
-                        <ThemeToggle />
-                    </div>
+                <div className="mb-6 flex justify-end">
+                    <ThemeToggle />
                 </div>
             </div>
 

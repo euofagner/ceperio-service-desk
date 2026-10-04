@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams  } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import cepelogo from "../assets/cepelogo.png";
 
@@ -224,7 +224,13 @@ function TicketsPage() {
         <div>
             <div className="mx-auto max-w-5xl">
                 <TicketSummary summary={summary} />
-                <TicketToolbar search={search} filter={filter} onSearchChange={setSearch} onFilterChange={setFilter} />
+                <TicketToolbar
+                    search={search}
+                    filter={filter}
+                    onSearchChange={setSearch}
+                    onFilterChange={setFilter}
+                    onCreateTicket={openCreateModal}
+                />
 
                 <div className="relative">
                     {loading && tickets.length > 0 && (

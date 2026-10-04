@@ -1,6 +1,12 @@
 import { Button, Input, Select, IconButton } from "../ui";
 
-function TicketToolbar({ search, filter, onSearchChange, onFilterChange }) {
+function TicketToolbar({
+    search,
+    filter,
+    onSearchChange,
+    onFilterChange,
+    onCreateTicket,
+}) {
     return (
         <>
             <div className="mb-5">
@@ -28,13 +34,13 @@ function TicketToolbar({ search, filter, onSearchChange, onFilterChange }) {
                 </div>
             </div>
 
-            {/* Filter */}
-            <div className="flex items-center justify-end mb-5 gap-3">
+            {/* Filter and actions */}
+            <div className="flex items-center justify-end gap-3 mb-5">
                 <Select
                     value={filter}
                     onChange={(e) => onFilterChange(e.target.value)}
                     fullWidth={false}
-                    className="ml-auto bg-neutral-900 border-neutral-800 text-neutral-300">
+                    className="bg-neutral-900 border-neutral-800 text-neutral-300">
                     <option value="all">Todos os status</option>
                     <option value="Open">Aberto</option>
                     <option value="InProgress">Em andamento</option>
@@ -42,6 +48,13 @@ function TicketToolbar({ search, filter, onSearchChange, onFilterChange }) {
                     <option value="Resolved">Resolvido</option>
                     <option value="Closed">Fechado</option>
                 </Select>
+
+                <Button
+                    type="button"
+                    onClick={onCreateTicket}
+                >
+                    + Novo ticket
+                </Button>
             </div>
         </>
     );
