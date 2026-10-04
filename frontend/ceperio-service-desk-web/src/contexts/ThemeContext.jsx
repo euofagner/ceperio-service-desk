@@ -5,6 +5,10 @@ const ThemeContext = createContext(null);
 const THEME_STORAGE_KEY = "theme";
 
 function getInitialTheme() {
+    if (typeof window === "undefined") {
+        return "dark";
+    }
+
     const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
 
     if (storedTheme === "light" || storedTheme === "dark") {
@@ -21,6 +25,7 @@ export function ThemeProvider({ children }) {
         const root = document.documentElement;
 
         root.dataset.theme = theme;
+
         root.classList.toggle("dark", theme === "dark");
         root.classList.toggle("light", theme === "light");
 
@@ -50,7 +55,9 @@ export function useTheme() {
     const context = useContext(ThemeContext);
 
     if (!context) {
-        throw new Error("useTheme deve ser usado dentro de ThemeProvider.");
+        throw new Error(
+            "useTheme deve ser usado dentro de ThemeProvider."
+        );
     }
 
     return context;

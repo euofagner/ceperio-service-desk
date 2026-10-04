@@ -2,6 +2,8 @@ import { LogOut, Palette, User } from "lucide-react";
 
 import { useAuth } from "../contexts/AuthContext";
 
+import ThemeToggle from "../components/layout/ThemeToggle";
+
 function SettingsPage() {
     const { user, logout } = useAuth();
 
@@ -20,10 +22,16 @@ function SettingsPage() {
                     Personalize sua experiência e gerencie as configurações da
                     sua conta.
                 </p>
+
+                <div className="mx-auto max-w-4xl">
+                    <div className="mb-6 flex justify-end">
+                        <ThemeToggle />
+                    </div>
+                </div>
             </div>
 
             <div className="space-y-6">
-                <section className="overflow-hidden rounded-xl border border-white/6 bg-white/[0.02]">
+                <section className="overflow-hidden rounded-xl border border-white/6 bg-white/2">
                     <div className="flex items-start gap-4 border-b border-white/6 px-5 py-5">
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/8 bg-white/[0.035] text-zinc-400">
                             <Palette size={18} strokeWidth={1.7} />
@@ -52,14 +60,14 @@ function SettingsPage() {
                                 </p>
                             </div>
 
-                            <span className="rounded-md border border-white/6 bg-white/[0.025] px-3 py-1.5 text-xs text-zinc-500">
+                            <span className="rounded-md border border-white/6 bg-white/2.5 px-3 py-1.5 text-xs text-zinc-500">
                                 Em breve
                             </span>
                         </div>
                     </div>
                 </section>
 
-                <section className="overflow-hidden rounded-xl border border-white/6 bg-white/[0.02]">
+                <section className="overflow-hidden rounded-xl border border-white/6 bg-white/2">
                     <div className="flex items-start gap-4 border-b border-white/6 px-5 py-5">
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/8 bg-white/[0.035] text-zinc-400">
                             <User size={18} strokeWidth={1.7} />
@@ -115,9 +123,9 @@ function SettingsPage() {
                     </div>
                 </section>
 
-                <section className="overflow-hidden rounded-xl border border-red-500/10 bg-red-500/[0.015]">
+                <section className="overflow-hidden rounded-xl border border-red-500/10 bg-red-500/1.5">
                     <div className="flex items-start gap-4 px-5 py-5">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-red-500/10 bg-red-500/[0.04] text-red-400">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-red-500/10 bg-red-500/4 text-red-400">
                             <LogOut size={18} strokeWidth={1.7} />
                         </div>
 
@@ -135,7 +143,7 @@ function SettingsPage() {
                             <button
                                 type="button"
                                 onClick={logout}
-                                className="shrink-0 rounded-lg border border-red-500/15 bg-red-500/[0.04] px-3.5 py-2 text-xs font-medium text-red-400 transition-colors hover:border-red-500/25 hover:bg-red-500/[0.08] hover:text-red-300"
+                                className="shrink-0 rounded-lg border border-red-500/15 bg-red-500/4 px-3.5 py-2 text-xs font-medium text-red-400 transition-colors hover:border-red-500/25 hover:bg-red-500/8 hover:text-red-300"
                             >
                                 Sair
                             </button>
