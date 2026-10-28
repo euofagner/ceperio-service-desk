@@ -129,10 +129,10 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-app.UseCors(options => 
+app.UseCors(options =>
 {
-    options.WithOrigins("http://localhost:5173");
-    options.AllowAnyMethod(); 
+    options.WithOrigins("http://localhost:5173", "http://192.168.1.50");
+    options.AllowAnyMethod();
     options.AllowAnyHeader();
 });
 
